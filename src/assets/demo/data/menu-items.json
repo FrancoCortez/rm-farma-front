@@ -1,0 +1,38 @@
+[
+  {
+    "label": "Administración",
+    "items": [
+      {
+        "label": "Administrador de Usuarios",
+        "icon": "pi pi-fw pi-home",
+        "routerLink": [
+          "/main"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Pacientes",
+    "items": [
+      {
+        "label": "Administrador de Pacientes",
+        "icon": "pi pi-fw pi-users",
+        "routerLink": [
+          "/main/patient"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Manufactura",
+    "items": [
+      {
+        "label": "Administración de Producción",
+        "icon": "pi pi-fw pi-prime",
+        "routerLink": [
+          "/main/manufacture"
+        ]
+      }
+    ]
+  }
+]

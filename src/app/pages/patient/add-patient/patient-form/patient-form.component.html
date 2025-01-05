@@ -1,0 +1,114 @@
+<form [formGroup]="patientForm">
+  <div class="flex flex-column">
+    <div class="justify-content-center align-items-center font-medium">
+      <div class="grid p-fluid mt-3">
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <input id="rut" type="text" pInputText autocomplete="off" autofocus appRutFormatter
+                   formControlName="rut" [appFormControlStatus]="patientForm.get('rut')" (blur)="onRutBlur()">
+            <label for="rut">Rut *</label>
+          </span>
+          <app-form-validation-messages [control]="patientForm.get('rut')" [message]="'El Rut es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+          <app-form-validation-messages [control]="patientForm.get('rut')" [message]="'El rut ingresado no es valido'"
+                                        [errorType]="'invalidRut'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <input id="identification" type="text" pInputText autocomplete="off" autofocus appRutFormatter formControlName="identification" [appFormControlStatus]="patientForm.get('identification')">
+            <label for="identification">Identificación</label>
+          </span>
+          <app-form-validation-messages [control]="patientForm.get('identification')" [message]="'El Rut es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input id="name" type="text" pInputText autocomplete="off" formControlName="name"
+                           [appFormControlStatus]="patientForm.get('name')">
+                    <label for="name">Nombre *</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('name')" [message]="'El Nombre es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input id="lastName" type="text" pInputText autocomplete="off" formControlName="lastName"
+                           [appFormControlStatus]="patientForm.get('lastName')">
+                    <label for="lastName">Apellidos</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('lastName')"
+                                        [message]="'Los Apellidos son obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-inputMask id="phone" mask="+569 99999999" autocomplete="off" formControlName="phone"
+                                 [appFormControlStatus]="patientForm.get('phone')"></p-inputMask>
+                    <label for="phone">Teléfono</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('phone')"
+                                        [message]="'El teléfono es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input id="email" type="text" pInputText autocomplete="off" formControlName="email"
+                           [appFormControlStatus]="patientForm.get('email')">
+                    <label for="email">Correo</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('email')"
+                                        [message]="'El Correo es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+          <app-form-validation-messages [control]="patientForm.get('email')"
+                                        [message]="'El Correo no tiene un formato valido'"
+                                        [errorType]="'email'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input id="villa" type="text" pInputText autocomplete="off" formControlName="villa"
+                           [appFormControlStatus]="patientForm.get('villa')">
+                    <label for="villa">Villa / Población</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('villa')"
+                                        [message]="'La población o villa son obligatorias'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input id="street" type="text" pInputText autocomplete="off" formControlName="street"
+                           [appFormControlStatus]="patientForm.get('street')">
+                    <label for="street">Calle</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('street')"
+                                        [message]="'La Calle es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-inputNumber id="houseNumber" autocomplete="off" formControlName="houseNumber"
+                                   [appFormControlStatus]="patientForm.get('houseNumber')"></p-inputNumber>
+                    <label for="houseNumber">N° Casa / Departamento</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('houseNumber')"
+                                        [message]="'El número de casa o block es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-calendar id="dateOfBirth" dateFormat="dd/mm/yy" formControlName="dateOfBirth"
+                                [appFormControlStatus]="patientForm.get('dateOfBirth')"></p-calendar>
+                    <label for="dateOfBirth">Fecha Nacimiento</label>
+                  </span>
+          <app-form-validation-messages [control]="patientForm.get('dateOfBirth')"
+                                        [message]="'La fecha de nacimiento es obligatoria'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex py-4">
+    <button [disabled]="patientForm.invalid" pButton pRipple type="button" label="Siguiente"
+            class="p-button-raised"
+            (click)="nextCallbackPatient()"></button>
+  </div>
+</form>

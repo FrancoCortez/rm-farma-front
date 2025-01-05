@@ -1,0 +1,66 @@
+<form [formGroup]="otherInformationForm">
+  <div class="flex flex-column">
+    <div class="justify-content-center align-items-center font-medium">
+      <div class="grid p-fluid mt-3">
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-dropdown id="clinic" placeholder="Seleccione Clínica"
+                                [appFormControlStatus]="otherInformationForm.get('clinic')" formControlName="clinic"
+                                [options]="clinicsCombo" optionLabel="name" dataKey="code" [filter]="true"
+                                filterBy="name" emptyFilterMessage="No se encontraron Clínicas"
+                                emptyMessage="No existen clínicas en Sistema"></p-dropdown>
+                    <label for="clinic">Clínicas</label>
+                  </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('clinic')"
+                                        [message]="'La clínica es obligatoria'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-dropdown id="schema" placeholder="Seleccione Esquema"
+                                [appFormControlStatus]="otherInformationForm.get('schema')" formControlName="schema"
+                                [options]="schemaCombo" optionLabel="name" dataKey="code" [filter]="true"
+                                filterBy="name" emptyFilterMessage="No se encontraron Esquemas"
+                                emptyMessage="No existen Esquemas en Sistema"></p-dropdown>
+                    <label for="schema">Esquemas</label>
+                  </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('schema')"
+                                        [message]="'El esquema es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-dropdown id="isapre" placeholder="Seleccione Isapre"
+                                [appFormControlStatus]="otherInformationForm.get('isapre')" formControlName="isapre"
+                                [options]="isapreCombo" optionLabel="name" dataKey="code" [filter]="true"
+                                filterBy="name" emptyFilterMessage="No se encontraron Isapres"
+                                emptyMessage="No existen Isapres en Sistema"></p-dropdown>
+                    <label for="schema">Isapre</label>
+                  </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('isapre')"
+                                        [message]="'La isapre-store es obligatoria'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-dropdown id="diagnosis" placeholder="Seleccione Dignóstico"
+                                [appFormControlStatus]="otherInformationForm.get('diagnosis')" formControlName="diagnosis"
+                                [options]="diagnosisCombo" optionLabel="name" dataKey="code" [filter]="true"
+                                filterBy="name" emptyFilterMessage="No se encontraron Diagnosticos"
+                                emptyMessage="No existen Diagnosticos en Sistema"></p-dropdown>
+                    <label for="diagnosis">Diagnóstico</label>
+                  </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('diagnosis')"
+                                        [message]="'El diagnóstico es obligatorio'"
+                                        [errorType]="'required'"></app-form-validation-messages>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex py-4 gap-2">
+    <button pButton pRipple type="button" label="Atras" class="p-button-raised p-button-secondary"
+            (click)="previousCallback()"></button>
+    <button pButton pRipple type="button" label="Guardar" (click)="submitEmit()" class="p-button-raised p-button-primary"
+            [disabled]="otherInformationForm.invalid"></button>
+  </div>
+</form>

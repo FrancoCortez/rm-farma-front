@@ -1,0 +1,28 @@
+<div class="card">
+  <p-stepper orientation="vertical" >
+    <p-stepperPanel header="Información del Paciente">
+      <ng-template pTemplate="content" let-nextCallback="nextCallback" let-index="index">
+        <app-patient-form (sendValueForm)="addDataPatientForm($event)" [nextCallbacks]="nextCallback"></app-patient-form>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Información del Médico">
+      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback"
+                   let-index="index">
+        <app-doctor-form (sendValueForm)="addDataDoctorForm($event)" [nextCallbacks]="nextCallback" [previousCallbacks]="prevCallback"></app-doctor-form>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Información Ciclo">
+      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback"
+                   let-index="index">
+        <app-cycles-form (sendValueForm)="addDataCyclesForm($event)" [nextCallbacks]="nextCallback" [previousCallbacks]="prevCallback"></app-cycles-form>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Otra Información">
+      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
+        <app-other-information-form (sendValueForm)="addDataOtherInformationForm($event)" [previousCallbacks]="prevCallback"></app-other-information-form>
+      </ng-template>
+    </p-stepperPanel>
+  </p-stepper>
+</div>
+<app-spinner *ngIf="isLoading"></app-spinner>
+<app-modal-error [display]="displayError" [message]="messageError"></app-modal-error>
