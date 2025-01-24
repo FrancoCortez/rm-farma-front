@@ -17,8 +17,33 @@
       {
         "label": "Administrador de Pacientes",
         "icon": "pi pi-fw pi-users",
+        "items": [
+          {
+            "label": "Listar Pacientes",
+            "icon": "pi pi-list",
+            "routerLink": [
+              "/main/patient/list-patient"
+            ]
+          },
+          {
+            "label": "Registrar Paciente",
+            "icon": "pi pi-plus",
+            "routerLink": [
+              "/main/patient/add-patient/0"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Validar Paciente",
+    "items": [
+      {
+        "label": "Check Paciente",
+        "icon": "pi pi-fw pi-users",
         "routerLink": [
-          "/main/patient"
+          "/main/check-patient/check-patient"
         ]
       }
     ]
@@ -29,8 +54,21 @@
       {
         "label": "Administración de Producción",
         "icon": "pi pi-fw pi-prime",
-        "routerLink": [
-          "/main/manufacture"
+        "items": [
+          {
+            "label": "Listar Producción",
+            "icon": "pi pi-list",
+            "routerLink": [
+              "/main/production/list-production"
+            ]
+          },
+          {
+            "label": "Registrar Producción",
+            "icon": "pi pi-plus",
+            "routerLink": [
+              "/main/production/new-production"
+            ]
+          }
         ]
       }
     ]

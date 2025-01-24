@@ -1,34 +1,88 @@
 <div class="grid">
   <div class="col-12">
     <div class="card">
-      <h5>Pacientes</h5>
-      <p-table #dt dataKey="id" [rows]="10" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" responsiveLayout="scroll" [scrollable]="true">
-        <ng-template pTemplate="header">
+      <p-table [columns]="selectedColumns"
+               [expandedRowKeys]="expandedRows"
+               [paginator]="true"
+               [rowHover]="true"
+               [rows]="10"
+               [tableStyle]="{'min-width': '50rem'}"
+               [value]=patients
+               responsiveLayout="scroll"
+               dataKey="identification"
+               styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="caption">
+          <div class="field col-12 md:col-12">
+            <span class="p-float-label">
+              <p-multiSelect
+                [(ngModel)]="selectedColumns"
+                [options]="cols"
+                [style]="{'min-width': '300px'}"
+                class="multiselect-custom"
+                display="comma"
+                id="multiselect"
+                inputId="multiselect"
+                optionLabel="header"
+                placeholder="Seleccione las columnas"
+                selectedItemsLabel="{0} columnas seleccionadas"
+              />
+              <label for="multiselect">Columnas</label>
+            </span>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
           <tr>
-            <th style="min-width: 12rem">
-              <div class="flex justify-content-between align-items-center">
-                Rut
-                <p-columnFilter type="text" field="rut" display="menu" placeholder="Buscar por Rut"></p-columnFilter>
-              </div>
+            <th style="width: 5rem"></th>
+            <th>Identificación</th>
+            <th *ngFor="let col of columns" style="min-width: 12rem">
+              {{ col.header }}
             </th>
-            <th style="min-width: 12rem">
-              <div class="flex justify-content-between align-items-center">
-                Nombre
-                <p-columnFilter type="text" field="name" display="menu" placeholder="Buscar por Nombre"></p-columnFilter>
+            <th style="width: 5rem"></th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-expanded="expanded" let-patient pTemplate="body">
+          <tr>
+            <td>
+              <button [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" [pRowToggler]="patient" class="p-button-text p-button-rounded p-button-plain" pButton
+                      pRipple
+                      type="button"></button>
+            </td>
+            <td>{{ patient.identification }}</td>
+            <td *ngFor="let col of columns">
+              {{ parseFieldInData(patient, col.field) }}
+            </td>
+            <td>
+              <button (click)="searchPatient(patient)" class="p-button-rounded p-button-info" icon="pi pi-search-plus" pButton pRipple type="button"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template let-patient pTemplate="rowexpansion">
+          <tr>
+            <td colspan="7">
+              <div class="p-3">
+                <p-table [columns]="subCols"
+                         [rowHover]="true"
+                         [tableStyle]="{'min-width': '50rem'}"
+                         [value]="patient.diagnosisPatient"
+                         responsiveLayout="scroll"
+                         styleClass="p-datatable-gridlines">
+                  <ng-template let-columns pTemplate="header">
+                    <tr>
+                      <th *ngFor="let cols of columns" style="min-width: 12rem">
+                        {{ cols.header }}
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template let-columns="columns" let-detail pTemplate="body">
+                    <tr>
+                      <td *ngFor="let cols of columns">
+                        {{ parseFieldInData(detail, cols.field) }}
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
               </div>
-            </th>
-            <th style="min-width: 12rem">
-              <div class="flex justify-content-between align-items-center">
-                Apellido
-                <p-columnFilter type="text" field="lastName" display="menu" placeholder="Buscar por Apellido"></p-columnFilter>
-              </div>
-            </th>
-            <th style="min-width: 12rem">
-              <div class="flex justify-content-between align-items-center">
-                Apellido
-                <p-columnFilter type="text" field="lastName" display="menu" placeholder="Buscar por Apellido"></p-columnFilter>
-              </div>
-            </th>
+            </td>
           </tr>
         </ng-template>
       </p-table>

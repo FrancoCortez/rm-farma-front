@@ -11,6 +11,7 @@ import { ClinicResourceDto } from '../model/clinic/clinic-resource.dto';
 })
 export class SchemaService {
   private host = environment.hostRmFarma;
+
   constructor(private http: HttpClient) {}
 
   public findAllSchemas(): Observable<SchemaResourceDto[]> {

@@ -12,7 +12,14 @@ export const routes: Routes = [
           import('./pages/patient/patient.routes').then((m) => m.patientRoutes),
       },
       {
-        path: 'manufacture',
+        path: 'check-patient',
+        loadChildren: () =>
+          import('./pages/check-patient/check-patient.routes').then(
+            (m) => m.checkPatientRoutes,
+          ),
+      },
+      {
+        path: 'production',
         loadChildren: () =>
           import('./pages/manufacture/manufacture.routes').then(
             (m) => m.manufactureRoutes,

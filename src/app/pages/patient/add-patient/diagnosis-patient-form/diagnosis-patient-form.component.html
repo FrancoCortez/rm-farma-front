@@ -1,0 +1,31 @@
+<p-fieldset [collapsed]="isCollapse" [toggleable]="true" [legend]="nameDiagnosisHeader">
+  <p-stepper [(activeStep)]="forceValue" [linear]="true" orientation="vertical">
+    <p-stepperPanel header="Diagnóstico">
+      <ng-template let-index="index" let-nextCallback="nextCallback" pTemplate="content">
+        <app-diagnosis [preLoadDiagnosisPatient]="preLoadDataPatient" (sendValueForm)="addDiagnosticForm($event)" [nextCallbacks]="nextCallback"></app-diagnosis>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Información Ciclos">
+      <ng-template let-index="index" let-nextCallback="nextCallback" let-prevCallback="prevCallback"
+                   pTemplate="content">
+        <app-cycles-form [preLoadDiagnosisPatient]="preLoadDataPatient" (sendValueForm)="addDataCyclesForm($event)" [nextCallbacks]="nextCallback"
+                         [previousCallbacks]="prevCallback"></app-cycles-form>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Información Médico">
+      <ng-template let-index="index" let-nextCallback="nextCallback" let-prevCallback="prevCallback"
+                   pTemplate="content">
+        <app-doctor-form [preLoadDiagnosisPatient]="preLoadDataPatient" (sendValueForm)="addDataDoctorForm($event)" [nextCallbacks]="nextCallback"
+                         [previousCallbacks]="prevCallback"></app-doctor-form>
+      </ng-template>
+    </p-stepperPanel>
+    <p-stepperPanel header="Otra Información">
+      <ng-template let-index="index" let-nextCallback="nextCallback" let-prevCallback="prevCallback"
+                   pTemplate="content">
+        <app-other-information-form [preLoadDiagnosisPatient]="preLoadDataPatient" (sendValueForm)="addDataOtherInformationForm($event)"
+                                    [nextCallbacks]="nextCallback"
+                                    [previousCallbacks]="prevCallback"></app-other-information-form>
+      </ng-template>
+    </p-stepperPanel>
+  </p-stepper>
+</p-fieldset>

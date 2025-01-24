@@ -23,3 +23,18 @@ export const selectPatient = createSelector(
   selector,
   (state: State) => state.patient,
 );
+
+export const selectSuccessCreateOrUpdate = createSelector(
+  selector,
+  (state: State) => state.successCreateOrUpdate,
+);
+
+export const selectPatients = createSelector(
+  selector,
+  (state: State) => state.patients,
+);
+
+export const selectErrorForProduction = createSelector(
+  selector,
+  (state: State) => state.errorForProduction,
+);

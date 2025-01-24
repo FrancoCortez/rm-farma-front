@@ -3,7 +3,6 @@ import {
   DoCheck,
   ElementRef,
   Input,
-  OnInit,
   Renderer2,
 } from '@angular/core';
 import { AbstractControl, FormControl } from '@angular/forms';
@@ -14,10 +13,12 @@ import { AbstractControl, FormControl } from '@angular/forms';
 })
 export class FormControlStatusDirective implements DoCheck {
   @Input('appFormControlStatus') control!: AbstractControl | null;
+
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
   ) {}
+
   ngDoCheck(): void {
     const formControl = this.control as FormControl;
     if (formControl) {

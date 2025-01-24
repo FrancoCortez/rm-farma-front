@@ -1,0 +1,144 @@
+<p-toolbar styleClass="mb-4">
+  <ng-template pTemplate="left">
+    <div class="my-2">
+      <button (click)="openNew()" class="p-button-secondary" icon="pi pi-plus" label="Nuevo" pButton pRipple></button>
+      <!--      <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>-->
+    </div>
+  </ng-template>
+</p-toolbar>
+<p-table *ngIf="(orderDetails && orderDetails.length > 0)" [columns]="cols"
+         [tableStyle]="{'min-width': '50rem'}"
+         [value]=orderDetails
+         responsiveLayout="scroll"
+         styleClass="p-datatable-gridlines">
+  <ng-template let-columns pTemplate="header">
+    <tr>
+      <th *ngFor="let col of columns" style="min-width: 12rem">
+        {{ col.header }}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template let-columns="columns" let-orderDetail pTemplate="body">
+    <tr>
+      <td *ngFor="let col of columns">
+        {{ parseFieldInData(orderDetail, col.field) }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<div *ngIf="(orderDetails && orderDetails.length > 0)" class="flex justify-content-center mt-6">
+  <button (click)="saveAll()" class="p-button-primary ml-3 mr-3" icon="pi pi-send" label="Guardar Todo" pButton
+          pRipple></button>
+  <button (click)="resetAll()" class="p-button-secondary ml-3 mr-3" icon="pi pi-trash" label="Limpiar" pButton
+          pRipple></button>
+</div>
+
+<p-dialog [(visible)]="orderDetailDialog" [modal]="true" [style]="{width: '800px'}" class="p-fluid"
+          header="Agregar Nueva Fórmula">
+  <ng-template pTemplate="content">
+    <form [formGroup]="orderDetailForm">
+      <div class="flex flex-column">
+        <div class="justify-content-center align-items-center font-medium">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('via')" [filter]="true"
+                            [options]="viaCombo" dataKey="code"
+                            emptyFilterMessage="No se encontraron Vias" emptyMessage="No existen Vias en Sistema" filterBy="name" formControlName="via"
+                            id="via" optionLabel="name"
+                            placeholder="Seleccione la Via"></p-dropdown>
+                <label for="via">Vias</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('via')" [errorType]="'required'"
+                                            [message]="'La via es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-calendar [appFormControlStatus]="orderDetailForm.get('productionDate')" [showTime]="true" dateFormat="dd/mm/yy" formControlName="productionDate"
+                            id="productionDate"></p-calendar>
+                <label for="productionDate">Fecha Produccion</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('via')" [errorType]="'required'"
+                                            [message]="'La via es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('productName')" [filter]="true"
+                            [options]="productCombo" dataKey="code"
+                            emptyFilterMessage="No se encontraron productos" emptyMessage="No existen Productos en Sistema" filterBy="name" formControlName="productName"
+                            id="productName" optionLabel="name"
+                            placeholder="Seleccione el producto"></p-dropdown>
+                <label for="productName">Productos</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('productName')"
+                                            [errorType]="'required'"
+                                            [message]="'El producto es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('realPart')" autocomplete="off" formControlName="realPart"
+                               id="realPart"></p-inputNumber>
+                <label for="realPart">Cantidad</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('realPart')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="orderDetailForm.get('batch')" autocomplete="off" formControlName="batch" id="batch" pInputText
+                       type="text">
+                <label for="batch">Lote</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('batch')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('complement')" [filter]="true"
+                            [options]="complementCombo" dataKey="code"
+                            emptyFilterMessage="No se encontraron complementos" emptyMessage="No existen Complementos en Sistema" filterBy="name" formControlName="complement"
+                            id="complement" optionLabel="name"
+                            placeholder="Seleccione el Complemento"></p-dropdown>
+                <label for="complement">Adicionales</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('complement')"
+                                            [errorType]="'required'"
+                                            [message]="'El Complemento es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="orderDetailForm.get('realPartComplement')" autocomplete="off" formControlName="realPartComplement" id="realPartComplement"
+                       pInputText
+                       type="text">
+                <label for="realPartComplement">Cantidad</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('realPartComplement')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <textarea [appFormControlStatus]="orderDetailForm.get('observation')" cols="20" formControlName="observation" id="observation" pInputTextarea required
+                          rows="3"></textarea>
+                <label for="observation">Observaciones</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('observation')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
+            pRipple></button>
+    <button (click)="saveFormula()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
+  </ng-template>
+</p-dialog>
+
+
+

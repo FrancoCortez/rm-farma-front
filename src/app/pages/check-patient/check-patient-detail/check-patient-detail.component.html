@@ -1,0 +1,28 @@
+<div class="card">
+  <h5>Proceso de Manufactura</h5>
+  <div class="grid p-fluid mt-3">
+    <div class="field col-12 md:col-4">
+      <span class="p-float-label">
+        <input (keydown.enter)="searchPatient()" [(ngModel)]="searchPatientValue" id="search" pInputText type="text"/>
+        <label for="search">Identificador Paciente</label>
+      </span>
+    </div>
+    <div class="col-12 md:col-4">
+      <p-button (onClick)="searchPatient()" [style]="{'max-width': '50%'}" class="p-button-raised p-button-primary" icon="pi pi-search"
+                label="Buscar..." pRipple></p-button>
+    </div>
+  </div>
+</div>
+
+<!--<div class="grid">-->
+<div *ngIf="patientSearch?.identification" class="grid">
+  <div class="col-12 md:col-12">
+    <div class="card">
+          <app-detail-patient [patientSearch]="patientSearch"></app-detail-patient>
+    </div>
+  </div>
+</div>
+
+<app-modal-error [display]="displayError" [message]="messageError"></app-modal-error>
+<app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
+                   [message]="'Se han creado los preparados con éxito'"></app-modal-success>

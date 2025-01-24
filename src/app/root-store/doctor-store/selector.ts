@@ -12,3 +12,16 @@ export const selectDoctor = createSelector(
   selector,
   (state: State) => state.doctorResource,
 );
+export const selectSuccessLoadAllDoctors = createSelector(
+  selector,
+  (state: State) => state.successLoadAllDoctors,
+);
+export const selectDoctorResources = createSelector(
+  selector,
+  (state: State) => state.doctorResources,
+);
+
+export const selectCreateDoctor = createSelector(
+  selector,
+  (state: State) => state.createDoctorResource,
+);

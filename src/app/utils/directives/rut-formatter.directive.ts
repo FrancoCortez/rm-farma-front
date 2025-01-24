@@ -11,11 +11,13 @@ export class RutFormatterDirective {
     const input = this.el.nativeElement.value;
     this.el.nativeElement.value = this.formatRut(input);
   }
+
   @HostListener('keyup', ['$event']) onKeyUp(event: KeyboardEvent): void {
     const input = this.el.nativeElement.value;
     this.el.nativeElement.value = this.formatRut(input);
     this.el.nativeElement.dispatchEvent(new Event('input'));
   }
+
   private formatRut(value: string): string {
     let newValue = value.replace(/[^0-9kK]/g, '');
     if (newValue.length > 1) {

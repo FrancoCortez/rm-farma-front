@@ -1,28 +1,21 @@
 <div class="card">
-  <p-stepper orientation="vertical" >
-    <p-stepperPanel header="Información del Paciente">
-      <ng-template pTemplate="content" let-nextCallback="nextCallback" let-index="index">
-        <app-patient-form (sendValueForm)="addDataPatientForm($event)" [nextCallbacks]="nextCallback"></app-patient-form>
-      </ng-template>
-    </p-stepperPanel>
-    <p-stepperPanel header="Información del Médico">
-      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback"
-                   let-index="index">
-        <app-doctor-form (sendValueForm)="addDataDoctorForm($event)" [nextCallbacks]="nextCallback" [previousCallbacks]="prevCallback"></app-doctor-form>
-      </ng-template>
-    </p-stepperPanel>
-    <p-stepperPanel header="Información Ciclo">
-      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback"
-                   let-index="index">
-        <app-cycles-form (sendValueForm)="addDataCyclesForm($event)" [nextCallbacks]="nextCallback" [previousCallbacks]="prevCallback"></app-cycles-form>
-      </ng-template>
-    </p-stepperPanel>
-    <p-stepperPanel header="Otra Información">
-      <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
-        <app-other-information-form (sendValueForm)="addDataOtherInformationForm($event)" [previousCallbacks]="prevCallback"></app-other-information-form>
-      </ng-template>
-    </p-stepperPanel>
-  </p-stepper>
+  <h5>Información Paciente</h5>
+  <!--  <app-patient-form (sendValueForm)="addDataPatientForm($event)"></app-patient-form>-->
+  <app-patient-form></app-patient-form>
+  <div *ngIf="statePatientFormValue.patientFormValid">
+    <h5>Información Diagnóstico</h5>
+    <div *ngFor="let form of diagnosisForms">
+      <app-diagnosis-patient-form (sendAllData)="addDataDiagnosisPatientForm($event)" [preLoadDataPatient]="patient.diagnosisPatient?.[form] || {}"></app-diagnosis-patient-form>
+    </div>
+  </div>
+  <div *ngIf="dataValid()" class="flex justify-content-center mt-6">
+    <button (click)="saveAll()" class="p-button-primary ml-3 mr-3" icon="pi pi-send" label="Guardar Todo" pButton
+            pRipple></button>
+    <button (click)="addDiagnosticForm()" class="p-button-primary ml-3 mr-3" icon="pi pi-send" label="Agregar Diag." pButton
+            pRipple></button>
+  </div>
 </div>
 <app-spinner *ngIf="isLoading"></app-spinner>
 <app-modal-error [display]="displayError" [message]="messageError"></app-modal-error>
+<app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
+                   [message]="'Se a creado o actualizado el paciente con éxito'"></app-modal-success>

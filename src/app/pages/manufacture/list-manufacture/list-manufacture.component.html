@@ -1,0 +1,398 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <p-table [columns]="selectedColumns"
+               [expandedRowKeys]="expandedRows"
+               [paginator]="true"
+               [rowHover]="true"
+               [rows]="10"
+               [tableStyle]="{'min-width': '50rem'}"
+               [value]="masterOrders"
+               dataKey="patientIdentification"
+               responsiveLayout="scroll"
+               styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="caption">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-4">
+            <span class="p-float-label">
+              <p-multiSelect
+                [(ngModel)]="selectedColumns"
+                [options]="cols"
+                [style]="{'min-width': '300px'}"
+                class="multiselect-custom"
+                display="comma"
+                id="multiselect"
+                inputId="multiselect"
+                optionLabel="header"
+                placeholder="Seleccione las columnas"
+                selectedItemsLabel="{0} columnas seleccionadas"
+              />
+              <label for="multiselect">Columnas</label>
+            </span>
+            </div>
+            <div class="field col-12 md:col-4">
+              <span class="p-float-label">
+                <p-calendar (ngModelChange)="updateFilters()" [(ngModel)]="searchDay" id="searchDay"
+                            inputId="searchDay"></p-calendar>
+                <label for="searchDay">Fecha</label>
+              </span>
+            </div>
+            <div class="filed col-12 md:col-4">
+              <span class="p-float-label">
+                <input (ngModelChange)="updateFilters()" [(ngModel)]="searchIdentification" id="identification"
+                       pInputText
+                       type="text">
+                <label for="identification">Identificación</label>
+              </span>
+            </div>
+            <div class="col-12 md:col-4">
+              <p-button (onClick)="searchMasterOrder()" [style]="{'max-width': '40%'}"
+                        class="p-button-raised p-button-primary" icon="pi pi-search"
+                        label="Buscar..." pRipple></p-button>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th style="width: 3rem"></th>
+            <th *ngFor="let col of columns" style="min-width: 12rem">
+              {{ col.header }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-expanded="expanded" let-master pTemplate="body">
+          <tr>
+            <td>
+              <button [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" [pRowToggler]="master"
+                      class="p-button-text p-button-rounded p-button-plain" pButton
+                      pRipple
+                      type="button"></button>
+            </td>
+            <td *ngFor="let col of columns">
+              {{ parseFieldInData(master, col.field) }}
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template let-master pTemplate="rowexpansion">
+          <tr>
+            <td colspan="7">
+              <div class="p-3">
+                <p-table [columns]="subCols"
+                         [rowHover]="true"
+                         [tableStyle]="{'min-width': '50rem'}"
+                         [value]="master.details"
+                         responsiveLayout="scroll"
+                         styleClass="p-datatable-gridlines">
+                  <ng-template let-columns pTemplate="header">
+                    <tr>
+                      <th></th>
+                      <th *ngFor="let cols of columns" style="min-width: 12rem">
+                        {{ cols.header }}
+                      </th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template let-columns="columns" let-detail pTemplate="body">
+                    <tr>
+                      <td>
+                        <button (click)="initProcessManufacture(detail, master)" class="p-button-rounded p-button-info"
+                                icon="pi pi-plus-circle" pButton pRipple type="button"></button>
+                      </td>
+                      <td *ngFor="let cols of columns">
+                        {{ parseFieldInData(detail, cols.field) }}
+                      </td>
+                      <td>
+                        <button (click)="detailProduct(detail, master)" class="p-button-rounded p-button-info"
+                                icon="pi pi-info" pButton pRipple type="button"></button>
+                      </td>
+                      <td>
+                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)" class="p-button-rounded p-button-info"
+                                icon="pi pi-print" pButton pRipple type="button"></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="zebraPreview" [style]="{width: '950px', height: '1100px'}" [modal]="true">
+<!--  <canvas id="labelCanvas"></canvas>-->
+<!--  <div class="flex justify-content-center">-->
+<!--    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" pRipple></p-button>-->
+<!--  </div>-->
+  <div id="canvasContainer"></div>
+  <div class="flex justify-content-center">
+    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" pRipple></p-button>
+  </div>
+</p-dialog>
+
+
+<p-dialog [(visible)]="orderDetailDialog" [modal]="true" [style]="{width: '1000px'}" class="p-fluid"
+          header="Agregar Nueva Fórmula">
+  <ng-template pTemplate="content">
+    <form [formGroup]="orderDetailForm">
+      <div class="flex flex-column">
+        <div class="justify-content-center align-items-center font-medium">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('via')" [filter]="true"
+                            [options]="viaCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron Vias" emptyMessage="No existen Vias en Sistema"
+                            filterBy="name" formControlName="via"
+                            id="via" optionLabel="name"
+                            placeholder="Seleccione la Via"></p-dropdown>
+                <label for="via">Vias</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('via')" [errorType]="'required'"
+                                            [message]="'La via es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6"></div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-calendar [appFormControlStatus]="orderDetailForm.get('productionDate')" [showTime]="true"
+                            dateFormat="dd/mm/yy" formControlName="productionDate"
+                            id="productionDate"></p-calendar>
+                <label for="productionDate">Fecha Produccion</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('productionDate')" [errorType]="'required'"
+                                            [message]="'La fecha de produccción es obligatoria'"></app-form-validation-messages>
+            </div>
+
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-calendar [appFormControlStatus]="orderDetailForm.get('expirationDate')" [showTime]="true"
+                            dateFormat="dd/mm/yy" formControlName="expirationDate"
+                            id="expirationDate"></p-calendar>
+                <label for="productionDate">Fecha Vencimiento</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('expirationDate')" [errorType]="'required'"
+                                            [message]="'La Fecha de vencimiento es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('productName')" [filter]="true"
+                            [options]="productCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron productos"
+                            emptyMessage="No existen Genéricos en Sistema" filterBy="name" formControlName="productName"
+                            id="productName" optionLabel="name"
+                            placeholder="Seleccione el Genérico"></p-dropdown>
+                <label for="productName">Genéricos</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('productName')"
+                                            [errorType]="'required'"
+                                            [message]="'El producto es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('dose')" autocomplete="off"
+                               formControlName="dose"
+                               id="dose"></p-inputNumber>
+                <label for="dose">Dosis</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('dose')"
+                                            [errorType]="'required'"
+                                            [message]="'La dosis es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('unitMetric')" [filter]="true"
+                            [options]="unitMetricCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron productos"
+                            emptyMessage="No existen Unidades en Sistema" filterBy="name" formControlName="unitMetric"
+                            id="unitMetric" optionLabel="name"
+                            placeholder="Seleccione la unidad de Medida"></p-dropdown>
+                <label for="productName">Unidad de Medida</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('unitMetric')"
+                                            [errorType]="'required'"
+                                            [message]="'La unidad de medida es obligatorio'"></app-form-validation-messages>
+            </div>
+
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('complement')" [filter]="true"
+                            [options]="complementCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron complementos"
+                            emptyMessage="No existen Complementos en Sistema" filterBy="name"
+                            formControlName="complement"
+                            id="complement" optionLabel="name"
+                            placeholder="Seleccione el Complemento"></p-dropdown>
+                <label for="complement">Sueros</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('complement')"
+                                            [errorType]="'required'"
+                                            [message]="'El Complemento es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('volTotal')" autocomplete="off"
+                               formControlName="volTotal"
+                               id="volTotal"></p-inputNumber>
+                <label for="dose">Vol Total ML</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('volTotal')"
+                                            [errorType]="'required'"
+                                            [message]="'La dosis es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="orderDetailForm.get('administrationTime')" autocomplete="off" formControlName="administrationTime"
+                       id="administrationTime" pInputText
+                       type="text">
+                <label for="administrationTime">Tiempo de Admin</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('administrationTime')"
+                                            [errorType]="'required'"
+                                            [message]="'El tiempo de administracion es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6 ">
+              <label>Proteccion a la Luz</label>
+              <div class="grid formgrid ml-3 mt-2">
+                <div class="field-radiobutton">
+                  <p-radioButton name="prot" value="Si" id="si" formControlName="prot"></p-radioButton>
+                  <label for="si">Si</label>
+                </div>
+                <div class="field-radiobutton ml-3">
+                  <p-radioButton name="prot" value="No" id="no" formControlName="prot"></p-radioButton>
+                  <label for="no">No</label>
+                </div>
+              </div>
+            </div>
+            <div class="field col-12 md:col-6 mt-2">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('condition')" [filter]="true"
+                            [options]="conditionCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron complementos"
+                            emptyMessage="No existen Complementos en Sistema" filterBy="name"
+                            formControlName="condition"
+                            id="condition" optionLabel="name"
+                            placeholder="Seleccione el Complemento"></p-dropdown>
+                <label for="condition">Condición</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('condition')"
+                                            [errorType]="'required'"
+                                            [message]="'La condición es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div formArrayName="commercialPart">
+              <div class="grid p-fluid mt-3 col-12"
+                   *ngFor="let commercialPart of commercialPart.controls; let i = index" [formGroupName]="i">
+                <div class="field col-12 md:col-6">
+                  <span class="p-float-label">
+                    <p-dropdown [appFormControlStatus]="commercialPart.get('commercial')" [filter]="true"
+                                [options]="commercialProductCombo" dataKey="code"
+                                [virtualScroll]="true"
+                                [virtualScrollItemSize]="38"
+                                emptyFilterMessage="No se encontraron complementos"
+                                emptyMessage="No existen Complementos en Sistema" filterBy="name"
+                                formControlName="commercial"
+                                id="commercial" optionLabel="name"
+                                placeholder="Seleccione el Complemento"></p-dropdown>
+                    <label for="commercial">Comercial</label>
+                  </span>
+                  <app-form-validation-messages [control]="commercialPart.get('commercial')"
+                                                [errorType]="'required'"
+                                                [message]="'El Producto de Marca comercial es obligatorio'"></app-form-validation-messages>
+                </div>
+                <div class="field col-12 md:col-3">
+                  <span class="p-float-label">
+                    <input [appFormControlStatus]="commercialPart.get('batch')" autocomplete="off" formControlName="batch"
+                           id="batch" pInputText
+                           type="text">
+                    <label for="batch">Lote</label>
+                  </span>
+                  <app-form-validation-messages [control]="orderDetailForm.get('batch')"
+                                                [errorType]="'required'"
+                                                [message]="'El Lote es obligatorio'"></app-form-validation-messages>
+                </div>
+                <div class="field col-12 md:col-2">
+                  <span class="p-float-label">
+                    <input [appFormControlStatus]="commercialPart.get('part')" autocomplete="off" formControlName="part"
+                           id="part"
+                           pInputText
+                           type="text">
+                    <label for="part">Cantidad</label>
+                  </span>
+                  <app-form-validation-messages [control]="commercialPart.get('part')"
+                                                [errorType]="'required'"
+                                                [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+                </div>
+                <div class="filed col-12 md:col-1">
+                  <p-button icon="pi pi-times" (click)="removeOrderPart(i)" [rounded]="true" [text]="true" [raised]="true" severity="danger" />
+                </div>
+              </div>
+            </div>
+            <div class="filed col-12 md:col-12">
+              <div>
+                <p-button icon="pi pi-plus" (click)="addOrderPart()" [rounded]="true"  [raised]="true" severity="primary" />
+              </div>
+            </div>
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <textarea [appFormControlStatus]="orderDetailForm.get('observation')" cols="20"
+                          formControlName="observation" id="observation" pInputTextarea required
+                          rows="3"></textarea>
+                <label for="observation">Observaciones</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('observation')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
+            pRipple></button>
+    <button (click)="saveFormula()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="prepareDialogDetail" [modal]="true" [style]="{width: '800px'}" class="p-fluid"
+          header="Preparados">
+  <p-table [columns]="detailTableCols"
+           [paginator]="true"
+           [rowHover]="true"
+           [rows]="10"
+           [tableStyle]="{'min-width': '50rem'}"
+           [value]="masterDetailTable"
+           dataKey="patientIdentification"
+           responsiveLayout="scroll"
+           styleClass="p-datatable-gridlines">
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th *ngFor="let col of columns" style="min-width: 12rem">
+          {{ col.header }}
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-master pTemplate="body">
+      <tr>
+        <td *ngFor="let col of columns">
+          {{ parseFieldInData(master, col.field) }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+

@@ -10,12 +10,12 @@ export interface MenuChangeEvent {
   providedIn: 'root',
 })
 export class MenuItemService {
-  constructor() {}
   private menuSource = new Subject<MenuChangeEvent>();
-  private resetSource = new Subject();
-
   menuSource$ = this.menuSource.asObservable();
+  private resetSource = new Subject();
   resetSource$ = this.resetSource.asObservable();
+
+  constructor() {}
 
   onMenuStateChange(event: MenuChangeEvent) {
     this.menuSource.next(event);

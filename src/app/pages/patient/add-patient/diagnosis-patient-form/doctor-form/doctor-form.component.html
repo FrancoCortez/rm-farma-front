@@ -1,0 +1,67 @@
+<!--<form [formGroup]="doctorForm">-->
+<div class="flex flex-column">
+  <div class="justify-content-center align-items-center font-medium">
+    <form [formGroup]="doctorForm">
+      <div class="grid p-fluid mt-3">
+        <div class="field col-12 md:col-12">
+          <div class="field-checkbox" style="margin-top: 6px">
+            <p-checkbox (onChange)="verifierDoctor($event)" formControlName="checking" id="createDoctor" name="group1"
+                        value="isCheck"></p-checkbox>
+            <label for="createDoctor">¿No existe el Médico?</label>
+          </div>
+        </div>
+        <div *ngIf="hiddenDropDoctor" class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-dropdown [appFormControlStatus]="doctorForm.get('doctor')" [filter]="true"
+                        [options]="doctorCombo" dataKey="code"
+                        [virtualScroll]="true"
+                        [virtualScrollItemSize]="38"
+                        appendTo="body"
+                        emptyFilterMessage="No se encontraron Médicos" emptyMessage="No existen Médicos en Sistema" filterBy="name" formControlName="doctor"
+                        id="doctor" optionLabel="name"
+                        placeholder="Seleccione el Médico"></p-dropdown>
+            <label for="doctor">Médico</label>
+          </span>
+          <app-form-validation-messages [control]="doctorForm.get('doctor')"
+                                        [errorType]="'required'"
+                                        [message]="'El Doctor es obligatorio'"></app-form-validation-messages>
+        </div>
+      </div>
+    </form>
+    <form *ngIf="!hiddenDropDoctor" [formGroup]="doctorCreateForm">
+      <div class="grid p-fluid mt-3">
+        <div class="field col-12 md:col-3">
+            <span class="p-float-label">
+             <input [appFormControlStatus]="doctorCreateForm.get('rut')" appRutFormatter autocomplete="off" autofocus formControlName="rut" id="rut"
+                    pInputText type="text">
+              <label for="rut">Rut *</label>
+            </span>
+          <app-form-validation-messages [control]="doctorCreateForm.get('rut')"
+                                        [errorType]="'required'"
+                                        [message]="'El rut del Médico es obligatorio'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-3">
+            <span class="p-float-label">
+             <input [appFormControlStatus]="doctorCreateForm.get('name')" autocomplete="off" autofocus formControlName="name" id="name"
+                    pInputText type="text">
+              <label for="name">Nombre *</label>
+            </span>
+          <app-form-validation-messages [control]="doctorCreateForm.get('name')"
+                                        [errorType]="'required'"
+                                        [message]="'El Nombre del Médico es obligatorio'"></app-form-validation-messages>
+        </div>
+      </div>
+      <div class="flex py-4 gap-2">
+        <button (click)="createDoctor()" [disabled]="doctorCreateForm.invalid" class="p-button-raised" label="Crear Medico" pButton
+                pRipple type="button"></button>
+      </div>
+    </form>
+  </div>
+</div>
+<div *ngIf="hiddenDropDoctor" class="flex py-4 gap-2">
+  <button (click)="previousCallback()" class="p-button-raised p-button-secondary" label="Atras" pButton pRipple
+          type="button"></button>
+  <button (click)="nextCallback()" [disabled]="doctorForm.invalid" class="p-button-raised" label="Siguiente" pButton pRipple
+          type="button"></button>
+</div>
+<!--</form>-->

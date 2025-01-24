@@ -13,12 +13,14 @@ const featureReducer = createReducer(
     ...state,
     loading: false,
     isLoader: true,
-    patient: payload,
+    successCreateOrUpdate: true,
+    patient: {},
   })),
   on(actions.createPatientFailure, (state, { error }) => ({
     ...state,
     loading: false,
     isLoader: false,
+    successCreateOrUpdate: false,
     error,
     patient: {},
   })),
@@ -40,6 +42,72 @@ const featureReducer = createReducer(
     isLoader: false,
     error,
     patient: {},
+  })),
+  on(actions.findByIdentificationPatientReportError, (state, { payload }) => ({
+    ...state,
+    loading: true,
+    isLoader: false,
+    error: undefined,
+    errorForProduction: undefined,
+    patient: {},
+  })),
+  on(
+    actions.findByIdentificationPatientReportErrorSuccess,
+    (state, { payload }) => ({
+      ...state,
+      loading: false,
+      isLoader: true,
+      error: undefined,
+      errorForProduction: undefined,
+      patient: payload,
+    }),
+  ),
+  on(
+    actions.findByIdentificationPatientReportErrorFailure,
+    (state, { error }) => ({
+      ...state,
+      loading: false,
+      isLoader: false,
+      errorForProduction: error,
+      patient: {},
+    }),
+  ),
+
+  on(actions.selectSuccessCreateOrUpdateChange, (state, { payload }) => ({
+    ...state,
+    successCreateOrUpdate: payload,
+  })),
+
+  on(actions.findAllPatients, (state) => ({
+    ...state,
+    loading: true,
+    isLoader: false,
+    patients: [],
+    patient: {},
+  })),
+  on(actions.findAllPatientsSuccess, (state, { payload }) => ({
+    ...state,
+    loading: false,
+    isLoader: true,
+    patients: payload,
+  })),
+  on(actions.findAllPatientsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    isLoader: false,
+    error,
+    patients: [],
+  })),
+
+  on(actions.resetState, (state) => ({
+    ...state,
+    loading: false,
+    isLoader: false,
+    error: undefined,
+    errorForProduction: undefined,
+    patient: {},
+    patients: [],
+    successCreateOrUpdate: false,
   })),
 );
 

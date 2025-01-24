@@ -4,13 +4,13 @@ import { environment } from '../../environments/environment';
 import { map, Observable } from 'rxjs';
 import { DiagnosisResourceDto } from '../model/diagnosis/diagnosis-resource.dto';
 import { ComboModelDto } from '../utils/models/combo-model.dto';
-import { IsapreResourceDto } from '../model/isapre/isapre-resource.dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DiagnosisService {
   private host = environment.hostRmFarma;
+
   constructor(private http: HttpClient) {}
 
   public findAllDiagnosis(): Observable<DiagnosisResourceDto[]> {

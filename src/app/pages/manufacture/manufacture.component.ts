@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { AddManufactureComponent } from './add-manufacture/add-manufacture.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-manufacture',
   standalone: true,
-  imports: [AddManufactureComponent],
+  imports: [RouterOutlet],
   templateUrl: './manufacture.component.html',
 })
 export class ManufactureComponent {}

@@ -26,5 +26,35 @@ export const findByIdentificationPatientSuccess = createAction(
 );
 export const findByIdentificationPatientFailure = createAction(
   '[Patient] Find By Identification Patient Failure',
+  props<{ error?: ErrorModelDto }>(),
+);
+
+export const findByIdentificationPatientReportError = createAction(
+  '[Patient] Find By Identification Patient Report Error',
+  props<{ payload: string }>(),
+);
+export const findByIdentificationPatientReportErrorSuccess = createAction(
+  '[Patient] Find By Identification Patient Success Report Error',
+  props<{ payload: PatientResourceDto }>(),
+);
+export const findByIdentificationPatientReportErrorFailure = createAction(
+  '[Patient] Find By Identification Patient Failure Report Error',
+  props<{ error?: ErrorModelDto }>(),
+);
+
+export const selectSuccessCreateOrUpdateChange = createAction(
+  '[Patient] Select Success Create Or Update Change',
+  props<{ payload: boolean }>(),
+);
+
+export const findAllPatients = createAction('[Patient] Find All Patients');
+export const findAllPatientsSuccess = createAction(
+  '[Patient] Find All Patients Success',
+  props<{ payload: PatientResourceDto[] }>(),
+);
+export const findAllPatientsFailure = createAction(
+  '[Patient] Find All Patients Failure',
   props<{ error: ErrorModelDto }>(),
 );
+
+export const resetState = createAction('[Patient] Reset State');

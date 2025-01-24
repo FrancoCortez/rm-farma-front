@@ -1,0 +1,79 @@
+<form [formGroup]="otherInformationForm">
+  <div class="flex flex-column">
+    <div class="justify-content-center align-items-center font-medium">
+      <div class="grid p-fluid mt-3">
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-dropdown [appFormControlStatus]="otherInformationForm.get('clinic')" [filter]="true"
+                                [options]="clinicsCombo"
+                                appendTo="body" dataKey="code"
+                                [virtualScroll]="true"
+                                [virtualScrollItemSize]="38"
+                                emptyFilterMessage="No se encontraron Clínicas" emptyMessage="No existen clínicas en Sistema" filterBy="name" formControlName="clinic"
+                                id="clinic" optionLabel="name"
+                                placeholder="Seleccione Clínica"></p-dropdown>
+                    <label for="clinic">Clínicas</label>
+                  </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('clinic')"
+                                        [errorType]="'required'"
+                                        [message]="'La clínica es obligatoria'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <p-dropdown [appFormControlStatus]="otherInformationForm.get('schema')" [filter]="true"
+                                [options]="schemaCombo"
+                                [virtualScroll]="true"
+                                [virtualScrollItemSize]="38"
+                                appendTo="body" dataKey="code"
+                                emptyFilterMessage="No se encontraron Esquemas" emptyMessage="No existen Esquemas en Sistema" filterBy="name" formControlName="schema"
+                                id="schema" optionLabel="name"
+                                placeholder="Seleccione Esquema"></p-dropdown>
+                    <label for="schema">Esquemas</label>
+                  </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('schema')"
+                                        [errorType]="'required'"
+                                        [message]="'El esquema es obligatorio'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <p-dropdown [appFormControlStatus]="otherInformationForm.get('services')" [filter]="true"
+                        [options]="serviceCombo"
+                        appendTo="body" dataKey="code"
+                        [virtualScroll]="true"
+                        [virtualScrollItemSize]="38"
+                        emptyFilterMessage="No se encontraron Servicios" emptyMessage="No existen Isapres en Sistema" filterBy="name" formControlName="services"
+                        id="services" optionLabel="name"
+                        placeholder="Seleccione El servicio"></p-dropdown>
+            <label for="services">Servicios</label>
+          </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('services')"
+                                        [errorType]="'required'"
+                                        [message]="'El servicio es Obligatorio'"></app-form-validation-messages>
+        </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <p-dropdown [appFormControlStatus]="otherInformationForm.get('hospitalUnit')" [filter]="true"
+                        [options]="hospitalUnitCombo"
+                        appendTo="body" dataKey="code"
+                        [virtualScroll]="true"
+                        [virtualScrollItemSize]="38"
+                        emptyFilterMessage="No se encontro unidad hispitalaria" emptyMessage="No existen unidades hospitalarias en Sistema" filterBy="name" formControlName="hospitalUnit"
+                        id="hospitalUnit" optionLabel="name"
+                        placeholder="Seleccione Unidad Hospitalaria"></p-dropdown>
+            <label for="hospitalUnit">Unidad Hospitalaria</label>
+          </span>
+          <app-form-validation-messages [control]="otherInformationForm.get('diagnosis')"
+                                        [errorType]="'required'"
+                                        [message]="'El diagnóstico es obligatorio'"></app-form-validation-messages>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex py-4 gap-2">
+    <button (click)="previousCallback()" class="p-button-raised p-button-secondary" label="Atras" pButton pRipple
+            type="button"></button>
+    <button (click)="submitEmit()" [disabled]="otherInformationForm.invalid" class="p-button-raised p-button-primary" label="Validar" pButton
+            pRipple
+            type="button"></button>
+  </div>
+</form>

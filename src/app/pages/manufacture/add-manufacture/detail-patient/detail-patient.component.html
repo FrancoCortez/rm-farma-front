@@ -1,0 +1,141 @@
+<div class="grid">
+  <div class="col-12 md:col-12">
+    <p-card header="Informacion Personal">
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div>Rut</div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div>{{patientSearch.rut || 'N/A'}}</div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div>Nombre</div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div>{{patientSearch.name || 'N/A'}}</div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div>Apellidos</div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div>{{patientSearch.lastName || 'N/A'}}</div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div>Isapre</div>
+        </div>
+        <div class="col-12 md:col-6">
+          <div>{{patientSearch.isapre?.description || 'N/A'}}</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+  <div class="col-12 md:col-12" *ngFor="let detailPatient of patientSearch.diagnosisPatient">
+    <p-card [header]="detailPatient.diagnosis?.description">
+      <div class="grid">
+        <div class="col-12 md:col-4">Rut Médico</div>
+        <div class="col-12 md:col-6">{{detailPatient.doctor?.rut || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Nombre Médico</div>
+        <div class="col-12 md:col-6">{{detailPatient.doctor?.name || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Clínica</div>
+        <div class="col-12 md:col-6">{{detailPatient.clinic?.description || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Esquema</div>
+        <div class="col-12 md:col-6">{{detailPatient.schema?.description || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Diagnóstico</div>
+        <div class="col-12 md:col-6">{{detailPatient.diagnosis?.description || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Servicios</div>
+        <div class="col-12 md:col-6">{{detailPatient.services?.description || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Uni. Hospitalaria</div>
+        <div class="col-12 md:col-6">{{detailPatient.hospitalUnit?.description || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">N° Ciclo</div>
+        <div class="col-12 md:col-6">{{detailPatient.cycleNumber || 'N/A'}}</div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-4">Dia Ciclo</div>
+        <div class="col-12 md:col-6">{{detailPatient.cycleDay || 'N/A'}}</div>
+        <div>
+          <button class="p-button-text" (click)="openClickDialogCheck(detailPatient)"  icon="pi pi-check" label="Check" pButton pRipple></button>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>
+
+<p-dialog [modal]="true"
+          [style]="{width: '800px'}"
+          [(visible)]="checkVisibility"
+          class="p-fluid"
+          header="Preparar Ciclos de preparación">
+  <ng-template pTemplate="content">
+    <form [formGroup]="checkPatientForm">
+      <div class="flex flex-column">
+        <div class="justify-content-center align-items-center font-medium">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-calendar [appFormControlStatus]="checkPatientForm.get('productionDate')"
+                            [showTime]="true"
+                            dateFormat="dd/mm/yy"
+                            appendTo="body"
+                            formControlName="productionDate"
+                            id="productionDate">
+                </p-calendar>
+                <label for="productionDate">Fecha Produccion</label>
+              </span>
+              <app-form-validation-messages [control]="checkPatientForm.get('productionDate')" [errorType]="'required'"
+                                            [message]="'La Fehca es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="checkPatientForm.get('cycleNumber')" autocomplete="off" formControlName="cycleNumber" id="cycleNumber" pInputText
+                       type="text">
+                <label for="cycleNumber">N° Ciclo</label>
+              </span>
+              <app-form-validation-messages [control]="checkPatientForm.get('cycleNumber')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="checkPatientForm.get('cycleDay')" autocomplete="off" formControlName="cycleDay" id="cycleDay" pInputText
+                       type="text">
+                <label for="cycleDay">Día Ciclo</label>
+              </span>
+              <app-form-validation-messages [control]="checkPatientForm.get('cycleDay')"
+                                            [errorType]="'required'"
+                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
+            pRipple></button>
+    <button (click)="saveCheckInitProcess()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
+  </ng-template>
+</p-dialog>
+
+<app-modal-error [display]="displayError" [message]="messageError"></app-modal-error>
+<app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
+                   [message]="messageOk"></app-modal-success>

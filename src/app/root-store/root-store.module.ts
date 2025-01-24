@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { ClinicStoreModule } from './clinic-store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({

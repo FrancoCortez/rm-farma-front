@@ -10,12 +10,12 @@ import { PatientResourceDto } from '../model/patient/patient-resource.dto';
 })
 export class PatientService {
   private host = environment.hostRmFarma;
+
   constructor(private readonly http: HttpClient) {}
 
   public createPatient(
     patientForm: PatientFormResourceDto,
   ): Observable<PatientResourceDto> {
-    console.log(patientForm);
     return this.http.post<PatientResourceDto>(
       `${this.host}/patients`,
       patientForm,
@@ -28,5 +28,9 @@ export class PatientService {
     return this.http.get<PatientResourceDto>(
       `${this.host}/patients/identification/${identification}`,
     );
+  }
+
+  public findAllPatients(): Observable<PatientResourceDto[]> {
+    return this.http.get<PatientResourceDto[]>(`${this.host}/patients`);
   }
 }

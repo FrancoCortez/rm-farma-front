@@ -1,7 +1,6 @@
 import {
   Component,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output,
@@ -24,12 +23,22 @@ import { CalendarModule } from 'primeng/calendar';
 import { InputMaskModule } from 'primeng/inputmask';
 import { Store } from '@ngrx/store';
 import {
+  IsapreStoreActions,
+  IsapreStoreSelectors,
   PatientStoreActions,
   PatientStoreSelectors,
   RootStoreState,
 } from '../../../../root-store';
 import { filter, Subscription } from 'rxjs';
 import { PatientResourceDto } from '../../../../model/patient/patient-resource.dto';
+import {
+  PatientFormStoreActions,
+  PatientFormStoreModule,
+  PatientFormStoreSelectors,
+} from '../../../../root-store/patient-form-store';
+import { DropdownModule } from 'primeng/dropdown';
+import { ComboModelDto } from '../../../../utils/models/combo-model.dto';
+import { PatientFormResourceDto } from '../../../../model/patient/patient-form-resource.dto';
 
 @Component({
   selector: 'app-patient-form',
@@ -45,17 +54,28 @@ import { PatientResourceDto } from '../../../../model/patient/patient-resource.d
     InputNumberModule,
     CalendarModule,
     InputMaskModule,
+    PatientFormStoreModule,
+    DropdownModule,
   ],
   templateUrl: './patient-form.component.html',
 })
 export class PatientFormComponent implements OnInit, OnDestroy {
-  @Input() nextCallbacks: any;
   @Output() sendValueForm = new EventEmitter<FormGroup>();
   patientForm!: FormGroup;
+  isapreCombo: ComboModelDto[] = [];
 
   findPatientByIdentification$: Subscription = new Subscription();
+  statePatientFormValue$: Subscription = new Subscription();
+  isapreComboSubscription$: Subscription = new Subscription();
 
   patient: PatientResourceDto = {};
+  statePatientFormValue!: {
+    patientFormValid: boolean;
+    diagnosticFormValid: boolean;
+    cyclesFormValid: boolean;
+    otherInformationFormValid: boolean;
+    doctorFormValid: boolean;
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -63,17 +83,14 @@ export class PatientFormComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.findValidFormPatient();
+    this.initCombos();
     this.patientForm = this.fb.group({
       rut: ['', [Validators.required, rutValidator()]],
       identification: [{ value: '', disabled: true }, Validators.required],
       name: ['', Validators.required],
       lastName: ['', Validators.required],
-      phone: [''],
-      email: [''],
-      villa: [''],
-      street: [''],
-      houseNumber: [null],
-      dateOfBirth: [null],
+      isapre: [''],
     });
     this.findPatientByIdentification$ = this.store
       .select(PatientStoreSelectors.selectPatient)
@@ -81,9 +98,40 @@ export class PatientFormComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (patient) => {
           this.patient = patient;
-          this.patientForm.patchValue(patient);
+          this.mapperToResourceToForm(patient);
+          this.patientForm.patchValue(this.patient);
         },
       });
+  }
+
+  mapperToResourceToForm(resource: PatientResourceDto) {
+    const form: PatientFormResourceDto = {
+      rut: resource.rut,
+      identification: resource.identification,
+      name: resource.name,
+      lastName: resource.lastName,
+      isapre: resource.isapre?.code || '',
+      diagnosisPatient: [],
+    };
+    if (resource?.diagnosisPatient) {
+      resource.diagnosisPatient.forEach((f) => {
+        if (form.diagnosisPatient) {
+          form.diagnosisPatient.push({
+            cycleNumber: f.cycleNumber,
+            cycleDay: f.cycleDay,
+            doctor: f.doctor?.id || '',
+            services: f.services?.code || '',
+            diagnosis: f.diagnosis?.code || '',
+            clinic: f.clinic?.code || '',
+            schema: f.schema?.code || '',
+            hospitalUnit: f.hospitalUnit?.code || '',
+          });
+        }
+      });
+      this.store.dispatch(
+        PatientFormStoreActions.createPatientForm({ payload: form }),
+      );
+    }
   }
 
   onRutBlur(): void {
@@ -99,14 +147,25 @@ export class PatientFormComponent implements OnInit, OnDestroy {
 
   nextCallbackPatient(): void {
     if (this.patientForm.valid) {
-      this.emitFormValues();
-      console.log(this.patient);
-      this.nextCallbacks.emit();
+      const value = {
+        ...this.patientForm.getRawValue(),
+        isapre: this.patientForm.value.isapre?.code ?? null,
+        type: 'RUT',
+      };
+      this.store.dispatch(
+        PatientFormStoreActions.createPatientForm({
+          payload: value,
+        }),
+      );
+      this.store.dispatch(
+        PatientFormStoreActions.pushValidStateForm({
+          payload: {
+            ...this.statePatientFormValue,
+            patientFormValid: true,
+          },
+        }),
+      );
     }
-  }
-
-  emitFormValues(): void {
-    this.sendValueForm.emit(this.patientForm);
   }
 
   resetForm(): void {
@@ -115,5 +174,31 @@ export class PatientFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.findPatientByIdentification$.unsubscribe();
+    this.statePatientFormValue$.unsubscribe();
+  }
+
+  findValidFormPatient() {
+    this.statePatientFormValue$ = this.store
+      .select(PatientFormStoreSelectors.allStateValidForm)
+      .subscribe({
+        next: (stateForm) => {
+          this.statePatientFormValue = stateForm;
+        },
+      });
+  }
+
+  private initCombos(): void {
+    console.log('init COmbos');
+    this.readIsapreCombo();
+  }
+
+  private readIsapreCombo() {
+    this.store.dispatch(IsapreStoreActions.loadIsapre());
+    this.isapreComboSubscription$ = this.store
+      .select(IsapreStoreSelectors.selectComboIsapre)
+      .pipe(filter((f) => !!f && f.length > 0))
+      .subscribe({
+        next: (data: ComboModelDto[] | []) => (this.isapreCombo = data),
+      });
   }
 }

@@ -27,3 +27,49 @@ export const findDoctorByRut = createEffect(
   },
   { functional: true },
 );
+
+export const findAllDoctor = createEffect(
+  (actions$ = inject(Actions), doctorService = inject(DoctorService)) => {
+    return actions$.pipe(
+      ofType(actions.loadAllDoctors),
+      exhaustMap(() =>
+        doctorService.findAllDoctors().pipe(
+          map((doctor: DoctorResourceDto[]) =>
+            actions.loadAllDoctorsSuccess({ payload: doctor }),
+          ),
+          catchError((errors) =>
+            of(
+              actions.loadAllDoctorsFailure({
+                error: errors.error,
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const createDoctor = createEffect(
+  (actions$ = inject(Actions), doctorService = inject(DoctorService)) => {
+    return actions$.pipe(
+      ofType(actions.createDoctor),
+      exhaustMap(({ payload }) =>
+        doctorService.createDoctor(payload).pipe(
+          map((doctor: DoctorResourceDto) =>
+            actions.createDoctorSuccess({ payload: doctor }),
+          ),
+          catchError((errors) =>
+            of(
+              actions.createDoctorFailure({
+                error: errors.error,
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);

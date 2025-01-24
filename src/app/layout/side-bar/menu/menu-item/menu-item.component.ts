@@ -115,6 +115,15 @@ export class MenuItemComponent implements OnInit, OnDestroy {
       });
   }
 
+  get submenuAnimation() {
+    return this.root ? 'expanded' : this.active ? 'expanded' : 'collapsed';
+  }
+
+  @HostBinding('class.active-menuitem')
+  get activeClass() {
+    return this.active && !this.root;
+  }
+
   ngOnInit() {
     this.key = this.parentKey
       ? this.parentKey + '-' + this.index
@@ -156,15 +165,6 @@ export class MenuItemComponent implements OnInit, OnDestroy {
     }
 
     this.menuService.onMenuStateChange({ key: this.key });
-  }
-
-  get submenuAnimation() {
-    return this.root ? 'expanded' : this.active ? 'expanded' : 'collapsed';
-  }
-
-  @HostBinding('class.active-menuitem')
-  get activeClass() {
-    return this.active && !this.root;
   }
 
   ngOnDestroy() {
