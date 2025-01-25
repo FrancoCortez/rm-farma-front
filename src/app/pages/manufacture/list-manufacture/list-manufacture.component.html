@@ -123,13 +123,9 @@
 </div>
 
 <p-dialog [(visible)]="zebraPreview" [style]="{width: '950px', height: '1100px'}" [modal]="true">
-<!--  <canvas id="labelCanvas"></canvas>-->
-<!--  <div class="flex justify-content-center">-->
-<!--    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" pRipple></p-button>-->
-<!--  </div>-->
   <div id="canvasContainer"></div>
   <div class="flex justify-content-center">
-    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" pRipple></p-button>
+    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" (click)="printEvent()" pRipple></p-button>
   </div>
 </p-dialog>
 

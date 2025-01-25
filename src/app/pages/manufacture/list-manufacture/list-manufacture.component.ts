@@ -225,7 +225,9 @@ export class ListManufactureComponent
           if (masterOrders) {
             this.loadMasterOrders();
             this.prepareDialogDetail = false;
+            this.orderDetailDialog = false;
             this.orderDetailForm.reset();
+            this.masterOrderForm = [];
             this.store.dispatch(
               MasterOrderStoreActions.selectSuccessCreateOrUpdateChange({
                 payload: false,
@@ -394,11 +396,19 @@ export class ListManufactureComponent
 
   initConditionCombo() {
     this.conditionCombo = [
-      { code: 'Condicion 1', name: 'Condicion 1' },
-      { code: 'Condicion 2', name: 'Condicion 2' },
-      { code: 'Condicion 3', name: 'Condicion 3' },
-      { code: 'Condicion 4', name: 'Condicion 4' },
-      { code: 'Condicion 5', name: 'Condicion 5' },
+      {
+        code: 'Precaución citostático vesicante',
+        name: 'Precaución citostático vesicante',
+      },
+      {
+        code: 'Precaución citostático irritante',
+        name: 'Precaución citostático irritante',
+      },
+      {
+        code: 'Administrar con filtro de 0,45 mcm',
+        name: 'Administrar con filtro de 0,45 mcm',
+      },
+      { code: 'Intratecal', name: 'Intratecal' },
     ];
   }
 
@@ -475,6 +485,7 @@ export class ListManufactureComponent
 
   saveFormula() {
     const formValue = this.orderDetailForm.value;
+    console.log(formValue.commercialPart);
     const masterOrder: MasterOrderFormResourceDto = {
       patientIdentification:
         this.currentTableSelectedMaster.patientIdentification,
@@ -503,12 +514,11 @@ export class ListManufactureComponent
     };
     this.masterOrderForm.push(masterOrder);
     console.log(this.masterOrderForm);
-    // this.store.dispatch(
-    //   MasterOrderStoreActions.createMasterOrder({
-    //     payload: this.masterOrderForm,
-    //   }),
-    // );
-    // this.orderDetailForm.reset();
+    this.store.dispatch(
+      MasterOrderStoreActions.createMasterOrder({
+        payload: this.masterOrderForm,
+      }),
+    );
   }
 
   detailProduct(detail: any, master: any) {
@@ -516,8 +526,14 @@ export class ListManufactureComponent
     this.prepareDialogDetail = true;
   }
 
-  formatDateTimeSeparated(inDate: Date) {
-    const timestamp = inDate.getTime() * 1000; // Convert to milliseconds
+  formatDateTimeSeparated(inDate: any) {
+    let timestamp;
+    if (inDate instanceof Date) {
+      timestamp = inDate.getTime() * 1000;
+    } else {
+      timestamp = inDate * 1000;
+    }
+
     const date = new Date(timestamp);
 
     const day = String(date.getDate()).padStart(2, '0');
@@ -618,5 +634,16 @@ export class ListManufactureComponent
         }
       }, 0); // Ensure the modal is rendered before accessing the canvas
     }
+  }
+
+  printEvent() {
+    this.zebraPrintService
+      .getAvailablePrinters()
+      .then((printers) => {
+        console.log(printers);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
