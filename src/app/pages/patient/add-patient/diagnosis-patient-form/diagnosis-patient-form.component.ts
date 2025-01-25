@@ -26,15 +26,10 @@ import {
 } from '../../../../root-store/patient-form-store';
 import { Store } from '@ngrx/store';
 import { RootStoreState } from '../../../../root-store';
-import { PatientFormResourceDto } from '../../../../model/patient/patient-form-resource.dto';
-import { PatientResourceDto } from '../../../../model/patient/patient-resource.dto';
 import { DiagnosisPatientResourceDto } from '../../../../model/diagnosis-patient/diagnosis-patient-resource.dto';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
-import { FormValidationMessagesComponent } from '../../../../utils/components/form-validation-messages/form-validation-messages.component';
 import { PaginatorModule } from 'primeng/paginator';
-import { FormControlStatusDirective } from '../../../../utils/directives/form-control-status.directive';
-import { Ripple } from 'primeng/ripple';
 
 @Component({
   selector: 'app-diagnosis-patient-form',
@@ -126,7 +121,6 @@ export class DiagnosisPatientFormComponent implements OnInit, OnDestroy {
   addDataOtherInformationForm(form: FormGroup) {
     if (form.valid) {
       const otherInformationFormValue = {
-        clinic: form.value.clinic.code,
         schema: form.value.schema.code,
         hospitalUnit: form.value.hospitalUnit.code,
         services: form.value.services.code,
@@ -138,7 +132,6 @@ export class DiagnosisPatientFormComponent implements OnInit, OnDestroy {
         }),
       );
       this.isCollapse = true;
-      console.log(this.dataAllForm);
     }
   }
 
@@ -147,13 +140,5 @@ export class DiagnosisPatientFormComponent implements OnInit, OnDestroy {
     this.cyclesFormComponent.resetForm();
     this.otherInformationFormComponent.resetForm();
     this.diagnosisComponent.resetForm();
-  }
-
-  hideDialog() {
-    console.log('cerrando dialogo');
-  }
-
-  sendCheckPatientDiagnosis() {
-    console.log('enviando datos');
   }
 }

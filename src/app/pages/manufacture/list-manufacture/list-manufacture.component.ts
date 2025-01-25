@@ -254,6 +254,7 @@ export class ListManufactureComponent
           this.masterOrders = this.groupByPatientIdentification(masterOrders);
         },
       });
+    this.updateFilters();
   }
 
   routerSearch() {
@@ -291,7 +292,7 @@ export class ListManufactureComponent
     this.subCols = [
       // { field: 'masterRecord', header: 'Id' },
       { field: 'cycleNumber', header: 'Ciclo' },
-      { field: 'clinicName', header: 'Clínica' },
+      { field: 'unitHospitalName', header: 'Un. Hosp' },
       { field: 'productionDate', header: 'Producción' },
       { field: 'diagnosisName', header: 'Diag' },
       { field: 'schemaName', header: 'Esquema' },
@@ -358,7 +359,7 @@ export class ListManufactureComponent
         viaDescription: item.viaDescription,
         pharmaceuticalChemist: item.pharmaceuticalChemist,
         doctorName: item.doctorName,
-        clinicName: item.clinicName,
+        unitHospitalName: item.unitHospitalName,
         idDiagnosisOrder: item.diagnosisOrderStage.id,
         idMasterId: item.id,
         orderDetails: item.orderDetails || [],
@@ -485,7 +486,6 @@ export class ListManufactureComponent
 
   saveFormula() {
     const formValue = this.orderDetailForm.value;
-    console.log(formValue.commercialPart);
     const masterOrder: MasterOrderFormResourceDto = {
       patientIdentification:
         this.currentTableSelectedMaster.patientIdentification,
@@ -513,7 +513,6 @@ export class ListManufactureComponent
       },
     };
     this.masterOrderForm.push(masterOrder);
-    console.log(this.masterOrderForm);
     this.store.dispatch(
       MasterOrderStoreActions.createMasterOrder({
         payload: this.masterOrderForm,

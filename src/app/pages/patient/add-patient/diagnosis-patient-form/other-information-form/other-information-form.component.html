@@ -4,22 +4,6 @@
       <div class="grid p-fluid mt-3">
         <div class="field col-12 md:col-4">
                   <span class="p-float-label">
-                    <p-dropdown [appFormControlStatus]="otherInformationForm.get('clinic')" [filter]="true"
-                                [options]="clinicsCombo"
-                                appendTo="body" dataKey="code"
-                                [virtualScroll]="true"
-                                [virtualScrollItemSize]="38"
-                                emptyFilterMessage="No se encontraron Clínicas" emptyMessage="No existen clínicas en Sistema" filterBy="name" formControlName="clinic"
-                                id="clinic" optionLabel="name"
-                                placeholder="Seleccione Clínica"></p-dropdown>
-                    <label for="clinic">Clínicas</label>
-                  </span>
-          <app-form-validation-messages [control]="otherInformationForm.get('clinic')"
-                                        [errorType]="'required'"
-                                        [message]="'La clínica es obligatoria'"></app-form-validation-messages>
-        </div>
-        <div class="field col-12 md:col-4">
-                  <span class="p-float-label">
                     <p-dropdown [appFormControlStatus]="otherInformationForm.get('schema')" [filter]="true"
                                 [options]="schemaCombo"
                                 [virtualScroll]="true"

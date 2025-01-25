@@ -12,8 +12,8 @@ export class MasterOrderResourceDto {
   patientIdentification?: string;
   doctorName?: string;
   doctorRut?: string;
-  clinicName?: string;
-  clinicCode?: string;
+  unitHospitalCode?: string;
+  unitHospitalName?: string;
   isapreCode?: number;
   isapreName?: string;
   diagnosisCode?: string;

@@ -13,7 +13,6 @@ export class DiagnosisPatientResourceDto {
   doctor?: DoctorResourceDto;
   services?: ServiceResourceDto;
   diagnosis?: DiagnosisResourceDto;
-  clinic?: ClinicResourceDto;
   schema?: SchemaResourceDto;
   hospitalUnit?: HospitalUnitResourceDto;
 }

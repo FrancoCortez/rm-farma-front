@@ -58,7 +58,6 @@ export class ListPatientComponent implements OnInit {
     this.store
       .select(PatientStoreSelectors.selectPatients)
       .subscribe((patients) => {
-        console.log(patients);
         this.patients = patients;
       });
   }
@@ -77,7 +76,6 @@ export class ListPatientComponent implements OnInit {
       { field: 'cycleNumber', header: 'Num. Ciclo' },
       { field: 'doctor.name', header: 'Dr. Nombre' },
       { field: 'schema.description', header: 'Esquema' },
-      { field: 'clinic.description', header: 'Clínica' },
       { field: 'services.description', header: 'Servicio' },
       { field: 'hospitalUnit.description', header: 'UN Hospitalaria' },
     ];

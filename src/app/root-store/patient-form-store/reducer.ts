@@ -4,23 +4,6 @@ import * as actions from './actions';
 
 const featureReducer = createReducer(
   initialState,
-  // on(actions.createPatientForm, (state, { payload }) => {
-  //   const value = payload;
-  //   if (
-  //     state?.patientFormCreate?.diagnosisPatient &&
-  //     state.patientFormCreate.diagnosisPatient.length > 0
-  //   ) {
-  //     value.diagnosisPatient = state.patientFormCreate.diagnosisPatient;
-  //   }
-  //   console.log('reducer', {
-  //     ...state,
-  //     patientFormCreate: { ...state.patientFormCreate, value },
-  //   });
-  //   return {
-  //     ...state,
-  //     patientFormCreate: { ...state.patientFormCreate, value },
-  //   };
-  // }),
   on(actions.createPatientForm, (state, { payload }) => {
     const updatedPatientFormCreate = {
       ...payload,
@@ -29,10 +12,6 @@ const featureReducer = createReducer(
           ? state.patientFormCreate.diagnosisPatient
           : payload.diagnosisPatient,
     };
-    console.log('reducer', {
-      ...state,
-      patientFormCreate: updatedPatientFormCreate,
-    });
     return {
       ...state,
       patientFormCreate: updatedPatientFormCreate,
@@ -63,6 +42,10 @@ const featureReducer = createReducer(
   on(actions.setDiagnosticCount, (state, { payload }) => ({
     ...state,
     diagnosticCount: payload || 0,
+  })),
+
+  on(actions.resetAllInitialState, (state) => ({
+    ...initialState,
   })),
 );
 

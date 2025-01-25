@@ -94,14 +94,36 @@ export class PatientFormComponent implements OnInit, OnDestroy {
     });
     this.findPatientByIdentification$ = this.store
       .select(PatientStoreSelectors.selectPatient)
-      .pipe(filter((patient) => !!patient))
+      // .pipe(filter((patient) => !!patient))
       .subscribe({
         next: (patient) => {
-          this.patient = patient;
-          this.mapperToResourceToForm(patient);
-          this.patientForm.patchValue(this.patient);
+          if (Object.keys(patient).length === 0) {
+            this.store.dispatch(
+              PatientFormStoreActions.setDiagnosticCount({ payload: 0 }),
+            );
+            this.resetFormNotFound();
+            this.mapperToResourceToFailedEmptyForm(patient);
+          } else {
+            this.patient = patient;
+            this.mapperToResourceToForm(patient);
+            this.patientForm.patchValue(this.patient);
+          }
         },
       });
+  }
+
+  mapperToResourceToFailedEmptyForm(resource: PatientResourceDto) {
+    const form: PatientFormResourceDto = {
+      rut: this.patientForm.get('rut')?.value || '',
+      identification: this.patientForm.get('identification')?.value || '',
+      name: '',
+      lastName: '',
+      isapre: '',
+      diagnosisPatient: [],
+    };
+    this.store.dispatch(
+      PatientFormStoreActions.createPatientForm({ payload: form }),
+    );
   }
 
   mapperToResourceToForm(resource: PatientResourceDto) {
@@ -122,7 +144,6 @@ export class PatientFormComponent implements OnInit, OnDestroy {
             doctor: f.doctor?.id || '',
             services: f.services?.code || '',
             diagnosis: f.diagnosis?.code || '',
-            clinic: f.clinic?.code || '',
             schema: f.schema?.code || '',
             hospitalUnit: f.hospitalUnit?.code || '',
           });
@@ -172,6 +193,16 @@ export class PatientFormComponent implements OnInit, OnDestroy {
     this.patientForm.reset();
   }
 
+  resetFormNotFound() {
+    this.patientForm.patchValue({
+      rut: this.patientForm.get('rut')?.value || '',
+      identification: this.patientForm.get('identification')?.value || '',
+      name: '',
+      lastName: '',
+      isapre: '',
+    });
+  }
+
   ngOnDestroy(): void {
     this.findPatientByIdentification$.unsubscribe();
     this.statePatientFormValue$.unsubscribe();
@@ -188,7 +219,6 @@ export class PatientFormComponent implements OnInit, OnDestroy {
   }
 
   private initCombos(): void {
-    console.log('init COmbos');
     this.readIsapreCombo();
   }
 

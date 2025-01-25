@@ -29,3 +29,7 @@ export const pushValidStateForm = createAction(
     };
   }>(),
 );
+
+export const resetAllInitialState = createAction(
+  '[PatientForm] Reset All Initial State',
+);

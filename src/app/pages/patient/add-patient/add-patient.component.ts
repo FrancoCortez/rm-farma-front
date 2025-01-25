@@ -28,6 +28,7 @@ import { ButtonDirective } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { DiagnosisPatientFormResourceDto } from '../../../model/diagnosis-patient/diagnosis-patient-form-resource.dto';
 import {
+  PatientFormStoreActions,
   PatientFormStoreModule,
   PatientFormStoreSelectors,
 } from '../../../root-store/patient-form-store';
@@ -104,6 +105,7 @@ export class AddPatientComponent implements OnInit, OnDestroy {
       .select(PatientFormStoreSelectors.getFormPatient)
       .subscribe({
         next: (patientCreate) => {
+          console.log('readDataForm', patientCreate);
           this.dataAllForm = patientCreate;
         },
       });
@@ -112,6 +114,9 @@ export class AddPatientComponent implements OnInit, OnDestroy {
   getDiagnosisCount() {
     this.store.select(PatientFormStoreSelectors.getDiagnosisCount).subscribe({
       next: (count) => {
+        if (count === 0) {
+          this.diagnosisForms = [0];
+        }
         for (let i = 1; i < count; i++) {
           this.addDiagnosticForm();
         }
@@ -146,9 +151,23 @@ export class AddPatientComponent implements OnInit, OnDestroy {
             this.resetAllForms();
             this.diagnosisForms = [0];
             this.store.dispatch(
+              PatientFormStoreActions.pushValidStateForm({
+                payload: {
+                  patientFormValid: false,
+                  diagnosticFormValid: false,
+                  cyclesFormValid: false,
+                  otherInformationFormValid: false,
+                  doctorFormValid: false,
+                },
+              }),
+            );
+            this.store.dispatch(
               PatientStoreActions.selectSuccessCreateOrUpdateChange({
                 payload: false,
               }),
+            );
+            this.store.dispatch(
+              PatientFormStoreActions.setDiagnosticCount({ payload: 0 }),
             );
           }
         },
@@ -227,7 +246,7 @@ export class AddPatientComponent implements OnInit, OnDestroy {
   }
 
   saveAll() {
-    console.log(this.dataAllForm);
+    console.log('saveAll', this.dataAllForm);
     this.store.dispatch(
       PatientStoreActions.createPatient({ payload: this.dataAllForm }),
     );

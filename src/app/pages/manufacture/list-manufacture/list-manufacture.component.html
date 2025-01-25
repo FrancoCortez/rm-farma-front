@@ -33,6 +33,7 @@
             <div class="field col-12 md:col-4">
               <span class="p-float-label">
                 <p-calendar (ngModelChange)="updateFilters()" [(ngModel)]="searchDay" id="searchDay"
+                            dateFormat="dd/mm/yy"
                             inputId="searchDay"></p-calendar>
                 <label for="searchDay">Fecha</label>
               </span>
@@ -103,7 +104,7 @@
                         {{ parseFieldInData(detail, cols.field) }}
                       </td>
                       <td>
-                        <button (click)="detailProduct(detail, master)" class="p-button-rounded p-button-info"
+                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)" class="p-button-rounded p-button-info"
                                 icon="pi pi-info" pButton pRipple type="button"></button>
                       </td>
                       <td>

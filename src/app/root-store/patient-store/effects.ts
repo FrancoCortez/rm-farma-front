@@ -45,6 +45,7 @@ export const findByIdentificationPatient = createEffect(
               actions.findByIdentificationPatientFailure({
                 error: undefined,
               }),
+              patientFormActions.resetAllInitialState(),
             ),
           ),
         ),

@@ -79,12 +79,10 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
   @Input() preLoadDiagnosisPatient?: DiagnosisPatientResourceDto = {};
   otherInformationForm!: FormGroup;
 
-  clinicsCombo: ComboModelDto[] = [];
   schemaCombo: ComboModelDto[] = [];
   serviceCombo: ComboModelDto[] = [];
   hospitalUnitCombo: ComboModelDto[] = [];
 
-  clinicsComboSubscription$: Subscription = new Subscription();
   schemaComboSubscription$: Subscription = new Subscription();
   serviceComboSubscription$: Subscription = new Subscription();
   hospitalUnitComboSubscription$: Subscription = new Subscription();
@@ -119,10 +117,9 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
     this.initCombos();
     this.readStateFormPatient();
     this.otherInformationForm = this.fb.group({
-      clinic: ['', Validators.required],
       schema: ['', Validators.required],
-      services: [''],
-      hospitalUnit: [''],
+      services: ['', Validators.required],
+      hospitalUnit: ['', Validators.required],
     });
     if (this.preLoadDiagnosisPatient) {
       this.otherInformationForm.patchValue(this.preLoadDiagnosisPatient);
@@ -130,7 +127,6 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.clinicsComboSubscription$.unsubscribe();
     this.schemaComboSubscription$.unsubscribe();
     this.serviceComboSubscription$.unsubscribe();
     this.hospitalUnitComboSubscription$.unsubscribe();
@@ -157,6 +153,7 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
   }
 
   emitFormValues(): void {
+    console.log('emitFormValues', this.otherInformationForm);
     this.sendValueForm.emit(this.otherInformationForm);
   }
 
@@ -165,7 +162,6 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
   }
 
   private initCombos(): void {
-    this.readClinicCombo();
     this.readSchemaCombo();
     this.readServiceCombo();
     this.readHospitalUnitCombo();
@@ -188,16 +184,6 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
       .pipe(filter((f) => !!f && f.length > 0))
       .subscribe({
         next: (service) => (this.serviceCombo = service),
-      });
-  }
-
-  private readClinicCombo() {
-    this.store.dispatch(ClinicStoreActions.loadClinic());
-    this.clinicsComboSubscription$ = this.store
-      .select(ClinicStoreSelectors.selectComboClinic)
-      .pipe(filter((f) => !!f && f.length > 0))
-      .subscribe({
-        next: (data: ComboModelDto[] | []) => (this.clinicsCombo = data),
       });
   }
 
