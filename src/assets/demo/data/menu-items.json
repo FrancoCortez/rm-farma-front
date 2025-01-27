@@ -61,13 +61,6 @@
             "routerLink": [
               "/main/production/list-production"
             ]
-          },
-          {
-            "label": "Registrar Producción",
-            "icon": "pi pi-plus",
-            "routerLink": [
-              "/main/production/new-production"
-            ]
           }
         ]
       }

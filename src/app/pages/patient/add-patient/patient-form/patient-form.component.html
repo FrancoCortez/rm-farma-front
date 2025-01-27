@@ -2,7 +2,28 @@
   <div class="flex flex-column">
     <div class="justify-content-center align-items-center font-medium">
       <div class="grid p-fluid mt-3">
-        <div class="field col-12 md:col-4">
+        <div class="field col-12 md:col-12 ">
+          <label>Seleccionar 1 tipo de Documento</label>
+          <div class="grid formgrid ml-3 mt-2">
+            <div class="field-radiobutton">
+              <p-radioButton name="type" value="RUT" id="RUT_TYPE" formControlName="type" (onClick)="onTypeChange($event)"></p-radioButton>
+              <label for="RUT">Rut</label>
+            </div>
+            <div class="field-radiobutton ml-3">
+              <p-radioButton name="type" value="PASSPORT" id="PASSPORT" formControlName="type"  (onClick)="onTypeChange($event)"></p-radioButton>
+              <label for="PASSPORT">Pasaporte</label>
+            </div>
+            <div class="field-radiobutton ml-3">
+              <p-radioButton name="type" value="CLINICAL_TRIAL" id="CLINICAL_TRIAL" formControlName="type" (onClick)="onTypeChange($event)"></p-radioButton>
+              <label for="CLINICAL_TRIAL">Ensayo Clínico</label>
+            </div>
+            <div class="field-radiobutton ml-3">
+              <p-radioButton name="type" value="OTHER" id="OTHER" formControlName="type" (onClick)="onTypeChange($event)"></p-radioButton>
+              <label for="OTHER">Otro</label>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="typeIdentification === 'RUT'" class="field col-12 md:col-4">
           <span class="p-float-label">
             <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" appRutFormatter autocomplete="off" autofocus formControlName="rut"
                    id="rut" pInputText type="text">
@@ -13,6 +34,35 @@
           <app-form-validation-messages [control]="patientForm.get('rut')" [errorType]="'invalidRut'"
                                         [message]="'El rut ingresado no es valido'"></app-form-validation-messages>
         </div>
+
+        <div *ngIf="typeIdentification === 'PASSPORT'" class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus formControlName="rut"
+                   id="passport_input" pInputText type="text">
+            <label for="passport_input">Pasaporte *</label>
+          </span>
+          <app-form-validation-messages [control]="patientForm.get('rut')" [errorType]="'required'"
+                                        [message]="'El Pasaporte es obligatorio'"></app-form-validation-messages>
+        </div>
+        <div *ngIf="typeIdentification === 'CLINICAL_TRIAL'" class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus formControlName="rut"
+                   id="clinical_tria_input" pInputText type="text">
+            <label for="clinical_tria_input">N° Paciente *</label>
+          </span>
+          <app-form-validation-messages [control]="patientForm.get('rut')" [errorType]="'required'"
+                                        [message]="'El N° de paciente es obligatorio'"></app-form-validation-messages>
+        </div>
+        <div *ngIf="typeIdentification === 'OTHER'" class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus formControlName="rut"
+                   id="other_input" pInputText type="text">
+            <label for="other_input">Otro Documento *</label>
+          </span>
+          <app-form-validation-messages [control]="patientForm.get('rut')" [errorType]="'required'"
+                                        [message]="'El Docuemento de identificación es obligatorio'"></app-form-validation-messages>
+        </div>
+
         <div class="field col-12 md:col-4">
           <span class="p-float-label">
             <input [appFormControlStatus]="patientForm.get('identification')" appRutFormatter autocomplete="off" autofocus formControlName="identification" id="identification"

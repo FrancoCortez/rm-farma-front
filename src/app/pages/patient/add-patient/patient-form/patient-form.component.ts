@@ -39,6 +39,8 @@ import {
 import { DropdownModule } from 'primeng/dropdown';
 import { ComboModelDto } from '../../../../utils/models/combo-model.dto';
 import { PatientFormResourceDto } from '../../../../model/patient/patient-form-resource.dto';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-patient-form',
@@ -56,6 +58,8 @@ import { PatientFormResourceDto } from '../../../../model/patient/patient-form-r
     InputMaskModule,
     PatientFormStoreModule,
     DropdownModule,
+    RadioButtonModule,
+    NgIf,
   ],
   templateUrl: './patient-form.component.html',
 })
@@ -76,22 +80,36 @@ export class PatientFormComponent implements OnInit, OnDestroy {
     otherInformationFormValid: boolean;
     doctorFormValid: boolean;
   };
+  typeIdentification: string = 'RUT';
 
   constructor(
     private fb: FormBuilder,
     private readonly store: Store<RootStoreState.RootState>,
   ) {}
 
-  ngOnInit(): void {
-    this.findValidFormPatient();
-    this.initCombos();
+  initFormPatient() {
     this.patientForm = this.fb.group({
       rut: ['', [Validators.required, rutValidator()]],
+      type: ['RUT', [Validators.required]],
       identification: [{ value: '', disabled: true }, Validators.required],
       name: ['', Validators.required],
       lastName: ['', Validators.required],
       isapre: [''],
     });
+    this.patientForm.get('type')?.valueChanges.subscribe((selectedType) => {
+      const rutControl = this.patientForm.get('rut');
+      if (selectedType === 'RUT') {
+        rutControl?.setValidators([Validators.required, rutValidator()]);
+      } else {
+        rutControl?.setValidators([Validators.required]);
+      }
+      rutControl?.updateValueAndValidity();
+    });
+  }
+  ngOnInit(): void {
+    this.findValidFormPatient();
+    this.initCombos();
+    this.initFormPatient();
     this.findPatientByIdentification$ = this.store
       .select(PatientStoreSelectors.selectPatient)
       // .pipe(filter((patient) => !!patient))
@@ -171,7 +189,7 @@ export class PatientFormComponent implements OnInit, OnDestroy {
       const value = {
         ...this.patientForm.getRawValue(),
         isapre: this.patientForm.value.isapre?.code ?? null,
-        type: 'RUT',
+        type: this.typeIdentification,
       };
       this.store.dispatch(
         PatientFormStoreActions.createPatientForm({
@@ -230,5 +248,8 @@ export class PatientFormComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: ComboModelDto[] | []) => (this.isapreCombo = data),
       });
+  }
+  onTypeChange($event: any) {
+    this.typeIdentification = $event.value;
   }
 }

@@ -153,7 +153,6 @@ export class OtherInformationFormComponent implements OnInit, OnDestroy {
   }
 
   emitFormValues(): void {
-    console.log('emitFormValues', this.otherInformationForm);
     this.sendValueForm.emit(this.otherInformationForm);
   }
 

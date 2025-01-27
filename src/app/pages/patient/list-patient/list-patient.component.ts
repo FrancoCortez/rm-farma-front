@@ -64,7 +64,8 @@ export class ListPatientComponent implements OnInit {
 
   initColumns(): void {
     this.cols = [
-      { field: 'rut', header: 'RUT' },
+      { field: 'rut', header: 'RUT / Identificador' },
+      { field: 'type', header: 'Tipo' },
       { field: 'name', header: 'Nombre' },
       { field: 'lastName', header: 'Apellido' },
       { field: 'isapre.description', header: 'Isapre' },

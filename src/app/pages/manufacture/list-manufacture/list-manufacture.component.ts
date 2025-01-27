@@ -123,6 +123,10 @@ export class ListManufactureComponent
   masterDetailTable: any[] = [];
   commercialProductCombo$: Subscription = new Subscription();
   zebraPreview = false;
+  printDetail!: {
+    detail: any;
+    master: any;
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -551,8 +555,29 @@ export class ListManufactureComponent
 
   async previewLabel(detail: any, master: any) {
     this.zebraPreview = true;
+    this.printDetail = {
+      detail,
+      master,
+    };
     for (let i = 0; i < detail.orderDetails.length; i++) {
-      const zpl = `^XA
+      const zpl = this.generateZpl(detail, i, master);
+      setTimeout(async () => {
+        try {
+          const canvasId = `labelCanvas${i}`;
+          const canvasContainer = document.getElementById('canvasContainer');
+          const canvas = document.createElement('canvas');
+          canvas.id = canvasId;
+          canvasContainer?.appendChild(canvas);
+          await this.zebraPrintService.previewLabel(zpl, canvasId);
+        } catch (error) {
+          console.error('Error previewing label:', error);
+        }
+      }, 0); // Ensure the modal is rendered before accessing the canvas
+    }
+  }
+
+  private generateZpl(detail: any, i: number, master: any) {
+    return `^XA
 ^PW1000
 ^LL1000
 ^CFA,20
@@ -570,7 +595,7 @@ export class ListManufactureComponent
 ^FO500,170^FDR.M.: ^FS
 ^FO560,170^FD${detail.orderDetails[i].masterRecord}^FS
 ^FO20,200^FDClínica:^FS
-^FO114,200^FD${detail.clinicName}^FS
+^FO114,200^FD${detail.unitHospitalName}^FS
 ^FO520,200^FDOrden:  ^FS
 ^FO590,200^FD${i + 1}/${detail.orderDetails.length}^FS
 ^FO20,230^FDEsquema:^FS
@@ -610,8 +635,8 @@ export class ListManufactureComponent
 ^FO120,620^FD${detail.orderDetails[i].commercialOrderDetails[0].laboratory}^FS
 ^FO550,620^FDLote:^FS
 ^FO610,620^FD${detail.orderDetails[i].commercialOrderDetails
-        .map((part: any) => part.batch)
-        .join('//')}^FS
+      .map((part: any) => part.batch)
+      .join('//')}^FS
 ^FO40,650^FDN° Registro: ^FS
 ^FO200,650^FDRF XIII 04/16;3D^FS
 ^FO450,650^FDDT.QF.^FS
@@ -620,29 +645,27 @@ export class ListManufactureComponent
 ^FO50,710^FDDirección: Pérez Valenzuela 1077, Providencia^FS
 ^FO20,740^GB750,3,3^FS
 ^XZ`;
-      setTimeout(async () => {
-        try {
-          const canvasId = `labelCanvas${i}`;
-          const canvasContainer = document.getElementById('canvasContainer');
-          const canvas = document.createElement('canvas');
-          canvas.id = canvasId;
-          canvasContainer?.appendChild(canvas);
-          await this.zebraPrintService.previewLabel(zpl, canvasId);
-        } catch (error) {
-          console.error('Error previewing label:', error);
-        }
-      }, 0); // Ensure the modal is rendered before accessing the canvas
-    }
   }
 
-  printEvent() {
-    this.zebraPrintService
-      .getAvailablePrinters()
-      .then((printers) => {
-        console.log(printers);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  async printEvent() {
+    try {
+      const printers = await this.zebraPrintService.getAvailablePrinters();
+      console.log(printers);
+      if (printers.length === 0) {
+        console.error('No printers found');
+        return;
+      }
+      this.zebraPrintService.setPrinter(printers[0]);
+      for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
+        const zpl = this.generateZpl(
+          this.printDetail.detail,
+          i,
+          this.printDetail.master,
+        );
+        await this.zebraPrintService.print(zpl);
+      }
+    } catch (error) {
+      console.error('Error during printing process:', error);
+    }
   }
 }

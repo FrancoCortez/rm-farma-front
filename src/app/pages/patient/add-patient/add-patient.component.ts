@@ -105,7 +105,6 @@ export class AddPatientComponent implements OnInit, OnDestroy {
       .select(PatientFormStoreSelectors.getFormPatient)
       .subscribe({
         next: (patientCreate) => {
-          console.log('readDataForm', patientCreate);
           this.dataAllForm = patientCreate;
         },
       });
@@ -246,7 +245,6 @@ export class AddPatientComponent implements OnInit, OnDestroy {
   }
 
   saveAll() {
-    console.log('saveAll', this.dataAllForm);
     this.store.dispatch(
       PatientStoreActions.createPatient({ payload: this.dataAllForm }),
     );

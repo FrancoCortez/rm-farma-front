@@ -14,6 +14,7 @@ export class ZebraPrintService {
   async getAvailablePrinters() {
     try {
       const printers = await this.zebraPrinter.getAvailablePrinters();
+      console.log(printers);
       console.log('Available printers:', printers);
       return printers;
     } catch (error) {
