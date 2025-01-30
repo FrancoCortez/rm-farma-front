@@ -14,6 +14,7 @@ import { LocalStorageStoreState } from './local-storage-store';
 import { PatientFormStoreState } from './patient-form-store';
 import { DiagnosisOrderStoreState } from './diagnosis-order-store';
 import { CommercialProductStoreState } from './commercial-product-store';
+import { OrderDetailsStoreState } from './order-details-store';
 
 export interface RootState {
   clinic: ClinicStoreState.State;
@@ -32,4 +33,5 @@ export interface RootState {
   localStorage: LocalStorageStoreState.State;
   diagnosisOrder: DiagnosisOrderStoreState.State;
   commercialProduct: CommercialProductStoreState.State;
+  orderDetails: OrderDetailsStoreState.State;
 }

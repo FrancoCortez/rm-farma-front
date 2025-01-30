@@ -95,17 +95,17 @@ export class DetailPatientComponent implements OnInit, OnDestroy {
   }
 
   saveCheckInitProcess() {
-    const cycleNumber = this.checkPatientForm.get('cycleNumber')?.value;
-    const cycleDay = this.checkPatientForm.get('cycleDay')?.value;
-    if (
-      this.detailsPatientCheck.cycleDay === cycleDay &&
-      this.detailsPatientCheck.cycleNumber === cycleNumber
-    ) {
-      this.messageError =
-        'No se han realizado cambios, Debe cambiar los ciclos actuales por la siguiente etapa';
-      this.displayError = true;
-      return;
-    }
+    // const cycleNumber = this.checkPatientForm.get('cycleNumber')?.value;
+    // const cycleDay = this.checkPatientForm.get('cycleDay')?.value;
+    // if (
+    //   this.detailsPatientCheck.cycleDay === cycleDay &&
+    //   this.detailsPatientCheck.cycleNumber === cycleNumber
+    // ) {
+    //   this.messageError =
+    //     'No se han realizado cambios, Debe cambiar los ciclos actuales por la siguiente etapa';
+    //   this.displayError = true;
+    //   return;
+    // }
     this.diagnosisOrderStateFormResourceDto =
       this.checkPatientForm.getRawValue();
     this.diagnosisOrderStateFormResourceDto.patientIdentification =

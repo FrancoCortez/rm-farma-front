@@ -65,5 +65,23 @@
         ]
       }
     ]
+  },
+  {
+    "label": "Reportes",
+    "items": [
+      {
+        "label": "Reportes de Producción",
+        "icon": "pi pi-fw pi-prime",
+        "items": [
+          {
+            "label": "Producción Recetario",
+            "icon": "pi pi-list",
+            "routerLink": [
+              "/main/production-report/report-production"
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

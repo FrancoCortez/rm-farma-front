@@ -123,7 +123,7 @@
   </div>
 </div>
 
-<p-dialog [(visible)]="zebraPreview" [style]="{width: '950px', height: '1100px'}" [modal]="true">
+<p-dialog *ngIf="zebraPreview" [(visible)]="zebraPreview" [style]="{width: '950px', height: '1100px'}" [modal]="true">
   <div id="canvasContainer"></div>
   <div class="flex justify-content-center">
     <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" (click)="printEvent()" pRipple></p-button>
@@ -288,10 +288,10 @@
                                             [errorType]="'required'"
                                             [message]="'La condición es obligatorio'"></app-form-validation-messages>
             </div>
-            <div formArrayName="commercialPart">
-              <div class="grid p-fluid mt-3 col-12"
+            <div formArrayName="commercialPart" style="width: 97%">
+              <div class="grid p-fluid mt-3 ml-3 mr-3 col-12 card"
                    *ngFor="let commercialPart of commercialPart.controls; let i = index" [formGroupName]="i">
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-12">
                   <span class="p-float-label">
                     <p-dropdown [appFormControlStatus]="commercialPart.get('commercial')" [filter]="true"
                                 [options]="commercialProductCombo" dataKey="code"
@@ -319,7 +319,7 @@
                                                 [errorType]="'required'"
                                                 [message]="'El Lote es obligatorio'"></app-form-validation-messages>
                 </div>
-                <div class="field col-12 md:col-2">
+                <div class="field col-12 md:col-3">
                   <span class="p-float-label">
                     <input [appFormControlStatus]="commercialPart.get('part')" autocomplete="off" formControlName="part"
                            id="part"

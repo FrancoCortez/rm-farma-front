@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { NgForOf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { PrimeNGConfig, PrimeTemplate } from 'primeng/api';
 import { TableModule } from 'primeng/table';
 import { ColumModelDto } from '../../../utils/models/colum-model.dto';
@@ -86,6 +86,7 @@ import { ZebraPrintService } from '../../../utils/services/zebra-print.service';
     ViaStoreModule,
     RadioButtonModule,
     CommercialProductStoreModule,
+    NgIf,
   ],
   providers: [PrimeNGConfig],
   templateUrl: './list-manufacture.component.html',
@@ -143,11 +144,9 @@ export class ListManufactureComponent
   }
 
   initFormOrderDetails() {
-    const date = new Date(
-      this.currentTableSelectedDetail.productionDate * 1000,
-    );
+    const date = new Date(this.currentTableSelectedDetail.productionDate);
     const expirationDate = new Date(
-      this.currentTableSelectedDetail.productionDate * 1000,
+      this.currentTableSelectedDetail.productionDate,
     );
     expirationDate.setDate(expirationDate.getDate() + 4);
     this.orderDetailForm = this.fb.group({
@@ -313,13 +312,14 @@ export class ListManufactureComponent
     ];
   }
 
-  formatDate(time: number) {
-    const date = new Date(time * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-4);
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+  formatDate(date: Date) {
+    // const date = new Date(inDate.getTime());
+    const inDate = new Date(date);
+    const day = String(inDate.getDate()).padStart(2, '0');
+    const month = String(inDate.getMonth() + 1).padStart(2, '0');
+    const year = String(inDate.getFullYear()).slice(-4);
+    const hours = String(inDate.getHours()).padStart(2, '0');
+    const minutes = String(inDate.getMinutes()).padStart(2, '0');
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
@@ -365,6 +365,8 @@ export class ListManufactureComponent
         doctorName: item.doctorName,
         unitHospitalName: item.unitHospitalName,
         idDiagnosisOrder: item.diagnosisOrderStage.id,
+        serviceName:
+          item.diagnosisOrderStage.diagnosisPatient.services.description,
         idMasterId: item.id,
         orderDetails: item.orderDetails || [],
         diagnosisName: item.diagnosisName,
@@ -463,7 +465,7 @@ export class ListManufactureComponent
         next: (commercialProduct) => {
           this.commercialProductCombo = commercialProduct.map((c) => ({
             code: c.code,
-            name: `${c.description} - ${c.laboratory}`,
+            name: `${c.code} - ${c.description} - ${c.laboratory}`,
           }));
         },
       });
@@ -530,14 +532,14 @@ export class ListManufactureComponent
   }
 
   formatDateTimeSeparated(inDate: any) {
-    let timestamp;
-    if (inDate instanceof Date) {
-      timestamp = inDate.getTime() * 1000;
-    } else {
-      timestamp = inDate * 1000;
-    }
+    // let timestamp;
+    // if (inDate instanceof Date) {
+    //   timestamp = inDate.getTime() * 1000;
+    // } else {
+    //   timestamp = inDate * 1000;
+    // }
 
-    const date = new Date(timestamp);
+    const date = new Date(inDate);
 
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -559,9 +561,17 @@ export class ListManufactureComponent
       detail,
       master,
     };
-    for (let i = 0; i < detail.orderDetails.length; i++) {
-      const zpl = this.generateZpl(detail, i, master);
-      setTimeout(async () => {
+    setTimeout(async () => {
+      // Generar la etiqueta del encabezado
+      const headZpl = this.generateHeadZpl(detail, master);
+      const canvasContainer = document.getElementById('canvasContainer');
+      const headCanvasId = 'labelHeadCanvas';
+      const headCanvas = document.createElement('canvas');
+      headCanvas.id = headCanvasId;
+      canvasContainer?.appendChild(headCanvas);
+      await this.zebraPrintService.previewLabel(headZpl, headCanvasId);
+      for (let i = 0; i < detail.orderDetails.length; i++) {
+        const zpl = this.generateZplDetail(detail, i, master);
         try {
           const canvasId = `labelCanvas${i}`;
           const canvasContainer = document.getElementById('canvasContainer');
@@ -572,11 +582,35 @@ export class ListManufactureComponent
         } catch (error) {
           console.error('Error previewing label:', error);
         }
-      }, 0); // Ensure the modal is rendered before accessing the canvas
-    }
+      }
+    }, 0); // Ensure the modal is rendered before accessing the canvas
   }
 
-  private generateZpl(detail: any, i: number, master: any) {
+  private generateHeadZpl(detail: any, master: any) {
+    return `^XA
+^CI28
+^CF0,35
+^FO20,250^GB750,170,8^FS
+^BY5,2,270
+^FO35,290^FD${master.patientLastName}, ${master.patientName}^FS
+^FO35,360^FDN°H.C: ^FS
+^FO180,360^FD${master.patientRut}^FS
+^CF0,35
+^FO30,440^A0N,50,35^FDFecha:^FS
+^FO230,440^A0N,50,30^FD${this.formatDateTimeSeparated(detail.orderDetails[0].productionDate).formattedDate}^FS
+^FO30,510^A0N,50,35^FDServicio:^FS
+^FO230,510^A0N,50,30^FD${detail.serviceName}^FS
+^FO30,580^A0N,50,35^FDUd Hosp:^FS
+^FO230,580^A0N,50,30^FD${detail.unitHospitalName}^FS
+^FO30,650^A0N,50,35^FDEsquema:^FS
+^FO230,650^A0N,50,30^FD${detail.schemaName}, Ciclo: ${detail.cycleNumber}^FS
+^FO30,720^A0N,50,35^FDMédico Resp:^FS
+^FO230,720^A0N,50,30^FD${detail.doctorName}^FS
+^XZ
+`;
+  }
+
+  private generateZplDetail(detail: any, i: number, master: any) {
     return `^XA
 ^PW1000
 ^LL1000
@@ -641,7 +675,7 @@ export class ListManufactureComponent
 ^FO200,650^FDRF XIII 04/16;3D^FS
 ^FO450,650^FDDT.QF.^FS
 ^FO520,650^FDPamela Figari^FS
-^FO5,680^FDPor seguridad eliminar este preparado después de fecha vencimiento^FS
+^FO20,680^A0,23^FDPor seguridad eliminar este preparado después de fecha vencimiento^FS
 ^FO50,710^FDDirección: Pérez Valenzuela 1077, Providencia^FS
 ^FO20,740^GB750,3,3^FS
 ^XZ`;
@@ -650,14 +684,13 @@ export class ListManufactureComponent
   async printEvent() {
     try {
       const printers = await this.zebraPrintService.getAvailablePrinters();
-      console.log(printers);
       if (printers.length === 0) {
         console.error('No printers found');
         return;
       }
       this.zebraPrintService.setPrinter(printers[0]);
       for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
-        const zpl = this.generateZpl(
+        const zpl = this.generateZplDetail(
           this.printDetail.detail,
           i,
           this.printDetail.master,
