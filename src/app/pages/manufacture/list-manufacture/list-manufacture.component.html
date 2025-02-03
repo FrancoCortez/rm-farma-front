@@ -14,21 +14,21 @@
         <ng-template pTemplate="caption">
           <div class="grid p-fluid mt-3">
             <div class="field col-12 md:col-4">
-            <span class="p-float-label">
-              <p-multiSelect
-                [(ngModel)]="selectedColumns"
-                [options]="cols"
-                [style]="{'min-width': '300px'}"
-                class="multiselect-custom"
-                display="comma"
-                id="multiselect"
-                inputId="multiselect"
-                optionLabel="header"
-                placeholder="Seleccione las columnas"
-                selectedItemsLabel="{0} columnas seleccionadas"
-              />
-              <label for="multiselect">Columnas</label>
-            </span>
+              <span class="p-float-label">
+                <p-multiSelect
+                  [(ngModel)]="selectedColumns"
+                  [options]="cols"
+                  [style]="{'min-width': '300px'}"
+                  class="multiselect-custom"
+                  display="comma"
+                  id="multiselect"
+                  inputId="multiselect"
+                  optionLabel="header"
+                  placeholder="Seleccione las columnas"
+                  selectedItemsLabel="{0} columnas seleccionadas"
+                />
+                <label for="multiselect">Columnas</label>
+              </span>
             </div>
             <div class="field col-12 md:col-4">
               <span class="p-float-label">

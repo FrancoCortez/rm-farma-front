@@ -4,6 +4,7 @@ import { ErrorModelDto } from '../../utils/models/error-model.dto';
 
 export const findCustomReport = createAction(
   '[OrderDetails] Find Custom Report',
+  props<{ payload: { startDate: Date; endDate: Date } }>(),
 );
 export const findCustomReportSuccess = createAction(
   '[OrderDetails] Find Custom Report Success',

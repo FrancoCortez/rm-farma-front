@@ -1,6 +1,6 @@
 export class OrderDetailsReportResourceDto {
   masterRecord?: string;
-  productionDate?: Date;
+  productionDate?: Date | string;
   fullPatientName?: string;
   patientRut?: string;
   doctorName?: string;

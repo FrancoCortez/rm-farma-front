@@ -1,1 +1,86 @@
-<p>report-production works!</p>
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <p-table #dt
+               [columns]="selectedColumns"
+               [paginator]="true"
+               [rowHover]="true"
+               [rows]="10"
+               [tableStyle]="{'min-width': '50rem'}"
+               [value]=manufactureReports
+               [exportFilename]="'reporte-produccion_' + nowDate"
+               responsiveLayout="scroll"
+               [scrollable]="true"
+               dataKey="masterRecord"
+               styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="caption">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-4">
+              <span class="p-float-label">
+                <p-multiSelect
+                  [(ngModel)]="selectedColumns"
+                  [options]="cols"
+                  [style]="{'min-width': '300px'}"
+                  class="multiselect-custom"
+                  display="comma"
+                  id="multiselect"
+                  inputId="multiselect"
+                  optionLabel="header"
+                  placeholder="Seleccione las columnas"
+                  selectedItemsLabel="{0} columnas seleccionadas"
+                />
+                <label for="multiselect">Columnas</label>
+              </span>
+            </div>
+            <div class="field md:col-8"></div>
+            <div class="field col-12 md:col-6">
+              <p-selectButton [options]="stateOptions"
+                              [(ngModel)]="stateSelection"
+                              optionLabel="label"
+                              optionValue="value"
+                              (onOptionClick)="periodSearch()">
+
+              </p-selectButton>
+            </div>
+            <div class="field md:col-4"></div>
+            <div class="field col-12 md:col-2">
+              <button pButton pRipple label="Export Csv" icon="pi pi-upload" class="p-button-help"
+                      (click)="dt.exportCSV({  })"></button>
+            </div>
+          </div>
+          <div *ngIf="stateSelection==='personalize'" class="card grid p-fluid mt-3">
+            <div class="field col-12 md:col-8">
+              <span class="p-float-label">
+                <p-calendar id="searchDay"
+                            [(ngModel)]="dateFilter"
+                            selectionMode="range"
+                            dateFormat="dd/mm/yy"
+                            inputId="searchDay"></p-calendar>
+                <label for="searchDay">Elegir Periodo</label>
+              </span>
+            </div>
+            <div class="field col-12 md:col-4">
+              <p-button (onClick)="searchPersonalize()" [style]="{'max-width': '40%'}"
+                        class="p-button-raised p-button-primary" icon="pi pi-search"
+                        label="Buscar..." pRipple></p-button>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th *ngFor="let col of columns" style="min-width: 12rem">
+              {{ col.header }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-details pTemplate="body">
+          <tr>
+            <td *ngFor="let col of columns">
+              {{ parseFieldInData(details, col.field) }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
