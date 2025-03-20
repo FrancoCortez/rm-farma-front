@@ -112,7 +112,6 @@ export class PatientFormComponent implements OnInit, OnDestroy {
     this.initFormPatient();
     this.findPatientByIdentification$ = this.store
       .select(PatientStoreSelectors.selectPatient)
-      // .pipe(filter((patient) => !!patient))
       .subscribe({
         next: (patient) => {
           if (Object.keys(patient).length === 0) {

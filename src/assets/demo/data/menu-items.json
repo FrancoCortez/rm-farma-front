@@ -79,6 +79,13 @@
             "routerLink": [
               "/main/production-report/report-production"
             ]
+          },
+          {
+            "label": "Resumen Producción Recetario",
+            "icon": "pi pi-list",
+            "routerLink": [
+              "/main/production-report/report-resume-production"
+            ]
           }
         ]
       }

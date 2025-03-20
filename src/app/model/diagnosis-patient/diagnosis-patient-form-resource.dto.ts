@@ -1,4 +1,5 @@
 export class DiagnosisPatientFormResourceDto {
+  id?: string;
   doctor?: string;
   cycleNumber?: number;
   cycleDay?: number;

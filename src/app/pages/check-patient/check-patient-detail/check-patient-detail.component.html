@@ -23,6 +23,7 @@
   </div>
 </div>
 
+<app-spinner *ngIf="loadingPatient"></app-spinner>
 <app-modal-error [display]="displayError" [message]="messageError"></app-modal-error>
 <app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
                    [message]="'Se han creado los preparados con éxito'"></app-modal-success>

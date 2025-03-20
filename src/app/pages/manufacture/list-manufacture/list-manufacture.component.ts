@@ -60,6 +60,14 @@ import {
   CommercialProductStoreSelectors,
 } from '../../../root-store/commercial-product-store';
 import { ZebraPrintService } from '../../../utils/services/zebra-print.service';
+import { MasterOrderDetailsUpdateFormResourceDto } from '../../../model/master-order-details/master-order-details-update-form-resource.dto';
+import {
+  OrderDetailsStoreActions,
+  OrderDetailsStoreModule,
+  OrderDetailsStoreSelectors,
+} from '../../../root-store/order-details-store';
+import { SpinnerComponent } from '../../../utils/components/spinner/spinner.component';
+import { ModalSuccessComponent } from '../../../utils/components/modal-success/modal-success.component';
 
 @Component({
   selector: 'app-list-manufacture',
@@ -86,7 +94,10 @@ import { ZebraPrintService } from '../../../utils/services/zebra-print.service';
     ViaStoreModule,
     RadioButtonModule,
     CommercialProductStoreModule,
+    OrderDetailsStoreModule,
     NgIf,
+    SpinnerComponent,
+    ModalSuccessComponent,
   ],
   providers: [PrimeNGConfig],
   templateUrl: './list-manufacture.component.html',
@@ -111,7 +122,9 @@ export class ListManufactureComponent
   commercialProductCombo: ComboModelDto[] = [];
   unitMetricCombo: ComboModelDto[] = [];
   conditionCombo: ComboModelDto[] = [];
-
+  operation: string = 'created';
+  dialogTitle: string = 'Agregar Nueva Fórmula';
+  displayOk: boolean = false;
   orderDetailDialog = false;
   orderDetailForm!: FormGroup;
 
@@ -128,6 +141,8 @@ export class ListManufactureComponent
     detail: any;
     master: any;
   };
+  private masterRecordPath = '';
+  isLoadingUpdate = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -143,12 +158,34 @@ export class ListManufactureComponent
     this.primengConfig.ripple = true;
   }
 
-  initFormOrderDetails() {
-    const date = new Date(this.currentTableSelectedDetail.productionDate);
-    const expirationDate = new Date(
-      this.currentTableSelectedDetail.productionDate,
-    );
+  isLoadingUpdateState() {
+    this.store
+      .select(OrderDetailsStoreSelectors.selectLoadingUpdate)
+      .subscribe({
+        next: (value) => {
+          this.isLoadingUpdate = value;
+        },
+      });
+    this.store
+      .select(OrderDetailsStoreSelectors.selectUpdatedSuccessModel)
+      .subscribe({
+        next: (value) => {
+          this.displayOk = value;
+          this.orderDetailDialog = false;
+          this.prepareDialogDetail = false;
+        },
+      });
+  }
+
+  initFormOrderDetails(commercialPartsData: any[] = []) {
+    let date = new Date();
+    let expirationDate = new Date();
+    if (this.operation === 'created') {
+      date = new Date(this.currentTableSelectedDetail.productionDate);
+      expirationDate = new Date(this.currentTableSelectedDetail.productionDate);
+    }
     expirationDate.setDate(expirationDate.getDate() + 4);
+
     this.orderDetailForm = this.fb.group({
       via: ['', Validators.required],
       productionDate: [date, Validators.required],
@@ -158,19 +195,23 @@ export class ListManufactureComponent
       unitMetric: ['', Validators.required],
       complement: ['', Validators.required],
       volTotal: [null, Validators.required],
-      prot: ['Si'],
+      prot: ['Si', Validators.required],
       condition: [''],
-      administrationTime: [null, Validators.required],
       observation: [''],
-      commercialPart: this.fb.array([this.createCommercialPart()]),
+      administrationTime: [null, Validators.required],
+      commercialPart: this.fb.array([]),
+    });
+
+    commercialPartsData.forEach((data) => {
+      this.commercialPart.push(this.createCommercialPart(data));
     });
   }
 
-  createCommercialPart(): FormGroup {
+  createCommercialPart(data: any = {}): FormGroup {
     return this.fb.group({
-      commercial: [''],
-      batch: [''],
-      part: [''],
+      commercial: [data.commercial || ''],
+      batch: [data.batch || ''],
+      part: [data.part || ''],
     });
   }
 
@@ -206,6 +247,7 @@ export class ListManufactureComponent
   }
 
   ngOnInit(): void {
+    this.isLoadingUpdateState();
     if (!this.searchDay) {
       this.searchDay = new Date();
       this.updateFilters();
@@ -216,7 +258,7 @@ export class ListManufactureComponent
     this.routerSearch();
     this._selectedColumns = this.cols;
     this.loadMasterOrders();
-
+    this.initCombo();
     this.selectedSuccessMaster();
   }
 
@@ -385,6 +427,8 @@ export class ListManufactureComponent
   }
 
   initProcessManufacture(detail: any, master: any) {
+    this.operation = 'created';
+    this.dialogTitle = 'Agregar Nueva Fórmula';
     this.initCombo();
     this.currentTableSelectedDetail = detail;
     this.currentTableSelectedMaster = master;
@@ -491,6 +535,48 @@ export class ListManufactureComponent
   }
 
   saveFormula() {
+    if (this.operation == 'created') {
+      this.createFormula();
+    }
+    if (this.operation == 'updated') {
+      this.updateFormula();
+    }
+  }
+
+  updateFormula() {
+    const patchFormula: MasterOrderDetailsUpdateFormResourceDto = {
+      master: this.currentTableSelectedDetail.idMasterId,
+      masterRecord: this.masterRecordPath,
+      details: {
+        productCode: this.orderDetailForm.value.productName.code,
+        via: this.orderDetailForm.value.via.code,
+        dose: this.orderDetailForm.value.dose,
+        productionDate: this.orderDetailForm.value.productionDate,
+        expirationDate: this.orderDetailForm.value.expirationDate,
+        unitMetric: this.orderDetailForm.value.unitMetric.code,
+        complementCode: this.orderDetailForm.value.complement.code,
+        volTotal: this.orderDetailForm.value.volTotal,
+        prot: this.orderDetailForm.value.prot,
+        condition: this.orderDetailForm.value.condition.code,
+        administrationTime: this.orderDetailForm.value.administrationTime,
+        observation: this.orderDetailForm.value.observation,
+        commercialPart: this.orderDetailForm.value.commercialPart.map(
+          (c: any) => ({
+            commercial: c.commercial.code,
+            batch: c.batch,
+            part: c.part,
+          }),
+        ),
+      },
+    };
+    this.store.dispatch(
+      OrderDetailsStoreActions.updatedDetailsProduction({
+        payload: patchFormula,
+      }),
+    );
+  }
+
+  createFormula() {
     const formValue = this.orderDetailForm.value;
     const masterOrder: MasterOrderFormResourceDto = {
       patientIdentification:
@@ -528,6 +614,8 @@ export class ListManufactureComponent
 
   detailProduct(detail: any, master: any) {
     this.masterDetailTable = detail.orderDetails;
+    this.currentTableSelectedDetail = detail;
+    this.currentTableSelectedMaster = master;
     this.prepareDialogDetail = true;
   }
 
@@ -621,15 +709,15 @@ export class ListManufactureComponent
 ^FD14${detail.orderDetails[i].masterRecord}^FS
 ^FO390,80^GB360,50,3^FS
 ^FO400,90^A0N^FDCentral de Mezclas Estériles Oncológicas^FS
-^FO500,110^FDFarmacia PROFAR^FS
+^FO410,110^FDClínica BUPA Santiago S.A.^FS
 ^FO20,140^FDNom. Paciente:^FS
 ^FO190,140^FD${master.patientLastName}, ${master.patientName}^FS
 ^FO20,170^FDN° RUT:^FS
 ^FO110,170^FD${master.patientRut}^FS
 ^FO500,170^FDR.M.: ^FS
 ^FO560,170^FD${detail.orderDetails[i].masterRecord}^FS
-^FO20,200^FDClínica:^FS
-^FO114,200^FD${detail.unitHospitalName}^FS
+^FO20,200^FDInstitución:^FS
+^FO161,200^FD${detail.serviceName}^FS
 ^FO520,200^FDOrden:  ^FS
 ^FO590,200^FD${i + 1}/${detail.orderDetails.length}^FS
 ^FO20,230^FDEsquema:^FS
@@ -639,11 +727,11 @@ export class ListManufactureComponent
 ^FO20,260^FDDiagnóstico: ^FS
 ^FO165,260^FD${detail.diagnosisName}^FS
 ^FO20,290^GB750,3,3^FS
-^FO20,320^FDDroga: ^FS
-^FO114,320^FD${detail.orderDetails[i].productName} ${detail.orderDetails[i].quantity} ${detail.orderDetails[i].unitMetric}^FS
+^FO20,320^A0N^FDDroga: ^FS
+^FO114,320^A0N^FD${detail.orderDetails[i].productName} ${detail.orderDetails[i].quantity} ${detail.orderDetails[i].unitMetric}^FS
 ^FO20,350^FD${detail.orderDetails[i].complementName}^FS
-^FO20,380^FDVol.Total:^FS
-^FO150,380^FD${detail.orderDetails[i].volumeTotal} mL,^FS
+^FO20,380^A0N^FDVol.Total:^FS
+^FO150,380^A0N^FD${detail.orderDetails[i].volumeTotal} mL,^FS
 ^FO330,380^FDTiempo:  ^FS
 ^FO420,380^FD${detail.orderDetails[i].administrationTime}^FS
 ^FO20,410^FDVía adm.:^FS
@@ -672,11 +760,11 @@ export class ListManufactureComponent
       .map((part: any) => part.batch)
       .join('//')}^FS
 ^FO40,650^FDN° Registro: ^FS
-^FO200,650^FDRF XIII 04/16;3D^FS
+^FO200,650^FDRF XIII 01/24:3B,3D^FS
 ^FO450,650^FDDT.QF.^FS
-^FO520,650^FDPamela Figari^FS
+^FO520,650^FDAlicia González Yévenes^FS
 ^FO20,680^A0,23^FDPor seguridad eliminar este preparado después de fecha vencimiento^FS
-^FO50,710^FDDirección: Pérez Valenzuela 1077, Providencia^FS
+^FO50,710^FDDirección: Av Departamental N°1455 (Piso -1), La Florida^FS
 ^FO20,740^GB750,3,3^FS
 ^XZ`;
   }
@@ -700,5 +788,43 @@ export class ListManufactureComponent
     } catch (error) {
       console.error('Error during printing process:', error);
     }
+  }
+
+  editProductionProcess(details: any) {
+    this.operation = 'updated';
+    this.dialogTitle = 'Editar Fòrmula ' + details.masterRecord;
+    this.masterRecordPath = details.masterRecord;
+    const commercial = details.commercialOrderDetails.map((part: any) => ({
+      commercial: this.commercialProductCombo.find((f) => f.code === part.code),
+      batch: part.batch,
+      part: part.quantity,
+    }));
+    this.initFormOrderDetails(commercial);
+    this.orderDetailForm.patchValue({
+      via: details.via,
+      productionDate: new Date(details.productionDate),
+      expirationDate: new Date(details.expirationDate),
+      productName: this.productCombo.find(
+        (f) => f.name === details.productName,
+      ),
+      dose: details.quantity,
+      unitMetric: this.unitMetricCombo.find(
+        (f) => f.name === details.unitMetric,
+      ),
+      complement: this.complementCombo.find(
+        (f) => f.name === details.complementName,
+      ),
+      volTotal: details.volumeTotal,
+      prot: details.prot,
+      condition: this.conditionCombo.find((f) => f.name === details.condition),
+      administrationTime: details.administrationTime,
+      observation: details.observation,
+    });
+    this.orderDetailDialog = true;
+  }
+
+  confirmDialog($event: boolean) {
+    this.displayOk = $event;
+    this.loadMasterOrders();
   }
 }

@@ -4,7 +4,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { Ripple } from 'primeng/ripple';
 import { AccordionModule } from 'primeng/accordion';
-import { DetailFormulaComponent } from '../../manufacture/add-manufacture/detail-formula/detail-formula.component';
 import { DetailPatientComponent } from '../../manufacture/add-manufacture/detail-patient/detail-patient.component';
 import { ModalErrorComponent } from '../../../utils/components/modal-error/modal-error.component';
 import { ModalSuccessComponent } from '../../../utils/components/modal-success/modal-success.component';
@@ -22,6 +21,7 @@ import {
   DiagnosisOrderStoreModule,
   DiagnosisOrderStoreSelectors,
 } from '../../../root-store/diagnosis-order-store';
+import { SpinnerComponent } from '../../../utils/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-check-patient-detail',
@@ -38,6 +38,7 @@ import {
     NgIf,
     PatientStoreModule,
     DiagnosisOrderStoreModule,
+    SpinnerComponent,
   ],
   templateUrl: './check-patient-detail.component.html',
 })
@@ -45,17 +46,22 @@ export class CheckPatientDetailComponent implements OnInit, OnDestroy {
   searchPatientValue: string = '';
   patientSearch: PatientResourceDto = {};
 
+  loadingPatient = false;
+
   displayError: boolean = false;
   displayOk: boolean = false;
   messageError?: string = '';
 
   constructor(private readonly store: Store<RootStoreState.RootState>) {}
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.store.dispatch(PatientStoreActions.resetState());
+  }
 
   ngOnInit(): void {
     this.loadSearchPatient();
     this.selectCreateSuccessFlag();
+    this.loadingStatusPatient();
   }
 
   selectCreateSuccessFlag() {
@@ -91,5 +97,13 @@ export class CheckPatientDetailComponent implements OnInit, OnDestroy {
 
   confirmDialog($event: boolean) {
     this.displayOk = $event;
+  }
+
+  private loadingStatusPatient() {
+    this.store.select(PatientStoreSelectors.selectLoading).subscribe({
+      next: (value) => {
+        this.loadingPatient = value;
+      },
+    });
   }
 }

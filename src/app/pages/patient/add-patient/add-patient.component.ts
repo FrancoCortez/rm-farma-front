@@ -238,6 +238,8 @@ export class AddPatientComponent implements OnInit, OnDestroy {
     this.selectError$.unsubscribe();
     this.dataAllFormSubscription$.unsubscribe();
     this.formValidPatient$.unsubscribe();
+    this.store.dispatch(PatientStoreActions.resetState());
+    this.store.dispatch(PatientFormStoreActions.resetAllInitialState());
   }
 
   confirmDialog($event: boolean) {

@@ -87,6 +87,9 @@ export class ListPatientComponent implements OnInit {
       if (Array.isArray(acc[obj])) {
         return acc[obj][0];
       }
+      if (!acc[obj]) {
+        return '';
+      }
       return acc[obj];
     }, data);
     // if (field.includes('productionDate') && value) {

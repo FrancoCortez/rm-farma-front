@@ -100,6 +100,7 @@
                         <button (click)="initProcessManufacture(detail, master)" class="p-button-rounded p-button-info"
                                 icon="pi pi-plus-circle" pButton pRipple type="button"></button>
                       </td>
+
                       <td *ngFor="let cols of columns">
                         {{ parseFieldInData(detail, cols.field) }}
                       </td>
@@ -132,7 +133,7 @@
 
 
 <p-dialog [(visible)]="orderDetailDialog" [modal]="true" [style]="{width: '1000px'}" class="p-fluid"
-          header="Agregar Nueva Fórmula">
+          [header]="dialogTitle">
   <ng-template pTemplate="content">
     <form [formGroup]="orderDetailForm">
       <div class="flex flex-column">
@@ -344,13 +345,13 @@
             <div class="field col-12 md:col-12">
               <span class="p-float-label">
                 <textarea [appFormControlStatus]="orderDetailForm.get('observation')" cols="20"
-                          formControlName="observation" id="observation" pInputTextarea required
+                          formControlName="observation" id="observation" pInputTextarea
                           rows="3"></textarea>
                 <label for="observation">Observaciones</label>
               </span>
               <app-form-validation-messages [control]="orderDetailForm.get('observation')"
                                             [errorType]="'required'"
-                                            [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+                                            [message]="'La Observación es obligatoria'"></app-form-validation-messages>
             </div>
           </div>
         </div>
@@ -376,7 +377,9 @@
            responsiveLayout="scroll"
            styleClass="p-datatable-gridlines">
     <ng-template let-columns pTemplate="header">
+
       <tr>
+        <th></th>
         <th *ngFor="let col of columns" style="min-width: 12rem">
           {{ col.header }}
         </th>
@@ -384,6 +387,9 @@
     </ng-template>
     <ng-template let-columns="columns" let-master pTemplate="body">
       <tr>
+        <td>
+          <button (click)="editProductionProcess(master)" class="p-button-rounded p-button-info" icon="pi pi-pencil" pButton pRipple type="button"></button>
+        </td>
         <td *ngFor="let col of columns">
           {{ parseFieldInData(master, col.field) }}
         </td>
@@ -392,4 +398,8 @@
   </p-table>
 </p-dialog>
 
+
+<app-spinner *ngIf="isLoadingUpdate"></app-spinner>
+<app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
+                   [message]="'Se han creado los preparados con éxito'"></app-modal-success>
 

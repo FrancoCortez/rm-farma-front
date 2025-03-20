@@ -1,43 +1,46 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ColumModelDto } from '../../../utils/models/colum-model.dto';
-import { TableModule } from 'primeng/table';
 import { OrderDetailsReportResourceDto } from '../../../model/master-order-details/order-details-report.resource.dto';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { FormsModule } from '@angular/forms';
-import { NgForOf, NgIf } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from '../../../root-store';
 import {
   OrderDetailsStoreActions,
   OrderDetailsStoreModule,
   OrderDetailsStoreSelectors,
 } from '../../../root-store/order-details-store';
-import { Store } from '@ngrx/store';
-import { RootStoreState } from '../../../root-store';
-import { ButtonDirective } from 'primeng/button';
-import { Ripple } from 'primeng/ripple';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { Button } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
+import { TableModule } from 'primeng/table';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule } from '@angular/forms';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { NgForOf, NgIf } from '@angular/common';
+import {
+  selectDataResumeReport,
+  selectLoadingResumeReport,
+} from '../../../root-store/order-details-store/selector';
+import { OrderDetailsResumeReportResourceDto } from '../../../model/master-order-details/order-details-resume-report.resource.dto';
 
 @Component({
-  selector: 'app-report-production',
+  selector: 'app-report-resume-production',
   standalone: true,
   imports: [
+    Button,
+    CalendarModule,
     TableModule,
     MultiSelectModule,
     FormsModule,
+    SelectButtonModule,
+    NgIf,
     NgForOf,
     OrderDetailsStoreModule,
-    ButtonDirective,
-    Ripple,
-    SelectButtonModule,
-    CalendarModule,
-    NgIf,
   ],
-  templateUrl: './report-production.component.html',
+  templateUrl: './report-resume-production.component.html',
 })
-export class ReportProductionComponent implements OnInit, OnDestroy {
+export class ReportResumeProductionComponent implements OnInit, OnDestroy {
   cols: ColumModelDto[] = [];
   _selectedColumns: ColumModelDto[] = [];
-  manufactureReports: OrderDetailsReportResourceDto[] = [];
+  manufactureReports: OrderDetailsResumeReportResourceDto[] = [];
   nowDate = Date.now();
   stateOptions = [
     { label: 'Hoy', value: 'hoy' },
@@ -78,38 +81,26 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
 
   initColumns() {
     this.cols = [
-      { field: 'masterRecord', header: 'Registro Magistral (RM)' },
-      { field: 'productionDate', header: 'Fecha de Elaboración' },
-      { field: 'fullPatientName', header: 'Paciente' },
-      { field: 'patientRut', header: 'Rut' },
-      { field: 'doctorName', header: 'Médico' },
-      { field: 'doctorRut', header: 'Rut' },
-      { field: 'unitName', header: 'Clínica' },
-      { field: 'code', header: 'Cod. Medicamento' },
-      { field: 'description', header: 'Producto' },
-      { field: 'quantity', header: 'Cantidad' },
-      { field: 'quantityReal', header: 'ml/mg' },
-      { field: 'laboratory', header: 'Laboratorio' },
-      { field: 'batch', header: 'Lote' },
-      { field: 'isapreCode', header: 'ISAPRE Cod.' },
-      { field: 'isapreName', header: 'ISAPRE desc.' },
-      { field: 'diagnosisCode', header: 'Diagnóstico Cod.' },
-      { field: 'diagnosisName', header: 'Diagnóstico Desc.' },
-      { field: 'cycleDay', header: 'Dia Ciclo' },
-      { field: 'cycleNumber', header: 'Num. Ciclo' },
-      { field: 'schemaCode', header: 'Esquema' },
-      { field: 'schemaName', header: 'Esquema Desc.' },
-      { field: 'volumeTotal', header: 'Volumen' },
-      { field: 'viaCode', header: 'Via Cod.' },
-      { field: 'viaDescription', header: 'Via Desc.' },
-      { field: 'qf', header: 'Qf responsable' },
-      { field: 'guia', header: 'Guia' },
+      { field: 'rut', header: 'NºH.C. (rut)' },
+      { field: 'schemaName', header: 'Desc. Esquema' },
+      { field: 'unitHospitalName', header: 'Unid. Hosp.' },
+      { field: 'doctorName', header: 'Medico' },
+      { field: 'masterRecord', header: 'R.M.' },
+      { field: 'lastName', header: 'Apellidos' },
+      { field: 'name', header: 'Nombre' },
+      { field: 'productionDate', header: 'Fecha de Prep.' },
+      { field: 'observation', header: 'Observaciones' },
+      { field: 'genericProduct', header: 'Medicamentos' },
+      { field: 'cycleNumber', header: 'CICLO' },
+      { field: 'cycleDay', header: 'DIA' },
+      { field: 'ov', header: 'OV' },
+      { field: 'trainer', header: 'PREPARADOR' },
     ];
   }
 
   selectLoadingReport() {
     this.store
-      .select(OrderDetailsStoreSelectors.selectLoadingDataReport)
+      .select(OrderDetailsStoreSelectors.selectLoadingResumeReport)
       .subscribe({
         next: (loading) => (this.loadingReport = loading),
       });
@@ -117,18 +108,20 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
 
   searchDataReport(startDate: Date, endDate: Date) {
     this.store.dispatch(
-      OrderDetailsStoreActions.findCustomReport({
+      OrderDetailsStoreActions.findResumeReport({
         payload: { startDate, endDate },
       }),
     );
   }
 
   getDataReport() {
-    this.store.select(OrderDetailsStoreSelectors.selectDataReport).subscribe({
-      next: (data) => {
-        this.manufactureReports = data;
-      },
-    });
+    this.store
+      .select(OrderDetailsStoreSelectors.selectDataResumeReport)
+      .subscribe({
+        next: (data) => {
+          this.manufactureReports = data;
+        },
+      });
   }
   parseFieldInData(data: any, field: string) {
     const value = field.split('.').reduce((acc: any, obj: any) => {
