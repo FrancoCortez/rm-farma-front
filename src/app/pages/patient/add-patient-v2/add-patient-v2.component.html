@@ -1,37 +1,42 @@
 <div class="card">
   <h5>Información Paciente</h5>
-  <form [formGroup]="patientForm" >
+  <form [formGroup]="patientForm">
     <div class="flex flex-column">
       <div class="justify-content-center align-items-center font-medium">
         <div class="flex justify-content-left mt-3 mr-3">
-          <button (click)="resetForm()"  class="p-button-primary" icon="pi pi-check" label="Vaciar" pButton pRipple></button>
+          <button (click)="clear()" type="button" class="p-button-primary" icon="pi pi-check" label="Vaciar" pButton
+                  pRipple></button>
         </div>
         <div class="grid p-fluid mt-3">
           <div class="field col-12 md:col-12 ">
             <label>Seleccionar 1 tipo de Documento</label>
             <div class="grid formgrid ml-3 mt-2">
               <div class="field-radiobutton">
-                <p-radioButton name="type" value="RUT" id="RUT_TYPE" formControlName="type" (onClick)="onTypeChange($event)"></p-radioButton>
+                <p-radioButton name="type" value="RUT" id="RUT_TYPE" formControlName="type"
+                               (onClick)="onTypeChange($event)"></p-radioButton>
                 <label for="RUT">Rut</label>
               </div>
               <div class="field-radiobutton ml-3">
-                <p-radioButton name="type" value="PASSPORT" id="PASSPORT" formControlName="type"  (onClick)="onTypeChange($event)"></p-radioButton>
+                <p-radioButton name="type" value="PASSPORT" id="PASSPORT" formControlName="type"
+                               (onClick)="onTypeChange($event)"></p-radioButton>
                 <label for="PASSPORT">Pasaporte</label>
               </div>
               <div class="field-radiobutton ml-3">
-                <p-radioButton name="type" value="CLINICAL_TRIAL" id="CLINICAL_TRIAL" formControlName="type" (onClick)="onTypeChange($event)"></p-radioButton>
+                <p-radioButton name="type" value="CLINICAL_TRIAL" id="CLINICAL_TRIAL" formControlName="type"
+                               (onClick)="onTypeChange($event)"></p-radioButton>
                 <label for="CLINICAL_TRIAL">Ensayo Clínico</label>
               </div>
               <div class="field-radiobutton ml-3">
-                <p-radioButton name="type" value="OTHER" id="OTHER" formControlName="type" (onClick)="onTypeChange($event)"></p-radioButton>
+                <p-radioButton name="type" value="OTHER" id="OTHER" formControlName="type"
+                               (onClick)="onTypeChange($event)"></p-radioButton>
                 <label for="OTHER">Otro</label>
               </div>
             </div>
           </div>
-
           <div *ngIf="typeIdentification === 'RUT'" class="field col-12 md:col-4">
           <span class="p-float-label">
-            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" appRutFormatter autocomplete="off" autofocus formControlName="rut"
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" appRutFormatter
+                   autocomplete="off" autofocus formControlName="rut"
                    id="rut" pInputText type="text">
             <label for="rut">Rut *</label>
           </span>
@@ -42,7 +47,8 @@
           </div>
           <div *ngIf="typeIdentification === 'PASSPORT'" class="field col-12 md:col-4">
           <span class="p-float-label">
-            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus formControlName="rut"
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus
+                   formControlName="rut"
                    id="passport_input" pInputText type="text">
             <label for="passport_input">Pasaporte *</label>
           </span>
@@ -51,7 +57,8 @@
           </div>
           <div *ngIf="typeIdentification === 'CLINICAL_TRIAL'" class="field col-12 md:col-4">
           <span class="p-float-label">
-            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus formControlName="rut"
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus
+                   formControlName="rut"
                    id="clinical_tria_input" pInputText type="text">
             <label for="clinical_tria_input">N° Paciente *</label>
           </span>
@@ -60,7 +67,8 @@
           </div>
           <div *ngIf="typeIdentification === 'OTHER'" class="field col-12 md:col-4">
           <span class="p-float-label">
-            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus formControlName="rut"
+            <input (blur)="onRutBlur()" [appFormControlStatus]="patientForm.get('rut')" autocomplete="off" autofocus
+                   formControlName="rut"
                    id="other_input" pInputText type="text">
             <label for="other_input">Otro Documento *</label>
           </span>
@@ -70,7 +78,8 @@
 
           <div class="field col-12 md:col-4">
           <span class="p-float-label">
-            <input [appFormControlStatus]="patientForm.get('identification')" appRutFormatter autocomplete="off" autofocus formControlName="identification" id="identification"
+            <input [appFormControlStatus]="patientForm.get('identification')" appRutFormatter autocomplete="off"
+                   autofocus formControlName="identification" id="identification"
                    pInputText type="text">
             <label for="identification">Identificación</label>
           </span>
@@ -84,7 +93,8 @@
               <p-dropdown [appFormControlStatus]="patientForm.get('isapre')" [filter]="true"
                           [options]="isapreCombo"
                           appendTo="body" dataKey="code"
-                          emptyFilterMessage="No se encontro isapres" emptyMessage="No existen Isapres en Sistema" filterBy="name" formControlName="isapre"
+                          emptyFilterMessage="No se encontro isapres" emptyMessage="No existen Isapres en Sistema"
+                          filterBy="name" formControlName="isapre"
                           id="isapreCombo" optionLabel="name"
                           placeholder="Seleccione Isapre"></p-dropdown>
               <label for="isapreCombo">Isapre</label>
@@ -96,7 +106,8 @@
 
           <div class="field col-12 md:col-4">
             <span class="p-float-label">
-              <input [appFormControlStatus]="patientForm.get('name')" autocomplete="off" formControlName="name" id="name" pInputText
+              <input [appFormControlStatus]="patientForm.get('name')" autocomplete="off" formControlName="name"
+                     id="name" pInputText
                      type="text">
               <label for="name">Nombre *</label>
             </span>
@@ -117,7 +128,8 @@
           </div>
 
           <div formArrayName="diagnosis" style="width: 97%">
-            <div class="grid p-fluid mt-3 ml-3 mr-3 col-12 card" *ngFor="let diagnosis of diagnosis.controls; let i=index" [formGroupName]="i">
+            <div class="grid p-fluid mt-3 ml-3 mr-3 col-12 card"
+                 *ngFor="let diagnosis of diagnosis.controls; let i=index" [formGroupName]="i">
               <div class="field col-12 md:col-4">
                 <span class="p-float-label">
                   <p-dropdown [appFormControlStatus]="diagnosis.get('diagnosis')" [filter]="true"
@@ -125,7 +137,9 @@
                               [virtualScroll]="true"
                               [virtualScrollItemSize]="38"
                               appendTo="body" dataKey="code"
-                              emptyFilterMessage="No se encontraron Diagnosticos" emptyMessage="No existen Diagnosticos en Sistema" filterBy="name" formControlName="diagnosis"
+                              emptyFilterMessage="No se encontraron Diagnosticos"
+                              emptyMessage="No existen Diagnosticos en Sistema" filterBy="name"
+                              formControlName="diagnosis"
                               id="diagnosis" optionLabel="name"
                               placeholder="Seleccione Dignóstico"></p-dropdown>
                   <label for="diagnosis">Diagnóstico</label>
@@ -136,7 +150,8 @@
               </div>
               <div class="field col-12 md:col-4">
                 <span class="p-float-label">
-                  <p-inputNumber [appFormControlStatus]="diagnosis.get('cycleNumber')" autocomplete="off" formControlName="cycleNumber"
+                  <p-inputNumber [appFormControlStatus]="diagnosis.get('cycleNumber')" autocomplete="off"
+                                 formControlName="cycleNumber"
                                  id="cycleNumber"></p-inputNumber>
                   <label for="cycleNumber">N° Ciclo</label>
                 </span>
@@ -146,7 +161,8 @@
               </div>
               <div class="field col-12 md:col-4">
                 <span class="p-float-label">
-                  <p-inputNumber [appFormControlStatus]="diagnosis.get('cycleDay')" autocomplete="off" formControlName="cycleDay"
+                  <p-inputNumber [appFormControlStatus]="diagnosis.get('cycleDay')" autocomplete="off"
+                                 formControlName="cycleDay"
                                  id="cycleDay"></p-inputNumber>
                   <label for="cycleDay">N° Dia</label>
                 </span>
@@ -161,7 +177,8 @@
                               [virtualScroll]="true"
                               [virtualScrollItemSize]="38"
                               appendTo="body"
-                              emptyFilterMessage="No se encontraron Médicos" emptyMessage="No existen Médicos en Sistema" filterBy="name" formControlName="doctor"
+                              emptyFilterMessage="No se encontraron Médicos"
+                              emptyMessage="No existen Médicos en Sistema" filterBy="name" formControlName="doctor"
                               id="doctor" optionLabel="name"
                               placeholder="Seleccione el Médico"></p-dropdown>
                   <label for="doctor">Médico</label>
@@ -178,7 +195,8 @@
                                 [virtualScroll]="true"
                                 [virtualScrollItemSize]="38"
                                 appendTo="body" dataKey="code"
-                                emptyFilterMessage="No se encontraron Esquemas" emptyMessage="No existen Esquemas en Sistema" filterBy="name" formControlName="schema"
+                                emptyFilterMessage="No se encontraron Esquemas"
+                                emptyMessage="No existen Esquemas en Sistema" filterBy="name" formControlName="schema"
                                 id="schema" optionLabel="name"
                                 placeholder="Seleccione Esquema"></p-dropdown>
                     <label for="schema">Esquemas</label>
@@ -194,7 +212,8 @@
                               appendTo="body" dataKey="code"
                               [virtualScroll]="true"
                               [virtualScrollItemSize]="38"
-                              emptyFilterMessage="No se encontraron Servicios" emptyMessage="No existen Isapres en Sistema" filterBy="name" formControlName="services"
+                              emptyFilterMessage="No se encontraron Servicios"
+                              emptyMessage="No existen Isapres en Sistema" filterBy="name" formControlName="services"
                               id="services" optionLabel="name"
                               placeholder="Seleccione El servicio"></p-dropdown>
                   <label for="services">Servicios</label>
@@ -210,7 +229,9 @@
                               appendTo="body" dataKey="code"
                               [virtualScroll]="true"
                               [virtualScrollItemSize]="38"
-                              emptyFilterMessage="No se encontro unidad hispitalaria" emptyMessage="No existen unidades hospitalarias en Sistema" filterBy="name" formControlName="hospitalUnit"
+                              emptyFilterMessage="No se encontro unidad hispitalaria"
+                              emptyMessage="No existen unidades hospitalarias en Sistema" filterBy="name"
+                              formControlName="hospitalUnit"
                               id="hospitalUnit" optionLabel="name"
                               placeholder="Seleccione Unidad Hospitalaria"></p-dropdown>
                   <label for="hospitalUnit">Unidad Hospitalaria</label>
@@ -220,26 +241,28 @@
                                               [message]="'El diagnóstico es obligatorio'"></app-form-validation-messages>
               </div>
               <div *ngIf="diagnosis?.value?.id == ''" class="filed col-12 md:col-3">
-                <p-button  (click)="removeDiagnosis(i)" label="Eliminar Diagnóstico" [raised]="true" severity="danger" />
+                <p-button (click)="removeDiagnosis(i)" label="Eliminar Diagnóstico" [raised]="true" severity="danger"/>
               </div>
             </div>
           </div>
           <div class="filed col-12 md:col-12">
             <div>
-              <p-button icon="pi pi-plus" (click)="addDiagnosis()" [rounded]="true"  [raised]="true" severity="primary" />
+              <p-button icon="pi pi-plus" (click)="addDiagnosis()" [rounded]="true" [raised]="true" severity="primary"/>
             </div>
           </div>
         </div>
       </div>
     </div>
+    {{ patientForm.invalid }}
     <div class="flex justify-content-center mt-3 mr-3">
-      <button (click)="savePatient()" [disabled]="patientForm.invalid" class="p-button-primary" icon="pi pi-check" label="Agregar" pButton pRipple></button>
-
+      <button (click)="savePatient()" [disabled]="patientForm.invalid" class="p-button-primary" icon="pi pi-check"
+              label="Agregar" pButton pRipple></button>
     </div>
   </form>
 </div>
 
-<app-spinner *ngIf="isLoading && diagnosisCombo.length == 0 && doctorCombo.length == 0"></app-spinner>
+<!--<app-spinner *ngIf="isLoading && diagnosisCombo.length == 0 && doctorCombo.length == 0"></app-spinner>-->
+<app-spinner *ngIf="isLoading"></app-spinner>
 <app-modal-error [display]="displayError" [message]="messageError"></app-modal-error>
 <app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
                    [message]="'Se a creado o actualizado el paciente con éxito'"></app-modal-success>

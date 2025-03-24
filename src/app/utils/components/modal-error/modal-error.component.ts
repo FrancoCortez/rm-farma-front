@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
@@ -11,4 +11,9 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 export class ModalErrorComponent {
   @Input() display!: boolean;
   @Input() message?: string;
+  @Output() confirm: EventEmitter<boolean> = new EventEmitter();
+
+  confirmation() {
+    this.confirm.emit(false);
+  }
 }

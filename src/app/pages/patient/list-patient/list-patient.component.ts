@@ -99,6 +99,8 @@ export class ListPatientComponent implements OnInit {
   }
 
   searchPatient(patient: PatientResourceDto) {
-    this.router.navigate(['/main/patient/add-patient', patient.identification]);
+    this.router.navigate(['/main/patient/add-patient'], {
+      queryParams: { identification: patient.identification },
+    });
   }
 }

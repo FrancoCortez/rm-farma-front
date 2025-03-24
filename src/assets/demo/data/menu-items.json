@@ -29,7 +29,7 @@
             "label": "Registrar Paciente",
             "icon": "pi pi-plus",
             "routerLink": [
-              "/main/patient/add-patient/0"
+              "/main/patient/add-patient"
             ]
           }
         ]

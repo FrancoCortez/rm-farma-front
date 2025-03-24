@@ -19,6 +19,11 @@ export const selectError = createSelector(
   (state: State) => state.error,
 );
 
+// export const selectPatient = createSelector(selector, (state: State) => {
+//   const patient = state.patient || {};
+//   return patient && Object.keys(patient).length > 0 ? patient : {};
+// });
+
 export const selectPatient = createSelector(
   selector,
   (state: State) => state.patient,

@@ -1,4 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { PatientResourceDto } from '../../../../model/patient/patient-resource.dto';
 import { JsonPipe, NgForOf, NgIf } from '@angular/common';
@@ -27,6 +34,8 @@ import {
   DiagnosisOrderStoreSelectors,
 } from '../../../../root-store/diagnosis-order-store';
 import { ModalSuccessComponent } from '../../../../utils/components/modal-success/modal-success.component';
+import { DiagnosisOrderStateService } from '../../../../services/diagnosis-order-state.service';
+import { SpinnerComponent } from '../../../../utils/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-detail-patient',
@@ -47,11 +56,13 @@ import { ModalSuccessComponent } from '../../../../utils/components/modal-succes
     DiagnosisOrderStoreModule,
     ModalSuccessComponent,
     NgIf,
+    SpinnerComponent,
   ],
   templateUrl: './detail-patient.component.html',
 })
 export class DetailPatientComponent implements OnInit, OnDestroy {
   @Input() patientSearch!: PatientResourceDto;
+  @Output() confirmEvent = new EventEmitter<boolean>();
   checkVisibility = false;
   checkPatientForm!: FormGroup;
   detailsPatientCheck!: DiagnosisPatientResourceDto;
@@ -60,10 +71,12 @@ export class DetailPatientComponent implements OnInit, OnDestroy {
   messageError = '';
   displayOk = false;
   messageOk = '';
+  loadingPatient = false;
 
   constructor(
     private fb: FormBuilder,
     private readonly store: Store<RootStoreState.RootState>,
+    private diagnosisOrderStateService: DiagnosisOrderStateService,
   ) {}
 
   initCheckPatientForm(cycleNumber?: number, cycleDay?: number) {
@@ -76,10 +89,7 @@ export class DetailPatientComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {}
 
-  ngOnInit(): void {
-    this.selectCreateSuccessFlag();
-    // this.patientSearch.diagnosisPatient = this.patientSearch.diag.filter(f => f. )
-  }
+  ngOnInit(): void {}
 
   openClickDialogCheck(detailPatient: DiagnosisPatientResourceDto) {
     this.checkVisibility = true;
@@ -95,17 +105,6 @@ export class DetailPatientComponent implements OnInit, OnDestroy {
   }
 
   saveCheckInitProcess() {
-    // const cycleNumber = this.checkPatientForm.get('cycleNumber')?.value;
-    // const cycleDay = this.checkPatientForm.get('cycleDay')?.value;
-    // if (
-    //   this.detailsPatientCheck.cycleDay === cycleDay &&
-    //   this.detailsPatientCheck.cycleNumber === cycleNumber
-    // ) {
-    //   this.messageError =
-    //     'No se han realizado cambios, Debe cambiar los ciclos actuales por la siguiente etapa';
-    //   this.displayError = true;
-    //   return;
-    // }
     this.diagnosisOrderStateFormResourceDto =
       this.checkPatientForm.getRawValue();
     this.diagnosisOrderStateFormResourceDto.patientIdentification =
@@ -113,33 +112,33 @@ export class DetailPatientComponent implements OnInit, OnDestroy {
     this.diagnosisOrderStateFormResourceDto.diagnosisPatient =
       this.detailsPatientCheck.id;
     this.diagnosisOrderStateFormResourceDto.patient = this.patientSearch.id;
-    this.store.dispatch(
-      DiagnosisOrderStoreActions.createDiagnosisOrder({
-        payload: this.diagnosisOrderStateFormResourceDto,
-      }),
-    );
-  }
-
-  selectCreateSuccessFlag() {
-    this.store
-      .select(DiagnosisOrderStoreSelectors.selectCreateSuccessFlag)
+    this.diagnosisOrderStateService
+      .createDiagnosisOrder(this.diagnosisOrderStateFormResourceDto)
       .subscribe({
         next: (value) => {
-          if (value) {
-            this.checkVisibility = false;
-            this.messageOk = 'Se ha realizado el check de paciento con éxito';
-            this.displayOk = true;
-          }
+          this.loadingPatient = true;
+          this.checkVisibility = false;
+          this.messageOk = 'Se ha realizado el check de paciento con éxito';
+          this.displayOk = true;
+        },
+        error: (error) => {
+          this.messageError = 'Error al realizar el check de paciente';
+          this.displayError = true;
+        },
+        complete: () => {
+          this.loadingPatient = false;
         },
       });
   }
 
   confirmDialog($event: boolean) {
     this.displayOk = $event;
-    this.store.dispatch(
-      DiagnosisOrderStoreActions.setStatusCreateDiagnosisOrder({
-        payload: false,
-      }),
-    );
+    this.messageOk = '';
+    this.confirmEvent.emit(true);
+  }
+
+  confirmDialogError($event: boolean) {
+    this.displayError = $event;
+    this.messageError = '';
   }
 }

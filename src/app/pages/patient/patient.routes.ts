@@ -10,7 +10,7 @@ export const patientRoutes: Routes = [
     component: PatientComponent,
     children: [
       // { path: 'add-patient/:identification', component: AddPatientComponent },
-      { path: 'add-patient/:identification', component: AddPatientV2Component },
+      { path: 'add-patient', component: AddPatientV2Component },
       { path: 'list-patient', component: ListPatientComponent },
       { path: '**', redirectTo: 'list-patient', pathMatch: 'full' },
     ],

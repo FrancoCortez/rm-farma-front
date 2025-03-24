@@ -68,6 +68,10 @@ import {
 } from '../../../root-store/order-details-store';
 import { SpinnerComponent } from '../../../utils/components/spinner/spinner.component';
 import { ModalSuccessComponent } from '../../../utils/components/modal-success/modal-success.component';
+import { MasterOrderService } from '../../../services/master-order.service';
+import { OrderDetailsService } from '../../../services/order-details.service';
+import { ModalErrorComponent } from '../../../utils/components/modal-error/modal-error.component';
+import { minLengthArray } from '../../../utils/form-validation/array-validator.form';
 
 @Component({
   selector: 'app-list-manufacture',
@@ -98,6 +102,7 @@ import { ModalSuccessComponent } from '../../../utils/components/modal-success/m
     NgIf,
     SpinnerComponent,
     ModalSuccessComponent,
+    ModalErrorComponent,
   ],
   providers: [PrimeNGConfig],
   templateUrl: './list-manufacture.component.html',
@@ -143,6 +148,8 @@ export class ListManufactureComponent
   };
   private masterRecordPath = '';
   isLoadingUpdate = false;
+  displayError = false;
+  messageError = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -152,29 +159,12 @@ export class ListManufactureComponent
     private primengConfig: PrimeNGConfig,
     private cdr: ChangeDetectorRef,
     private zebraPrintService: ZebraPrintService,
+    private masterOrderService: MasterOrderService,
+    private orderDetailService: OrderDetailsService,
   ) {}
 
   ngAfterViewInit() {
     this.primengConfig.ripple = true;
-  }
-
-  isLoadingUpdateState() {
-    this.store
-      .select(OrderDetailsStoreSelectors.selectLoadingUpdate)
-      .subscribe({
-        next: (value) => {
-          this.isLoadingUpdate = value;
-        },
-      });
-    this.store
-      .select(OrderDetailsStoreSelectors.selectUpdatedSuccessModel)
-      .subscribe({
-        next: (value) => {
-          this.displayOk = value;
-          this.orderDetailDialog = false;
-          this.prepareDialogDetail = false;
-        },
-      });
   }
 
   initFormOrderDetails(commercialPartsData: any[] = []) {
@@ -196,10 +186,10 @@ export class ListManufactureComponent
       complement: ['', Validators.required],
       volTotal: [null, Validators.required],
       prot: ['Si', Validators.required],
+      administrationTime: [null, Validators.required],
       condition: [''],
       observation: [''],
-      administrationTime: [null, Validators.required],
-      commercialPart: this.fb.array([]),
+      commercialPart: this.fb.array([], minLengthArray(1)),
     });
 
     commercialPartsData.forEach((data) => {
@@ -209,9 +199,9 @@ export class ListManufactureComponent
 
   createCommercialPart(data: any = {}): FormGroup {
     return this.fb.group({
-      commercial: [data.commercial || ''],
-      batch: [data.batch || ''],
-      part: [data.part || ''],
+      commercial: [data.commercial || '', Validators.required],
+      batch: [data.batch || '', Validators.required],
+      part: [data.part || '', Validators.required],
     });
   }
 
@@ -247,7 +237,6 @@ export class ListManufactureComponent
   }
 
   ngOnInit(): void {
-    this.isLoadingUpdateState();
     if (!this.searchDay) {
       this.searchDay = new Date();
       this.updateFilters();
@@ -259,44 +248,19 @@ export class ListManufactureComponent
     this._selectedColumns = this.cols;
     this.loadMasterOrders();
     this.initCombo();
-    this.selectedSuccessMaster();
-  }
-
-  selectedSuccessMaster() {
-    this.store
-      .select(MasterOrderStoreSelectors.successCreateOrUpdate)
-      .subscribe({
-        next: (masterOrders) => {
-          if (masterOrders) {
-            this.loadMasterOrders();
-            this.prepareDialogDetail = false;
-            this.orderDetailDialog = false;
-            this.orderDetailForm.reset();
-            this.masterOrderForm = [];
-            this.store.dispatch(
-              MasterOrderStoreActions.selectSuccessCreateOrUpdateChange({
-                payload: false,
-              }),
-            );
-          }
-        },
-      });
   }
 
   loadMasterOrders() {
-    this.store.dispatch(
-      MasterOrderStoreActions.loadMasterOrder({
-        payload: {
-          searchDay: this.searchDay,
-          searchIdentification: this.searchIdentification,
-        },
-      }),
-    );
-    this.masterOrdersSubscription$ = this.store
-      .select(MasterOrderStoreSelectors.selectMasterOrders)
+    this.masterOrderService
+      .findAllMasterOrders(this.searchDay, this.searchIdentification)
       .subscribe({
-        next: (masterOrders) => {
-          this.masterOrders = this.groupByPatientIdentification(masterOrders);
+        next: (value) => {
+          this.isLoadingUpdate = true;
+          this.masterOrders = this.groupByPatientIdentification(value);
+        },
+        error: (err) => {},
+        complete: () => {
+          this.isLoadingUpdate = false;
         },
       });
     this.updateFilters();
@@ -569,11 +533,23 @@ export class ListManufactureComponent
         ),
       },
     };
-    this.store.dispatch(
-      OrderDetailsStoreActions.updatedDetailsProduction({
-        payload: patchFormula,
-      }),
-    );
+    this.orderDetailService.updateDetail(patchFormula).subscribe({
+      next: (value) => {
+        this.isLoadingUpdate = true;
+        this.prepareDialogDetail = false;
+        this.orderDetailDialog = false;
+        this.orderDetailForm.reset();
+        this.masterOrderForm = [];
+        this.displayOk = true;
+      },
+      error: (err) => {
+        this.messageError = 'No se logró actualizar la fórmula';
+        this.displayError = true;
+      },
+      complete: () => {
+        this.isLoadingUpdate = false;
+      },
+    });
   }
 
   createFormula() {
@@ -605,11 +581,23 @@ export class ListManufactureComponent
       },
     };
     this.masterOrderForm.push(masterOrder);
-    this.store.dispatch(
-      MasterOrderStoreActions.createMasterOrder({
-        payload: this.masterOrderForm,
-      }),
-    );
+    this.masterOrderService.createMasterOrder(this.masterOrderForm).subscribe({
+      next: (value) => {
+        this.isLoadingUpdate = true;
+        this.prepareDialogDetail = false;
+        this.orderDetailDialog = false;
+        this.orderDetailForm.reset();
+        this.masterOrderForm = [];
+        this.displayOk = true;
+      },
+      error: (err) => {
+        this.messageError = 'No se logro crear la fórmula';
+        this.displayError = true;
+      },
+      complete: () => {
+        this.isLoadingUpdate = false;
+      },
+    });
   }
 
   detailProduct(detail: any, master: any) {
@@ -754,7 +742,7 @@ export class ListManufactureComponent
 ^FO360,590^FDHora Vencim.: ^FS
 ^FO530,590^FD${this.formatDateTimeSeparated(detail.orderDetails[i].expirationDate).formattedTime}^FS
 ^FO20,620^FDLaborat:^FS
-^FO120,620^FD${detail.orderDetails[i].commercialOrderDetails[0].laboratory}^FS
+^FO120,620^FD${detail.orderDetails[i].commercialOrderDetails[0]?.laboratory || 'N/A'}^FS
 ^FO550,620^FDLote:^FS
 ^FO610,620^FD${detail.orderDetails[i].commercialOrderDetails
       .map((part: any) => part.batch)
@@ -826,5 +814,9 @@ export class ListManufactureComponent
   confirmDialog($event: boolean) {
     this.displayOk = $event;
     this.loadMasterOrders();
+  }
+
+  confirmDialogError($event: boolean) {
+    this.displayError = false;
   }
 }

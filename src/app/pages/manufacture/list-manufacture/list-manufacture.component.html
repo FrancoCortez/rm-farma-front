@@ -316,9 +316,10 @@
                            type="text">
                     <label for="batch">Lote</label>
                   </span>
-                  <app-form-validation-messages [control]="orderDetailForm.get('batch')"
+                  <app-form-validation-messages [control]="commercialPart.get('batch')"
                                                 [errorType]="'required'"
                                                 [message]="'El Lote es obligatorio'"></app-form-validation-messages>
+
                 </div>
                 <div class="field col-12 md:col-3">
                   <span class="p-float-label">
@@ -361,7 +362,7 @@
   <ng-template pTemplate="footer">
     <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
             pRipple></button>
-    <button (click)="saveFormula()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
+    <button [disabled]="orderDetailForm.invalid || commercialPart.invalid" (click)="saveFormula()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
   </ng-template>
 </p-dialog>
 
@@ -402,4 +403,6 @@
 <app-spinner *ngIf="isLoadingUpdate"></app-spinner>
 <app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
                    [message]="'Se han creado los preparados con éxito'"></app-modal-success>
+<app-modal-error (confirm)="confirmDialogError($event)" [display]="displayError"
+                   [message]="messageError"></app-modal-error>
 

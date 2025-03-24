@@ -35,9 +35,9 @@ export const findByIdentificationPatient = createEffect(
           mergeMap((patient: PatientResourceDto) => {
             return [
               actions.findByIdentificationPatientSuccess({ payload: patient }),
-              patientFormActions.setDiagnosticCount({
-                payload: patient?.diagnosisPatient?.length,
-              }),
+              // patientFormActions.setDiagnosticCount({
+              //   payload: patient?.diagnosisPatient?.length,
+              // }),
             ];
           }),
           catchError((errors) =>
@@ -45,7 +45,7 @@ export const findByIdentificationPatient = createEffect(
               actions.findByIdentificationPatientFailure({
                 error: undefined,
               }),
-              patientFormActions.resetAllInitialState(),
+              actions.resetState(),
             ),
           ),
         ),

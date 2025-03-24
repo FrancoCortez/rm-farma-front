@@ -35,7 +35,7 @@ import { filter, map } from 'rxjs';
 import { ComboModelDto } from '../../../utils/models/combo-model.dto';
 import { FormValidationMessagesComponent } from '../../../utils/components/form-validation-messages/form-validation-messages.component';
 import { InputTextModule } from 'primeng/inputtext';
-import { JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { RutFormatterDirective } from '../../../utils/directives/rut-formatter.directive';
 import { FormControlStatusDirective } from '../../../utils/directives/form-control-status.directive';
 import { DropdownModule } from 'primeng/dropdown';
@@ -65,6 +65,7 @@ import { PatientFormResourceDto } from '../../../model/patient/patient-form-reso
 import { PatientResourceDto } from '../../../model/patient/patient-resource.dto';
 import { DiagnosisPatientResourceDto } from '../../../model/diagnosis-patient/diagnosis-patient-resource.dto';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PatientService } from '../../../services/patient.service';
 
 @Component({
   selector: 'app-add-patient-v2',
@@ -121,9 +122,11 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private ngZone: NgZone,
     private router: Router,
+    private patientService: PatientService,
   ) {}
+
   ngOnDestroy(): void {
-    this.store.dispatch(PatientStoreActions.resetState());
+    // this.store.dispatch(PatientStoreActions.resetState());
   }
 
   ngOnInit(): void {
@@ -131,43 +134,65 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
     this.initFormPatient();
     this.initialForList();
     this.dynamicValidation();
-    this.initPatientForUrl();
-    this.isLoadingOperation();
-    this.isLoader();
-  }
+    // Subscribe to valueChanges to monitor changes in form values
+    this.patientForm.valueChanges.subscribe((value) => {
+      // console.log('Form value changed:', value);
+    });
 
-  isLoadingOperation() {
-    this.store.select(PatientStoreSelectors.selectLoading).subscribe({
-      next: (loading) => (this.isLoading = loading),
+    // Subscribe to statusChanges to monitor changes in form validation status
+    this.patientForm.statusChanges.subscribe((status) => {
+      // console.log('Form status changed:', status);
     });
   }
 
-  isLoader() {
-    this.store
-      .select(PatientStoreSelectors.selectSuccessCreateOrUpdate)
-      .subscribe({
-        next: (value) => {
-          console.log(value);
-          this.displayOk = value || false;
-        },
-      });
+  // isLoadingOperation() {
+  //   this.store.select(PatientStoreSelectors.selectLoading).subscribe({
+  //     next: (loading) => (this.isLoading = loading),
+  //   });
+  // }
+
+  // isLoader() {
+  //   this.store
+  //     .select(PatientStoreSelectors.selectSuccessCreateOrUpdate)
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.displayOk = value || false;
+  //       },
+  //     });
+  // }
+
+  findPatientByIdentification(identification: string) {
+    this.patientService.findByIdentificationPatent(identification).subscribe({
+      next: (patient) => {
+        this.isLoading = true;
+        this.patient = patient;
+        this.resetForm();
+        this.addDiagnosisData(this.mapDiagnosisDataLoadingPatient(patient));
+        this.patientForm.patchValue(this.patient);
+      },
+      error: (error) => {
+        this.resetForm();
+        this.diagnosis.push(this.createDiagnosis());
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
+    });
   }
 
   initialForList() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.queryParams.subscribe((params) => {
       this.ngZone.run(() => {
-        const param = params.get('identification');
+        const param = params['identification'] || '0';
         if (param && param !== '0') {
-          this.store.dispatch(
-            PatientStoreActions.findByIdentificationPatient({ payload: param }),
-          );
-          this.cdr.detectChanges();
+          this.findPatientByIdentification(param);
+          // this.cdr.detectChanges();
         }
       });
     });
   }
 
-  initFormPatient(diagnosisData: DiagnosisPatientResourceDto[] = []) {
+  initFormPatient() {
     this.patientForm = this.fb.group({
       rut: ['', [Validators.required, rutValidator()]],
       type: ['RUT', [Validators.required]],
@@ -177,44 +202,36 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
       isapre: [''],
       diagnosis: this.fb.array([]),
     });
+  }
+
+  addDiagnosisData(diagnosisData: DiagnosisPatientResourceDto[] = []) {
     diagnosisData.forEach((data) => {
       this.diagnosis.push(this.createDiagnosis(data));
     });
-    if (diagnosisData.length === 0) {
-      this.diagnosis.push(this.createDiagnosis());
-    }
-    this.cdr.detectChanges();
+    // if (
+    //   diagnosisData.length === 0 ||
+    //   this.patient.diagnosisPatient?.length === 0
+    // ) {
+    //   this.diagnosis.push(this.createDiagnosis());
+    // }
   }
 
-  initPatientForUrl() {
-    this.store.select(PatientStoreSelectors.selectPatient).subscribe({
-      next: (patient) => {
-        if (patient && Object.keys(patient).length > 0) {
-          this.patient = patient;
-          const diagnosis = patient?.diagnosisPatient?.map((part) => {
-            return {
-              id: part.id,
-              diagnosis: this.diagnosisCombo.find(
-                (d) => d.code === part.diagnosis?.code,
-              ),
-              cycleNumber: part.cycleNumber,
-              cycleDay: part.cycleDay,
-              doctor: this.doctorCombo.find((d) => d.code === part.doctor?.id),
-              schema: this.schemaCombo.find(
-                (d) => d.code === part.schema?.code,
-              ),
-              services: this.serviceCombo.find(
-                (d) => d.code === part.services?.code,
-              ),
-              hospitalUnit: this.hospitalUnitCombo.find(
-                (d) => d.code === part.hospitalUnit?.code,
-              ),
-            };
-          });
-          this.initFormPatient(diagnosis);
-          this.patientForm.patchValue(this.patient);
-        }
-      },
+  mapDiagnosisDataLoadingPatient(patient: PatientResourceDto) {
+    return patient?.diagnosisPatient?.map((part) => {
+      return {
+        id: part.id,
+        diagnosis: this.diagnosisCombo.find(
+          (d) => d.code === part.diagnosis?.code,
+        ),
+        cycleNumber: part.cycleNumber,
+        cycleDay: part.cycleDay,
+        doctor: this.doctorCombo.find((d) => d.code === part.doctor?.id),
+        schema: this.schemaCombo.find((d) => d.code === part.schema?.code),
+        services: this.serviceCombo.find((d) => d.code === part.services?.code),
+        hospitalUnit: this.hospitalUnitCombo.find(
+          (d) => d.code === part.hospitalUnit?.code,
+        ),
+      };
     });
   }
 
@@ -246,6 +263,8 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
 
   onTypeChange($event: any) {
     this.typeIdentification = $event.value;
+    this.clear();
+    this.diagnosis.push(this.createDiagnosis());
   }
 
   dynamicValidation() {
@@ -336,21 +355,13 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
     if (rutControl?.value) {
       const rawValue = rutControl.value.replace(/\./g, '').replace('-', '');
       this.patientForm.get('identification')?.setValue(rawValue);
-      this.store.dispatch(
-        PatientStoreActions.findByIdentificationPatient({ payload: rawValue }),
-      );
+      this.findPatientByIdentification(rawValue);
     }
   }
 
   confirmDialog($event: boolean) {
     this.displayOk = $event;
-    this.patientForm.reset();
-    this.initFormPatient();
-    this.store.dispatch(
-      PatientStoreActions.selectSuccessCreateOrUpdateChange({
-        payload: false,
-      }),
-    );
+    this.clear();
   }
 
   addDiagnosis() {
@@ -372,7 +383,7 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
       identification: formValue.identification,
       name: formValue.name,
       lastName: formValue.lastName,
-      isapre: formValue.isapre.code,
+      isapre: formValue?.isapre?.code,
       diagnosisPatient: formValue.diagnosis.map((c: any) => ({
         id: c.id,
         diagnosis: c.diagnosis?.code,
@@ -384,18 +395,65 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
         hospitalUnit: c.hospitalUnit?.code,
       })),
     };
-    this.store.dispatch(
-      PatientStoreActions.createPatient({ payload: sendDataValue }),
-    );
+    this.patientService.createPatient(sendDataValue).subscribe({
+      next: (patient) => {
+        this.isLoading = true;
+        this.displayOk = true;
+        this.clear();
+      },
+      error: (err) => {
+        this.messageError = err.error.message;
+        this.displayError = true;
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
+  resetFormExcept(fieldsToKeep: string[]) {
+    const fieldValues: { [key: string]: any } = {};
+    const fieldValidators: { [key: string]: any } = {};
+    fieldsToKeep.forEach((field) => {
+      const control = this.patientForm.get(field);
+      if (control) {
+        fieldValues[field] = control.value;
+        fieldValidators[field] = control.validator ? [control.validator] : [];
+      }
+    });
+    Object.keys(this.patientForm.controls).forEach((field) => {
+      if (!fieldsToKeep.includes(field)) {
+        this.patientForm.get(field)?.reset();
+      }
+    });
+    fieldsToKeep.forEach((field) => {
+      const control = this.patientForm.get(field);
+      if (control) {
+        control.setValue(fieldValues[field]);
+        control.setValidators(fieldValidators[field]);
+        control.updateValueAndValidity();
+      }
+    });
   }
 
   resetForm() {
+    const currentType = this.patientForm.get('type')?.value;
+    this.resetFormExcept(['rut', 'identification']);
+    this.diagnosis.clear();
+    this.diagnosis.reset();
+    this.addDiagnosisData();
+    this.patientForm.get('type')?.setValue(currentType);
+    this.patientForm.updateValueAndValidity();
+    this.cdr.detectChanges();
+  }
+
+  clear() {
+    const currentType = this.patientForm.get('type')?.value;
     this.patientForm.reset();
-    this.initFormPatient();
-    this.store.dispatch(
-      PatientStoreActions.selectSuccessCreateOrUpdateChange({
-        payload: false,
-      }),
-    );
+    this.diagnosis.clear();
+    this.diagnosis.reset();
+    this.addDiagnosisData();
+    this.patientForm.get('type')?.setValue(currentType);
+    this.cdr.detectChanges();
   }
 }
