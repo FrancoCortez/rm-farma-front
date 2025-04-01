@@ -710,8 +710,8 @@ export class ListManufactureComponent
 ^FO590,200^FD${i + 1}/${detail.orderDetails.length}^FS
 ^FO20,230^FDEsquema:^FS
 ^FO114,230^FD${detail.schemaName},^FS
-^FO320,230^FDCiclo:^FS
-^FO400,230^FD${detail.cycleNumber}^FS
+^FO420,230^FDCiclo:^FS
+^FO510,230^FD${detail.cycleNumber}^FS
 ^FO20,260^FDDiagnóstico: ^FS
 ^FO165,260^FD${detail.diagnosisName}^FS
 ^FO20,290^GB750,3,3^FS
@@ -726,7 +726,7 @@ export class ListManufactureComponent
 ^FO130,410^FD${detail.orderDetails[i].via.description} ^FS
 ^FO300,410^FDProteger Luz: ${detail.orderDetails[i].prot}^FS
 ^FO20,440^FDPrecaución: ^FS
-^FO165,440^FD${detail.orderDetails[i].condition || ''}^FS
+^FO165,440^FD${detail.orderDetails[i].condition || 'Sin Observación'}^FS
 ^FO20,470^FD${detail.orderDetails[i].observation || ''}^FS
 ^FO20,500^GB750,3,3^FS
 ^FO20,530^FDMédico Resp.: ^FS
