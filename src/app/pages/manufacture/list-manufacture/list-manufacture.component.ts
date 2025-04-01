@@ -726,8 +726,8 @@ export class ListManufactureComponent
 ^FO130,410^FD${detail.orderDetails[i].via.description} ^FS
 ^FO300,410^FDProteger Luz: ${detail.orderDetails[i].prot}^FS
 ^FO20,440^FDPrecaución: ^FS
-^FO165,440^FD${detail.orderDetails[i].condition}^FS
-^FO20,470^FD${detail.orderDetails[i].observation}^FS
+^FO165,440^FD${detail.orderDetails[i].condition || ''}^FS
+^FO20,470^FD${detail.orderDetails[i].observation || ''}^FS
 ^FO20,500^GB750,3,3^FS
 ^FO20,530^FDMédico Resp.: ^FS
 ^FO180,530^FD${detail.doctorName}^FS
