@@ -262,14 +262,22 @@
             <div class="field col-12 md:col-6 ">
               <label>Proteccion a la Luz</label>
               <div class="grid formgrid ml-3 mt-2">
-                <div class="field-radiobutton">
-                  <p-radioButton name="prot" value="Si" id="si" formControlName="prot"></p-radioButton>
-                  <label for="si">Si</label>
+                <div class="field-radiobutton col-12">
+                  <p-radioButton name="prot" value="Proteger Luz y Refrigerar" id="Proteger Luz y Refrigerar" formControlName="prot"></p-radioButton>
+                  <label for="Proteger Luz y Refrigerar">Proteger Luz y Refrigerar</label>
                 </div>
-                <div class="field-radiobutton ml-3">
-                  <p-radioButton name="prot" value="No" id="no" formControlName="prot"></p-radioButton>
-                  <label for="no">No</label>
+                <div class="field-radiobutton col-12">
+                  <p-radioButton name="prot" value="Proteger Luz, Temperatura Ambiente" id="Proteger Luz, Temperatura Ambiente" formControlName="prot"></p-radioButton>
+                  <label for="Proteger Luz, Temperatura Ambiente">Proteger Luz, Temperatura Ambiente</label>
                 </div>
+                <div class="field-radiobutton col-12">
+                  <p-radioButton name="prot" value="No Refrigerar" id="No Refrigerar" formControlName="prot"></p-radioButton>
+                  <label for="No Refrigerar">No Refrigerar</label>
+                </div>
+<!--                <div class="field-radiobutton col-12">-->
+<!--                  <p-radioButton name="prot" value="Solucion intravenosa. Proteger de la luz y refrigerar" id="Solucion intravenosa. Proteger de la luz y refrigerar" formControlName="prot"></p-radioButton>-->
+<!--                  <label for="Solucion intravenosa. Proteger de la luz y refrigerar">Solucion intravenosa. Proteger de la luz y refrigerar</label>-->
+<!--                </div>-->
               </div>
             </div>
             <div class="field col-12 md:col-6 mt-2">
@@ -282,7 +290,7 @@
                             emptyMessage="No existen Complementos en Sistema" filterBy="name"
                             formControlName="condition"
                             id="condition" optionLabel="name"
-                            placeholder="Seleccione el Complemento"></p-dropdown>
+                            placeholder="Seleccione la condición"></p-dropdown>
                 <label for="condition">Condición</label>
               </span>
               <app-form-validation-messages [control]="orderDetailForm.get('condition')"

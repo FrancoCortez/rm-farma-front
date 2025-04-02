@@ -185,7 +185,7 @@ export class ListManufactureComponent
       unitMetric: ['', Validators.required],
       complement: ['', Validators.required],
       volTotal: [null, Validators.required],
-      prot: ['Si', Validators.required],
+      prot: ['Proteger Luz y Refrigerar', Validators.required],
       administrationTime: [null, Validators.required],
       condition: [''],
       observation: [''],
@@ -724,7 +724,7 @@ export class ListManufactureComponent
 ^FO420,380^FD${detail.orderDetails[i].administrationTime}^FS
 ^FO20,410^FDVía adm.:^FS
 ^FO130,410^FD${detail.orderDetails[i].via.description} ^FS
-^FO300,410^FDProteger Luz: ${detail.orderDetails[i].prot}^FS
+^FO300,410^FD${detail.orderDetails[i].prot}^FS
 ^FO20,440^FDPrecaución: ^FS
 ^FO165,440^FD${detail.orderDetails[i].condition || 'Sin Observación'}^FS
 ^FO20,470^FD${detail.orderDetails[i].observation || ''}^FS
