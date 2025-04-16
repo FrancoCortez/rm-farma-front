@@ -105,11 +105,13 @@
                         {{ parseFieldInData(detail, cols.field) }}
                       </td>
                       <td>
-                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)" class="p-button-rounded p-button-info"
+                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)"
+                                class="p-button-rounded p-button-info"
                                 icon="pi pi-info" pButton pRipple type="button"></button>
                       </td>
                       <td>
-                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)" class="p-button-rounded p-button-info"
+                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)"
+                                class="p-button-rounded p-button-info"
                                 icon="pi pi-print" pButton pRipple type="button"></button>
                       </td>
                     </tr>
@@ -127,7 +129,8 @@
 <p-dialog *ngIf="zebraPreview" [(visible)]="zebraPreview" [style]="{width: '950px', height: '1100px'}" [modal]="true">
   <div id="canvasContainer"></div>
   <div class="flex justify-content-center">
-    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir" (click)="printEvent()" pRipple></p-button>
+    <p-button class="p-button-rounded p-button-info" icon="pi pi-print" [raised]="true" label="Imprimir"
+              (click)="openCopyDialog()" pRipple></p-button>
   </div>
 </p-dialog>
 
@@ -250,7 +253,8 @@
             </div>
             <div class="field col-12 md:col-3">
               <span class="p-float-label">
-                <input [appFormControlStatus]="orderDetailForm.get('administrationTime')" autocomplete="off" formControlName="administrationTime"
+                <input [appFormControlStatus]="orderDetailForm.get('administrationTime')" autocomplete="off"
+                       formControlName="administrationTime"
                        id="administrationTime" pInputText
                        type="text">
                 <label for="administrationTime">Tiempo de Admin</label>
@@ -263,21 +267,24 @@
               <label>Proteccion a la Luz</label>
               <div class="grid formgrid ml-3 mt-2">
                 <div class="field-radiobutton col-12">
-                  <p-radioButton name="prot" value="Proteger Luz y Refrigerar" id="Proteger Luz y Refrigerar" formControlName="prot"></p-radioButton>
+                  <p-radioButton name="prot" value="Proteger Luz y Refrigerar" id="Proteger Luz y Refrigerar"
+                                 formControlName="prot"></p-radioButton>
                   <label for="Proteger Luz y Refrigerar">Proteger Luz y Refrigerar</label>
                 </div>
                 <div class="field-radiobutton col-12">
-                  <p-radioButton name="prot" value="Proteger Luz, Temperatura Ambiente" id="Proteger Luz, Temperatura Ambiente" formControlName="prot"></p-radioButton>
+                  <p-radioButton name="prot" value="Proteger Luz, Temperatura Ambiente"
+                                 id="Proteger Luz, Temperatura Ambiente" formControlName="prot"></p-radioButton>
                   <label for="Proteger Luz, Temperatura Ambiente">Proteger Luz, Temperatura Ambiente</label>
                 </div>
                 <div class="field-radiobutton col-12">
-                  <p-radioButton name="prot" value="No Refrigerar" id="No Refrigerar" formControlName="prot"></p-radioButton>
+                  <p-radioButton name="prot" value="No Refrigerar" id="No Refrigerar"
+                                 formControlName="prot"></p-radioButton>
                   <label for="No Refrigerar">No Refrigerar</label>
                 </div>
-<!--                <div class="field-radiobutton col-12">-->
-<!--                  <p-radioButton name="prot" value="Solucion intravenosa. Proteger de la luz y refrigerar" id="Solucion intravenosa. Proteger de la luz y refrigerar" formControlName="prot"></p-radioButton>-->
-<!--                  <label for="Solucion intravenosa. Proteger de la luz y refrigerar">Solucion intravenosa. Proteger de la luz y refrigerar</label>-->
-<!--                </div>-->
+                <!--                <div class="field-radiobutton col-12">-->
+                <!--                  <p-radioButton name="prot" value="Solucion intravenosa. Proteger de la luz y refrigerar" id="Solucion intravenosa. Proteger de la luz y refrigerar" formControlName="prot"></p-radioButton>-->
+                <!--                  <label for="Solucion intravenosa. Proteger de la luz y refrigerar">Solucion intravenosa. Proteger de la luz y refrigerar</label>-->
+                <!--                </div>-->
               </div>
             </div>
             <div class="field col-12 md:col-6 mt-2">
@@ -319,7 +326,8 @@
                 </div>
                 <div class="field col-12 md:col-3">
                   <span class="p-float-label">
-                    <input [appFormControlStatus]="commercialPart.get('batch')" autocomplete="off" formControlName="batch"
+                    <input [appFormControlStatus]="commercialPart.get('batch')" autocomplete="off"
+                           formControlName="batch"
                            id="batch" pInputText
                            type="text">
                     <label for="batch">Lote</label>
@@ -342,13 +350,15 @@
                                                 [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
                 </div>
                 <div class="filed col-12 md:col-1">
-                  <p-button icon="pi pi-times" (click)="removeOrderPart(i)" [rounded]="true" [text]="true" [raised]="true" severity="danger" />
+                  <p-button icon="pi pi-times" (click)="removeOrderPart(i)" [rounded]="true" [text]="true"
+                            [raised]="true" severity="danger"/>
                 </div>
               </div>
             </div>
             <div class="filed col-12 md:col-12">
               <div>
-                <p-button icon="pi pi-plus" (click)="addOrderPart()" [rounded]="true"  [raised]="true" severity="primary" />
+                <p-button icon="pi pi-plus" (click)="addOrderPart()" [rounded]="true" [raised]="true"
+                          severity="primary"/>
               </div>
             </div>
             <div class="field col-12 md:col-12">
@@ -370,7 +380,8 @@
   <ng-template pTemplate="footer">
     <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
             pRipple></button>
-    <button [disabled]="orderDetailForm.invalid || commercialPart.invalid" (click)="saveFormula()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
+    <button [disabled]="orderDetailForm.invalid || commercialPart.invalid" (click)="saveFormula()" class="p-button-text"
+            icon="pi pi-check" label="Agregar" pButton pRipple></button>
   </ng-template>
 </p-dialog>
 
@@ -397,7 +408,8 @@
     <ng-template let-columns="columns" let-master pTemplate="body">
       <tr>
         <td>
-          <button (click)="editProductionProcess(master)" class="p-button-rounded p-button-info" icon="pi pi-pencil" pButton pRipple type="button"></button>
+          <button (click)="editProductionProcess(master)" class="p-button-rounded p-button-info" icon="pi pi-pencil"
+                  pButton pRipple type="button"></button>
         </td>
         <td *ngFor="let col of columns">
           {{ parseFieldInData(master, col.field) }}
@@ -406,11 +418,28 @@
     </ng-template>
   </p-table>
 </p-dialog>
+<p-dialog [(visible)]="copyDialog" [modal]="true" [style]="{width: '400px'}" class="p-fluid" header="Cantidad de Copias">
+  <div class="flex flex-column">
+    <div class="justify-content-center align-items-center font-medium">
+      <div class="grid p-fluid mt-3">
+        <div class="field col-12 md:col-12">
+          <span class="p-float-label">
+            <input [(ngModel)]="copyValue" autocomplete="off" id="copy" pInputText type="text">
+            <label for="batch">Copias</label>
+          </span>
+        </div>
+        <div class="field col-12">
+          <button class="p-button-rounded p-button-info" icon="pi pi-copy" label="Imprimir" pButton pRipple (click)="printEvent()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-dialog>
 
 
 <app-spinner *ngIf="isLoadingUpdate"></app-spinner>
 <app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
                    [message]="'Se han creado los preparados con éxito'"></app-modal-success>
 <app-modal-error (confirm)="confirmDialogError($event)" [display]="displayError"
-                   [message]="messageError"></app-modal-error>
+                 [message]="messageError"></app-modal-error>
 

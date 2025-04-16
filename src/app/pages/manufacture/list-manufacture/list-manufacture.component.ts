@@ -150,6 +150,8 @@ export class ListManufactureComponent
   isLoadingUpdate = false;
   displayError = false;
   messageError = '';
+  copyDialog = false;
+  copyValue = 1;
 
   constructor(
     private route: ActivatedRoute,
@@ -757,6 +759,9 @@ export class ListManufactureComponent
 ^XZ`;
   }
 
+  openCopyDialog() {
+    this.copyDialog = true;
+  }
   async printEvent() {
     try {
       const printers = await this.zebraPrintService.getAvailablePrinters();
@@ -765,6 +770,11 @@ export class ListManufactureComponent
         return;
       }
       this.zebraPrintService.setPrinter(printers[0]);
+      const headZpl = this.generateHeadZpl(
+        this.printDetail.detail,
+        this.printDetail.master,
+      );
+      await this.zebraPrintService.print(headZpl);
       for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
         const zpl = this.generateZplDetail(
           this.printDetail.detail,
