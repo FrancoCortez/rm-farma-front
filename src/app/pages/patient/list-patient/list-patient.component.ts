@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import {Table, TableModule} from 'primeng/table';
 import { Store } from '@ngrx/store';
 import {
   PatientStoreActions,
@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonDirective } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { Router } from '@angular/router';
+import {InputTextModule} from "primeng/inputtext";
 
 @Component({
   selector: 'app-list-patient',
@@ -27,6 +28,7 @@ import { Router } from '@angular/router';
     FormsModule,
     ButtonDirective,
     Ripple,
+    InputTextModule,
   ],
   templateUrl: './list-patient.component.html',
 })
@@ -102,5 +104,9 @@ export class ListPatientComponent implements OnInit {
     this.router.navigate(['/main/patient/add-patient'], {
       queryParams: { identification: patient.identification },
     });
+  }
+
+  onGlobalFilter(table: Table, event: Event) {
+    table.filterGlobal((event.target as HTMLInputElement).value, 'contains')
   }
 }

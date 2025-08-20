@@ -2,10 +2,20 @@
   <h5>Proceso de Manufactura</h5>
   <div class="grid p-fluid mt-3">
     <div class="field col-12 md:col-4">
-      <span class="p-float-label">
-        <input (keydown.enter)="searchPatient()" [(ngModel)]="searchPatientValue" id="search" pInputText type="text"/>
-        <label for="search">Identificador Paciente</label>
-      </span>
+        <p-autoComplete
+                        delay="300"
+                        [autoZIndex]="false"
+                        [baseZIndex]="1000"
+                        [appendTo]="'body'"
+                        [forceSelection]="true"
+                        (completeMethod)="filterPatient($event)"
+                        [suggestions]="suggestions"
+                        (keydown.enter)="searchPatient()"
+                        [(ngModel)]="searchPatientValue"
+                        [virtualScroll]="true"
+                        [virtualScrollItemSize]="34"
+                        optionLabel="label"
+                        [dropdown]="true" ></p-autoComplete>
     </div>
     <div class="col-12 md:col-4">
       <p-button (onClick)="searchPatient()" [style]="{'max-width': '50%'}" class="p-button-raised p-button-primary" icon="pi pi-search"

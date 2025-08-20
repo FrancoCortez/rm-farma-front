@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -8,10 +8,11 @@ import { PrimeNGConfig } from 'primeng/api';
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   constructor(private primengConfig: PrimeNGConfig) {}
 
   ngOnInit() {
+    window.addEventListener('beforeunload', this.clearSessionStorage);
     this.primengConfig.ripple = true;
     this.primengConfig.setTranslation({
       accept: 'Aceptar',
@@ -60,5 +61,14 @@ export class AppComponent implements OnInit {
       dateFormat: 'dd/mm/yy',
       weekHeader: 'Sm',
     });
+  }
+
+  ngOnDestroy() {
+    // Eliminar el listener al destruir el componente
+    window.removeEventListener('beforeunload', this.clearSessionStorage);
+  }
+
+  clearSessionStorage() {
+    sessionStorage.clear();
   }
 }

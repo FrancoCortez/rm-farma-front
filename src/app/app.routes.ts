@@ -1,11 +1,14 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { manufactureReportRoutes } from './pages/manufacture-report/manufacture-report.routes';
+import { LoginComponent } from './pages/login/login.component';
+import {AuthGuardService} from "./services/auth-guard.service";
 
 export const routes: Routes = [
   {
     path: 'main',
     component: MainLayoutComponent,
+    canActivate: [AuthGuardService],
     children: [
       {
         path: 'patient',
@@ -35,6 +38,6 @@ export const routes: Routes = [
       },
     ],
   },
-
-  { path: '**', redirectTo: 'main', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: '**', redirectTo: 'login', pathMatch: 'full' },
 ];

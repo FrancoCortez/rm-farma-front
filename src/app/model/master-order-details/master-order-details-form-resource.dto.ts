@@ -10,6 +10,7 @@ export class MasterOrderDetailsFormResourceDto {
   observation?: string;
   productionDate?: Date;
   expirationDate?: Date;
+  concentration?: string;
   commercialPart?: Array<{
     commercial?: string;
     part?: number;

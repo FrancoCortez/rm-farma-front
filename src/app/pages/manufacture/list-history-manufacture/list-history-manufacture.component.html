@@ -1,0 +1,80 @@
+<p-dialog [(visible)]="prepareDialogHistory" [modal]="true" [style]="{width: '1080px'}" class="p-fluid"
+          (onHide)="onHide($event)"
+          header="Histórico de Preparación">
+<ng-template pTemplate="content">
+  <div *ngIf="originalManufactureOrdersTable.length > 0" class="grid">
+    <div class="col-12 md:col-12">
+      <p-card header="Informacion Personal">
+        <div class="grid">
+          <div class="col-12 md:col-4">
+            <div>Rut</div>
+          </div>
+          <div class="col-12 md:col-6">
+            <div>{{originalManufactureOrdersTable[0].patientRut || 'N/A'}}</div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-12 md:col-4">
+            <div>Nombre</div>
+          </div>
+          <div class="col-12 md:col-6">
+            <div>{{originalManufactureOrdersTable[0].patientName || 'N/A'}}</div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-12 md:col-4">
+            <div>Apellidos</div>
+          </div>
+          <div class="col-12 md:col-6">
+            <div>{{originalManufactureOrdersTable[0].patientLastName || 'N/A'}}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+  <p-table [columns]="cols"
+           [(selection)]="selectedMaster"
+           selectionMode="single"
+           [paginator]="true"
+           [metaKeySelection]="metaKey"
+           [rowHover]="true"
+           [rows]="10"
+           [tableStyle]="{'min-width': '50rem'}"
+           [value]="historyManufactureOrdersTable"
+           dataKey="id"
+           responsiveLayout="scroll"
+           styleClass="p-datatable-gridlines">
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th></th>
+        <th *ngFor="let col of columns" style="min-width: 12rem">
+          {{ col.header }}
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr class="justify-content-center">
+        <td colspan="6" >No se encontraron historicos para este paciente</td>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-master pTemplate="body" let-rowIndex="rowIndex">
+
+      <tr [pSelectableRow]="master" [pSelectableRowIndex]="rowIndex">
+        <td>
+          <p-tableRadioButton [value]="master" />
+        </td>
+        <td *ngFor="let col of columns">
+          {{ parseFieldInData(master, col.field) }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</ng-template>
+  <ng-template pTemplate="footer">
+    <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
+            pRipple></button>
+    <button [disabled]="!selectedMaster" class="p-button-text" (click)="usedHistory()"
+            icon="pi pi-check" label="Agregar" pButton pRipple></button>
+  </ng-template>
+</p-dialog>

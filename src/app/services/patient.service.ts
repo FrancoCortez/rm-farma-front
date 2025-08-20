@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { PatientFormResourceDto } from '../model/patient/patient-form-resource.dto';
 import { Observable } from 'rxjs';
 import { PatientResourceDto } from '../model/patient/patient-resource.dto';
@@ -32,5 +32,12 @@ export class PatientService {
 
   public findAllPatients(): Observable<PatientResourceDto[]> {
     return this.http.get<PatientResourceDto[]>(`${this.host}/patients`);
+  }
+
+  public deboudPatient(identification: string): Observable<{identification: string, label: string}[]> {
+    const params = new HttpParams().set('identification', identification);
+    return this.http.get<{identification: string, label: string}[]>(
+      `${this.host}/patients/debound`, { params}
+    );
   }
 }

@@ -35,4 +35,15 @@ export class MasterOrderService {
   ): Observable<MasterOrderResourceDto> {
     return this.http.post(`${this.host}/master-order`, body);
   }
+
+  public findAllHistoryMasterOrders(identification: string, diagnosisOrder: string): Observable<MasterOrderResourceDto[]>  {
+    let params = new HttpParams();
+    if (identification) {
+      params = params.set('identification', identification);
+      params = params.set('diagnosisId', diagnosisOrder);
+    }
+    return this.http.get<MasterOrderResourceDto[]>(
+      `${this.host}/master-order/find-history`, { params }
+    );
+  }
 }

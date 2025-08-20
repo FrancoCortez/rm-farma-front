@@ -1,3 +1,8 @@
+<div *ngIf="openHistory">
+  <app-list-history-manufacture [historyIdentification]="historyIdentification"
+                                (historyClose)="dialogHistoryClose($event)"
+                                (historyUsed)="historyUsed($event)"></app-list-history-manufacture>
+</div>
 <div class="grid">
   <div class="col-12">
     <div class="card">
@@ -87,6 +92,7 @@
                   <ng-template let-columns pTemplate="header">
                     <tr>
                       <th></th>
+                      <th>Hist</th>
                       <th *ngFor="let cols of columns" style="min-width: 12rem">
                         {{ cols.header }}
                       </th>
@@ -100,7 +106,11 @@
                         <button (click)="initProcessManufacture(detail, master)" class="p-button-rounded p-button-info"
                                 icon="pi pi-plus-circle" pButton pRipple type="button"></button>
                       </td>
-
+                      <td class="justify-content-center align-items-center">
+                        <button
+                                (click)="initHistoryManufacture(detail, master)" class="p-button-rounded p-button-info"
+                                icon="pi pi-search" pButton pRipple type="button"></button>
+                      </td>
                       <td *ngFor="let cols of columns">
                         {{ parseFieldInData(detail, cols.field) }}
                       </td>
@@ -168,16 +178,42 @@
               <app-form-validation-messages [control]="orderDetailForm.get('productionDate')" [errorType]="'required'"
                                             [message]="'La fecha de produccción es obligatoria'"></app-form-validation-messages>
             </div>
-
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 md:col-3">
               <span class="p-float-label">
-                <p-calendar [appFormControlStatus]="orderDetailForm.get('expirationDate')" [showTime]="true"
-                            dateFormat="dd/mm/yy" formControlName="expirationDate"
-                            id="expirationDate"></p-calendar>
-                <label for="productionDate">Fecha Vencimiento</label>
+                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('expirationDate')" autocomplete="off"
+                               formControlName="expirationDate"
+                               prefix="Expira en "
+                               suffix=" hrs"
+                               id="expirationDate"></p-inputNumber>
+                <label for="expirationDate">Fecha Vencimiento</label>
               </span>
-              <app-form-validation-messages [control]="orderDetailForm.get('expirationDate')" [errorType]="'required'"
+
+              <app-form-validation-messages [control]="orderDetailForm.get('expirationDate')"
+                                            [errorType]="'required'"
                                             [message]="'La Fecha de vencimiento es obligatoria'"></app-form-validation-messages>
+            </div>
+
+            <!--            <div class="field col-12 md:col-6">-->
+            <!--              <span class="p-float-label">-->
+            <!--                <p-calendar [appFormControlStatus]="orderDetailForm.get('expirationDate')" [showTime]="true"-->
+            <!--                            dateFormat="dd/mm/yy" formControlName="expirationDate"-->
+            <!--                            id="expirationDate"></p-calendar>-->
+            <!--                <label for="productionDate">Fecha Vencimiento</label>-->
+            <!--              </span>-->
+            <!--              <app-form-validation-messages [control]="orderDetailForm.get('expirationDate')" [errorType]="'required'"-->
+            <!--                                            [message]="'La Fecha de vencimiento es obligatoria'"></app-form-validation-messages>-->
+            <!--            </div>-->
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="orderDetailForm.get('concentration')" autocomplete="off"
+                       formControlName="concentration"
+                       id="concentration" pInputText
+                       type="text">
+                <label for="concentration">Concentración</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('concentration')"
+                                            [errorType]="'required'"
+                                            [message]="'La dosis es obligatorio'"></app-form-validation-messages>
             </div>
             <div class="field col-12 md:col-6">
               <span class="p-float-label">
@@ -408,7 +444,8 @@
     <ng-template let-columns="columns" let-master pTemplate="body">
       <tr>
         <td>
-          <button (click)="editProductionProcess(master)" class="p-button-rounded p-button-info" icon="pi pi-pencil"
+          <button (click)="editProductionProcess(master, 'updated')" class="p-button-rounded p-button-info"
+                  icon="pi pi-pencil"
                   pButton pRipple type="button"></button>
         </td>
         <td *ngFor="let col of columns">
@@ -418,19 +455,23 @@
     </ng-template>
   </p-table>
 </p-dialog>
-<p-dialog [(visible)]="copyDialog" [modal]="true" [style]="{width: '400px'}" class="p-fluid" header="Cantidad de Copias">
+<p-dialog [(visible)]="copyDialog" [modal]="true" [style]="{width: '400px'}" class="p-fluid"
+          header="Cantidad de Copias">
   <div class="flex flex-column">
     <div class="justify-content-center align-items-center font-medium">
-      <div class="grid p-fluid mt-3">
-        <div class="field col-12 md:col-12">
+      <div class="grid p-fluid" *ngFor="let detail of printDetail?.detail?.orderDetails; let i = index">
+        <div class="field col-8 md:col-8 mt-3">
+          {{ detail.masterRecord }} - {{ detail.productName }}
+        </div>
+        <div class="field col-4 md:col-4">
           <span class="p-float-label">
-            <input [(ngModel)]="copyValue" autocomplete="off" id="copy" pInputText type="text">
-            <label for="batch">Copias</label>
+              <p-inputNumber [(ngModel)]="copyValues[i]" autocomplete="off" id="copy-{{i}}"></p-inputNumber>
           </span>
         </div>
-        <div class="field col-12">
-          <button class="p-button-rounded p-button-info" icon="pi pi-copy" label="Imprimir" pButton pRipple (click)="printEvent()"></button>
-        </div>
+      </div>
+      <div class="field col-12">
+        <button class="p-button-rounded p-button-info" icon="pi pi-copy" label="Imprimir" pButton pRipple
+                (click)="printEvent()"></button>
       </div>
     </div>
   </div>

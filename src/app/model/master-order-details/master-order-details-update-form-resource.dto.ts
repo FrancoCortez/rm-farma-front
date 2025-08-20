@@ -14,6 +14,7 @@ export class MasterOrderDetailsUpdateFormResourceDto {
     condition?: string;
     administrationTime?: string;
     observation?: string;
+    concentration?: string;
     commercialPart?: Array<{
       commercial?: string;
       batch?: string;
