@@ -209,7 +209,7 @@
                        formControlName="concentration"
                        id="concentration" pInputText
                        type="text">
-                <label for="concentration">Concentración</label>
+                <label for="concentration">Vol Droga</label>
               </span>
               <app-form-validation-messages [control]="orderDetailForm.get('concentration')"
                                             [errorType]="'required'"
@@ -235,6 +235,9 @@
               <span class="p-float-label">
                 <p-inputNumber [appFormControlStatus]="orderDetailForm.get('dose')" autocomplete="off"
                                formControlName="dose"
+                                [mode]="'decimal'"
+                               [minFractionDigits]="0"
+                               [maxFractionDigits]="4"
                                id="dose"></p-inputNumber>
                 <label for="dose">Dosis</label>
               </span>
@@ -280,8 +283,11 @@
               <span class="p-float-label">
                 <p-inputNumber [appFormControlStatus]="orderDetailForm.get('volTotal')" autocomplete="off"
                                formControlName="volTotal"
+                               [mode]="'decimal'"
+                               [minFractionDigits]="0"
+                               [maxFractionDigits]="4"
                                id="volTotal"></p-inputNumber>
-                <label for="dose">Vol Total ML</label>
+                <label for="volTotal">Vol Total ML</label>
               </span>
               <app-form-validation-messages [control]="orderDetailForm.get('volTotal')"
                                             [errorType]="'required'"

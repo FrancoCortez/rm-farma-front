@@ -297,12 +297,15 @@ export class ListManufactureComponent
       this.orderDetailForm.get('concentration')?.patchValue(defaultConcentration, { emitEvent: false });
     } else {
       if (concentration && concentrationUnit) {
-        const concentrationValue = (dose / concentration) + ' ' + concentrationUnit;
+        console.log('dose', dose)
+        console.log('concentration', concentration)
+        console.log('calculate: ', (dose / concentration))
+        const concentrationValue = (dose / concentration) + ' ML';
         this.orderDetailForm.get('concentration')?.patchValue(concentrationValue, { emitEvent: false });
       }
       if (!concentration && !concentrationUnit && commercialPart[0].commercial?.factors.length > 0) {
         const factor = commercialPart[0].commercial.factors.find((f: any) => f.administrationRoute === viaCode);
-        const concentrationValue = factor ? (dose / factor.factor) + ' MG/ML' : (dose / 1) + ' MG/ML';
+        const concentrationValue = factor ? (dose / factor.factor) + ' ML' : (dose / 1) + ' ML';
         this.orderDetailForm.get('concentration')?.patchValue(concentrationValue, { emitEvent: false });
       }
     }
@@ -546,7 +549,9 @@ export class ListManufactureComponent
           this.commercialProductCombo = commercialProduct.map((c) => ({
             ...c,
             code: c.code,
-            name: `${c.code} - ${c.description} - ${c.laboratory}`,
+            name: c.laboratory
+              ? `${c.code} - ${c.description} - ${c.laboratory}`
+              : `${c.code} - ${c.description}`,
           }));
         },
       });
@@ -714,11 +719,15 @@ export class ListManufactureComponent
   }
 
   private generateZplDetail(detail: any, i: number, master: any) {
+    const laboratory = detail.orderDetails[i].commercialOrderDetails[0]?.laboratory || 'N/A';
+    const truncatedLab = laboratory.length > 33 ? laboratory.substring(0, 33) + '...' : laboratory;
     return `^XA
 ^PW1000
 ^LL1000
 ^CFA,20
 ^CI28
+^FO20,20^A0N,20,20^FDPREPARADO CITOESTÁTICO^FS
+^FO50,60^A0N,20,20^FDPRODUCTO ESTÉRIL^FS
 ^FO420,15
 ^BCN,65,N,N
 ^FD14${detail.orderDetails[i].masterRecord}^FS
@@ -775,7 +784,7 @@ export class ListManufactureComponent
 ^FO360,590^AN^FDHora Vencim.: ^FS
 ^FO530,590^AN^FD${this.formatDateTimeSeparated(detail.orderDetails[i].expirationDate).formattedTime}^FS
 ^FO20,620^AN^FDLaborat:^FS
-^FO120,620^AN^FD${detail.orderDetails[i].commercialOrderDetails[0]?.laboratory || 'N/A'}^FS
+^FO120,620^AN^FD${truncatedLab}^FS
 ^FO550,620^AN^FDLote:^FS
 ^FO610,620^AN^FD${detail.orderDetails[i].commercialOrderDetails
       .map((part: any) => part.batch)

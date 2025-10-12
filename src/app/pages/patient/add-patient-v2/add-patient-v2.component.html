@@ -207,23 +207,6 @@
               </div>
               <div class="field col-12 md:col-4">
                 <span class="p-float-label">
-                  <p-dropdown [appFormControlStatus]="diagnosis.get('services')" [filter]="true"
-                              [options]="serviceCombo"
-                              appendTo="body" dataKey="code"
-                              [virtualScroll]="true"
-                              [virtualScrollItemSize]="38"
-                              emptyFilterMessage="No se encontraron Servicios"
-                              emptyMessage="No existen Isapres en Sistema" filterBy="name" formControlName="services"
-                              id="services" optionLabel="name"
-                              placeholder="Seleccione El servicio"></p-dropdown>
-                  <label for="services">Servicios</label>
-                </span>
-                <app-form-validation-messages [control]="diagnosis.get('services')"
-                                              [errorType]="'required'"
-                                              [message]="'El servicio es Obligatorio'"></app-form-validation-messages>
-              </div>
-              <div class="field col-12 md:col-4">
-                <span class="p-float-label">
                   <p-dropdown [appFormControlStatus]="diagnosis.get('hospitalUnit')" [filter]="true"
                               [options]="hospitalUnitCombo"
                               appendTo="body" dataKey="code"
@@ -239,6 +222,24 @@
                 <app-form-validation-messages [control]="diagnosis.get('hospitalUnit')"
                                               [errorType]="'required'"
                                               [message]="'El diagnóstico es obligatorio'"></app-form-validation-messages>
+              </div>
+              <div class="field col-12 md:col-4">
+                <span class="p-float-label">
+                  <p-dropdown [appFormControlStatus]="diagnosis.get('services')" [filter]="true"
+                              [options]="serviceCombo"
+                              appendTo="body" dataKey="code"
+                              [virtualScroll]="true"
+                              [virtualScrollItemSize]="38"
+                              emptyFilterMessage="No se encontraron Servicios"
+                              emptyMessage="No existen Isapres en Sistema" filterBy="name" formControlName="services"
+                              id="services" optionLabel="name"
+                              placeholder="Seleccione El servicio"></p-dropdown>
+                  <label for="services">Servicios</label>
+                </span>
+                <app-form-validation-messages [control]="diagnosis.get('services')"
+                                              [errorType]="'required'"
+                                              [message]="'El servicio es Obligatorio'"></app-form-validation-messages>
+
               </div>
               <div *ngIf="diagnosis?.value?.id == ''" class="filed col-12 md:col-3">
                 <p-button (click)="removeDiagnosis(i)" label="Eliminar Diagnóstico" [raised]="true" severity="danger"/>

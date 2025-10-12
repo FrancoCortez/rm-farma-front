@@ -1,0 +1,85 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <p-table #dt
+               [columns]="selectedColumns"
+               [paginator]="true"
+               [rowHover]="true"
+               [rows]="10"
+               [tableStyle]="{'min-width': '50rem'}"
+               [value]=manufactureReports
+               [exportFilename]="'reporte-produccion_' + nowDate"
+               responsiveLayout="scroll"
+               [scrollable]="true"
+               [loading]="loadingReport"
+               dataKey="name"
+               styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="caption">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-4">
+              <span class="p-float-label">
+                <p-multiSelect
+                  [(ngModel)]="selectedColumns"
+                  [options]="cols"
+                  [style]="{'min-width': '300px'}"
+                  class="multiselect-custom"
+                  display="comma"
+                  id="multiselect"
+                  inputId="multiselect"
+                  optionLabel="header"
+                  placeholder="Seleccione las columnas"
+                  selectedItemsLabel="{0} columnas seleccionadas"
+                />
+                <label for="multiselect">Columnas</label>
+              </span>
+            </div>
+            <div class="field md:col-8"></div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-calendar [(ngModel)]="searchDay" id="searchDay"
+                            dateFormat="dd/mm/yy"
+                            (onSelect)="selectedDay()"
+                            inputId="searchDay"></p-calendar>
+                <label for="searchDay">Fecha</label>
+              </span>
+            </div>
+            <div class="field md:col-4">
+            <span class="p-float-label">
+                  <p-dropdown [filter]="true"
+                              [options]="hospitalUnitCombo"
+                              appendTo="body" dataKey="code"
+                              [virtualScroll]="true"
+                              [virtualScrollItemSize]="38"
+                              emptyFilterMessage="No se encontro unidad hispitalaria"
+                              emptyMessage="No existen unidades hospitalarias en Sistema" filterBy="name"
+                              id="hospitalUnit" optionLabel="name"
+                              (onChange)="filterUnitHospital($event.value)"
+                              [showClear]="true"
+                              placeholder="Seleccione Unidad Hospitalaria"></p-dropdown>
+                  <label for="hospitalUnit">Unidad Hospitalaria</label>
+                </span>
+            </div>
+            <div class="field col-12 md:col-2">
+              <button pButton pRipple label="Export Csv" icon="pi pi-upload" class="p-button-help"
+                      (click)="dt.exportCSV({  })"></button>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th *ngFor="let col of columns" style="min-width: 12rem">
+              {{ col.header }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-details pTemplate="body">
+          <tr>
+            <td *ngFor="let col of columns">
+              {{ parseFieldInData(details, col.field) }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

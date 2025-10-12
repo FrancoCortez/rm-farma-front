@@ -10,10 +10,10 @@ export class AuthGuardService implements CanActivate {
 
   canActivate(): boolean {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-    // if (!isLoggedIn) {
-    //   this.router.navigate(['/login']); // Redirigir al login si no está autenticado
-    //   return false;
-    // }
+    if (!isLoggedIn) {
+      this.router.navigate(['/login']); // Redirigir al login si no está autenticado
+      return false;
+    }
     return true;
   }
 }

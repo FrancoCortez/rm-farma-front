@@ -20,6 +20,7 @@ import {
   selectLoadingResumeReport,
 } from '../../../root-store/order-details-store/selector';
 import { OrderDetailsResumeReportResourceDto } from '../../../model/master-order-details/order-details-resume-report.resource.dto';
+import {Ripple} from "primeng/ripple";
 
 @Component({
   selector: 'app-report-resume-production',
@@ -34,6 +35,7 @@ import { OrderDetailsResumeReportResourceDto } from '../../../model/master-order
     NgIf,
     NgForOf,
     OrderDetailsStoreModule,
+    Ripple,
   ],
   templateUrl: './report-resume-production.component.html',
 })

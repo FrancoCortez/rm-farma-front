@@ -86,6 +86,13 @@
             "routerLink": [
               "/main/production-report/report-resume-production"
             ]
+          },
+          {
+            "label": "Reporte Concentración",
+            "icon": "pi pi-list",
+            "routerLink": [
+              "/main/production-report/report-concentration"
+            ]
           }
         ]
       }

@@ -5,6 +5,9 @@ import { Observable } from 'rxjs';
 import { OrderDetailsReportResourceDto } from '../model/master-order-details/order-details-report.resource.dto';
 import { MasterOrderDetailsUpdateFormResourceDto } from '../model/master-order-details/master-order-details-update-form-resource.dto';
 import { OrderDetailsResumeReportResourceDto } from '../model/master-order-details/order-details-resume-report.resource.dto';
+import {
+  OrderDetailsConcentrateReportResourceDto
+} from "../model/master-order-details/order-details-concentrate-report.resource.dto";
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +38,19 @@ export class OrderDetailsService {
     params = params.set('endDate', endDate.toISOString());
     return this.http.get<OrderDetailsResumeReportResourceDto[]>(
       `${this.host}/order-details/generate/resume-report`,
+      { params },
+    );
+  }
+
+  public concentrateReport(
+    startDate: Date,
+    endDate: Date,
+  ): Observable<OrderDetailsConcentrateReportResourceDto[]> {
+    let params = new HttpParams();
+    params = params.set('startDate', startDate.toISOString());
+    params = params.set('endDate', endDate.toISOString());
+    return this.http.get<OrderDetailsConcentrateReportResourceDto[]>(
+      `${this.host}/order-details/generate/concentrate-report`,
       { params },
     );
   }
