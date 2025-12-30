@@ -5,10 +5,11 @@
         #dt1
         [columns]="selectedColumns"
         [expandedRowKeys]="expandedRows"
+        [rowsPerPageOptions]="[10,20,30,40,50]"
         [paginator]="true"
         [globalFilterFields]="['identification','rut','name','lastName']"
         [rowHover]="true"
-        [rows]="10"
+        [rows]="30"
         [tableStyle]="{'min-width': '50rem'}"
         [value]=patients
         responsiveLayout="scroll"

@@ -1,20 +1,19 @@
-import {Component, OnInit} from '@angular/core';
-import {TableModule} from "primeng/table";
-import {ColumModelDto} from "../../../utils/models/colum-model.dto";
-import {ButtonDirective} from "primeng/button";
-import {CalendarModule} from "primeng/calendar";
-import {MultiSelectModule} from "primeng/multiselect";
-import {NgForOf} from "@angular/common";
-import {SelectButtonModule} from "primeng/selectbutton";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {Ripple} from "primeng/ripple";
-import {OrderDetailsService} from "../../../services/order-details.service";
-import {
-  OrderDetailsConcentrateReportResourceDto
-} from "../../../model/master-order-details/order-details-concentrate-report.resource.dto";
-import {HospitalUnitService} from "../../../services/hospital-unit.service";
-import {HospitalUnitResourceDto} from "../../../model/hospital-unit/hospital-unit-resource.dto";
-import {DropdownModule} from "primeng/dropdown";
+import { Component, OnInit } from '@angular/core';
+import { TableModule } from 'primeng/table';
+import { ColumModelDto } from '../../../utils/models/colum-model.dto';
+import { ButtonDirective } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { NgForOf } from '@angular/common';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Ripple } from 'primeng/ripple';
+import { OrderDetailsService } from '../../../services/order-details.service';
+import { OrderDetailsConcentrateReportResourceDto } from '../../../model/master-order-details/order-details-concentrate-report.resource.dto';
+import { HospitalUnitService } from '../../../services/hospital-unit.service';
+import { HospitalUnitResourceDto } from '../../../model/hospital-unit/hospital-unit-resource.dto';
+import { DropdownModule } from 'primeng/dropdown';
+import { ExcelExportService } from '../../../utils/services/excel-export.service';
 
 @Component({
   selector: 'app-report-concentration',
@@ -29,7 +28,7 @@ import {DropdownModule} from "primeng/dropdown";
     Ripple,
     NgForOf,
     DropdownModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './report-concentration.component.html',
 })
@@ -41,12 +40,11 @@ export class ReportConcentrationComponent implements OnInit {
   manufactureReports: OrderDetailsConcentrateReportResourceDto[] = [];
   manufactureReportsBackup: OrderDetailsConcentrateReportResourceDto[] = [];
   searchDay: Date = new Date();
-  hospitalUnitCombo!: HospitalUnitResourceDto [];
+  hospitalUnitCombo!: HospitalUnitResourceDto[];
 
   get selectedColumns(): ColumModelDto[] {
     return this._selectedColumns;
   }
-
 
   set selectedColumns(val: ColumModelDto[]) {
     this._selectedColumns = this.cols.filter((col) => val.includes(col));
@@ -59,31 +57,33 @@ export class ReportConcentrationComponent implements OnInit {
     this.selectedDay();
   }
 
-  constructor(private readonly orderDetailService: OrderDetailsService, private readonly hospitalUnit: HospitalUnitService) {
-
-  }
+  constructor(
+    private readonly orderDetailService: OrderDetailsService,
+    private readonly hospitalUnit: HospitalUnitService,
+    private readonly exportExcelService: ExcelExportService,
+  ) {}
 
   initColumns() {
     this.cols = [
-      {field: 'name', header: 'Nombre'},
-      {field: 'hospitalName', header: 'U. Hospitalaria'},
-      {field: 'productName', header: 'Droga'},
-      {field: 'dose', header: 'Dosis (ML)'},
-      {field: 'volumeTotalProduct', header: 'V Droga'},
-      {field: 'laboratory', header: 'Laboratorio'},
-      {field: 'volumeTotal', header: 'V Final (ML)'},
-      {field: 'vehicle', header: 'Vehiculo'},
-      {field: 'viaName', header: 'Via'},
-      {field: 'down', header: 'Bajada'}
+      { field: 'name', header: 'Nombre' },
+      { field: 'hospitalName', header: 'U. Hospitalaria' },
+      { field: 'productName', header: 'Droga' },
+      { field: 'dose', header: 'Dosis (ML)' },
+      { field: 'volumeTotalProduct', header: 'V Droga' },
+      { field: 'laboratory', header: 'Laboratorio' },
+      { field: 'volumeTotal', header: 'V Final (ML)' },
+      { field: 'vehicle', header: 'Vehiculo' },
+      { field: 'viaName', header: 'Via' },
+      { field: 'down', header: 'Bajada' },
     ];
   }
 
-  initCombo () {
+  initCombo() {
     this.hospitalUnit.findAllHospitalUnit().subscribe({
       next: (data: HospitalUnitResourceDto[]) => {
         this.hospitalUnitCombo = data;
-      }
-    })
+      },
+    });
   }
 
   parseFieldInData(data: any, field: string) {
@@ -94,11 +94,11 @@ export class ReportConcentrationComponent implements OnInit {
       if (Array.isArray(acc[obj])) {
         return acc[obj][0];
       }
-      if(field === 'dose') {
+      if (field === 'dose') {
         return acc.dose + ' ' + acc.unitMetric;
       }
 
-      if(field === 'volumeTotal') {
+      if (field === 'volumeTotal') {
         return acc.volumeTotal + ' ML';
       }
       return acc[obj];
@@ -110,21 +110,37 @@ export class ReportConcentrationComponent implements OnInit {
     const startDate = new Date(this.searchDay.setHours(0, 0, 0, 0));
     const endDate = new Date(this.searchDay.setHours(23, 59, 59, 999));
     this.orderDetailService.concentrateReport(startDate, endDate).subscribe({
-      next: data => {
+      next: (data) => {
         this.manufactureReports = data;
         this.manufactureReportsBackup = [...data];
       },
       complete: () => {
         this.loadingReport = false;
-      }
+      },
     });
   }
 
   filterUnitHospital(value: any) {
-    if(!value?.name) {
+    if (!value?.name) {
       this.manufactureReports = [...this.manufactureReportsBackup];
       return;
     }
-    this.manufactureReports = this.manufactureReportsBackup.filter(f => f.hospitalName?.toLowerCase().includes(value.name.toLowerCase()));
+    this.manufactureReports = this.manufactureReportsBackup.filter((f) =>
+      f.hospitalName?.toLowerCase().includes(value.name.toLowerCase()),
+    );
+  }
+
+  protected exportExcel() {
+    const exportData = this.manufactureReports.map((item) => {
+      const row: any = {};
+      this.cols.forEach((col) => {
+        row[col.header] = this.parseFieldInData(item, col.field);
+      });
+      return row;
+    });
+    this.exportExcelService.exportToExcel(
+      exportData,
+      `reporte_concentration_${this.nowDate}.xlsx`,
+    );
   }
 }

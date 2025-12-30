@@ -119,7 +119,7 @@ export class DetailFormulaComponent implements OnInit, OnDestroy {
         next: (product) => {
           this.productCombo = product.map((p) => ({
             code: p.code,
-            name: p.description + '-' + p.laboratory,
+            name: p.description,
           }));
         },
       });

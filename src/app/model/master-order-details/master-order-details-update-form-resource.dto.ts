@@ -7,6 +7,8 @@ export class MasterOrderDetailsUpdateFormResourceDto {
     dose?: number;
     productionDate?: Date;
     expirationDate?: Date;
+    administrationDate?: Date;
+    bedDay?: string;
     unitMetric?: string;
     complementCode?: string;
     volTotal?: number;
@@ -15,6 +17,7 @@ export class MasterOrderDetailsUpdateFormResourceDto {
     administrationTime?: string;
     observation?: string;
     concentration?: string;
+    status?: string;
     commercialPart?: Array<{
       commercial?: string;
       batch?: string;

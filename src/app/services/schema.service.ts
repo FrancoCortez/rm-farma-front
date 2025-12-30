@@ -5,6 +5,7 @@ import { map, Observable } from 'rxjs';
 import { SchemaResourceDto } from '../model/schema/schema-resource.dto';
 import { ComboModelDto } from '../utils/models/combo-model.dto';
 import { ClinicResourceDto } from '../model/clinic/clinic-resource.dto';
+import { SchemaCreateDto } from '../model/schema/schema-create.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,15 @@ export class SchemaService {
           name: schema.description,
         })),
       ),
+    );
+  }
+
+  createSchema(
+    schemaCreateDto: SchemaCreateDto,
+  ): Observable<SchemaResourceDto> {
+    return this.http.post<SchemaResourceDto>(
+      `${this.host}/schemas`,
+      schemaCreateDto,
     );
   }
 }

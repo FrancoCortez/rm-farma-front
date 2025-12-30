@@ -30,6 +30,7 @@
     "@sweetalert2/ngx-sweetalert2": "^12.4.0",
     "chart.js": "^3.3.2",
     "crypto-js": "^4.2.0",
+    "file-saver": "^2.0.5",
     "primeflex": "^3.3.1",
     "primeicons": "6.0.1",
     "primeng": "^17.18.15",
@@ -37,6 +38,7 @@
     "quill": "^2.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zebra-browser-print-wrapper": "^0.1.4",
     "zone.js": "~0.14.3"
   },
@@ -45,6 +47,7 @@
     "@angular/cli": "^17.3.2",
     "@angular/compiler-cli": "^17.3.0",
     "@types/crypto-js": "^4.2.2",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",

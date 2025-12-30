@@ -1,0 +1,182 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button pButton pRipple label="Nuevo" (click)="openCreateModal()" icon="pi pi-plus"
+                    class="p-button-success mr-2"></button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button pButton label="CSV" icon="pi pi-file-excel" class="p-button-help mr-3" (click)="dt.exportCSV()"></button>
+          <button pButton label="Excel" icon="pi pi-file-excel" class="p-button-help" (click)="exportExcel()"></button>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table #dt
+               [columns]="cols"
+               [paginator]="true"
+               [rowsPerPageOptions]="[10,20,30,40,50]"
+               [showCurrentPageReport]="true"
+               currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos comerciales"
+               [rowHover]="true"
+               [rows]="30"
+               [tableStyle]="{'min-width': '50rem'}"
+               [value]=commercialProductList
+               [exportFilename]="'commercial_product_' + nowDate"
+               responsiveLayout="scroll"
+               [scrollable]="true"
+               [globalFilterFields]="['code', 'description', 'laboratory', 'product.description', 'product.code']"
+               [loading]="loadingReport"
+               dataKey="id"
+               styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Administrador de Productos Comerciales</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."
+                     class="w-full sm:w-auto">
+            </span>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th *ngFor="let col of columns" style="min-width: 14rem;">
+              {{ col.header }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-details pTemplate="body">
+          <tr>
+            <td *ngFor="let col of columns">
+              {{ parseFieldInData(details, col.field) }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="createDialogVisible" [modal]="true" [style]="{width: '600px', 'min-height': '500px'}"
+          class="p-fluid"
+          [header]="'Creación de Producto Comercial'">
+  <ng-template pTemplate="content">
+    <form [formGroup]="commercialProductCreateForm">
+      <div class="flex flex-column">
+        <div class="justify-content-center align-content-center font medium">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="commercialProductCreateForm.get('code')" id="code" type="text" pInputText
+                       autocomplete="off"
+                       formControlName="code"/>
+
+                <label for="code">Código *</label>
+              </span>
+              <app-form-validation-messages [control]="commercialProductCreateForm.get('code')" [errorType]="'required'"
+                                            [message]="'El código del Producto Comercial es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="commercialProductCreateForm.get('description')" id="description"
+                       type="text" pInputText
+                       autocomplete="off"
+                       formControlName="description"/>
+                <label for="description">Nombre y/o Descripción *</label>
+              </span>
+              <app-form-validation-messages [control]="commercialProductCreateForm.get('description')"
+                                            [errorType]="'required'"
+                                            [message]="'El nombre y/o descripción del Producto Comercial es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="commercialProductCreateForm.get('laboratory')" id="laboratory"
+                       type="text" pInputText
+                       autocomplete="off"
+                       formControlName="laboratory"/>
+                <label for="laboratory">Laboratorio</label>
+              </span>
+              <app-form-validation-messages [control]="commercialProductCreateForm.get('laboratory')"
+                                            [errorType]="'required'"
+                                            [message]="'El laboratorio es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-12">
+                <span class="p-float-label">
+                  <p-dropdown
+                    [appFormControlStatus]="commercialProductCreateForm.get('activeIngredientCode')"
+                    [filter]="true"
+                    [options]="activeIngredientCombo" dataKey="code"
+                    appendTo="body"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="38"
+                    emptyFilterMessage="No se encontraron productos"
+                    emptyMessage="No existen Genéricos en Sistema" filterBy="name"
+                    formControlName="activeIngredientCode"
+                    id="code" optionLabel="name"
+                    placeholder="Seleccione el PA *">
+
+                  </p-dropdown>
+                  <label for="activeIngredientCode">Genéricos</label>
+                </span>
+              <app-form-validation-messages [control]="commercialProductCreateForm.get('activeIngredientCode')"
+                                            [errorType]="'required'"
+                                            [message]="'El PA es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-6 md:col-6">
+              <span class="p-float-label">
+                <p-inputNumber [appFormControlStatus]="commercialProductCreateForm.get('concentration')"
+                               id="concentration"
+                               autocomplete="off"
+                               [mode]="'decimal'"
+                               [minFractionDigits]="0"
+                               [maxFractionDigits]="4"
+                               formControlName="concentration"/>
+                <label for="concentration">Concentración *</label>
+              </span>
+              <app-form-validation-messages [control]="commercialProductCreateForm.get('concentration')"
+                                            [errorType]="'required'"
+                                            [message]="'La concentración es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-6 md:col-6">
+                <span class="p-float-label">
+                  <p-dropdown
+                    [appFormControlStatus]="commercialProductCreateForm.get('concentrationUnit')"
+                    [filter]="true"
+                    [options]="unitMetricCombo" dataKey="code"
+                    appendTo="body"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="38"
+                    emptyFilterMessage="No se encontraron unidades métricas"
+                    emptyMessage="No unidades metricas en sistema" filterBy="name"
+                    formControlName="concentrationUnit"
+                    id="code" optionLabel="name"
+                    placeholder="Seleccione unidad métrica *">
+                  </p-dropdown>
+                  <label for="concentrationUnit">Unidad de concentración</label>
+                </span>
+              <app-form-validation-messages [control]="commercialProductCreateForm.get('concentrationUnit')"
+                                            [errorType]="'required'"
+                                            [message]="'La unidad métrica es obligatoria'"></app-form-validation-messages>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button class="p-button-text p-button-secondary" (click)="cancelModal()" icon="pi pi-times" label="Cancelar" pButton
+            pRipple></button>
+    <button [disabled]="commercialProductCreateForm.invalid" (click)="saveCommercialProduct()" class="p-button-text"
+            icon="pi pi-check" label="Agregar" pButton pRipple></button>
+  </ng-template>
+</p-dialog>
+
+
+<app-spinner *ngIf="isLoadingUpdate"></app-spinner>
+<app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
+                   [message]="'Se ha creado el Producto Comercial con éxito'"></app-modal-success>
+<app-modal-error (confirm)="confirmDialogError($event)" [display]="displayError"
+                 [message]="messageError"></app-modal-error>

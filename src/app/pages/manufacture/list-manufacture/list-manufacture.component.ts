@@ -5,11 +5,11 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import {MultiSelectModule} from 'primeng/multiselect';
-import {JsonPipe, NgForOf, NgIf} from '@angular/common';
-import {PrimeNGConfig, PrimeTemplate} from 'primeng/api';
-import {TableModule} from 'primeng/table';
-import {ColumModelDto} from '../../../utils/models/colum-model.dto';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { MenuItem, PrimeNGConfig, PrimeTemplate } from 'primeng/api';
+import { TableModule } from 'primeng/table';
+import { ColumModelDto } from '../../../utils/models/colum-model.dto';
 import {
   FormArray,
   FormBuilder,
@@ -18,26 +18,26 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {CalendarModule} from 'primeng/calendar';
-import {ActivatedRoute, Router} from '@angular/router';
-import {InputTextModule} from 'primeng/inputtext';
-import {Store} from '@ngrx/store';
-import {RootStoreState} from '../../../root-store';
-import {combineLatest, startWith, Subscription} from 'rxjs';
+import { CalendarModule } from 'primeng/calendar';
+import { ActivatedRoute, Router } from '@angular/router';
+import { InputTextModule } from 'primeng/inputtext';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from '../../../root-store';
 import {
-  MasterOrderStoreActions,
-  MasterOrderStoreModule,
-  MasterOrderStoreSelectors,
-} from '../../../root-store/master-order-store';
-import {Ripple} from 'primeng/ripple';
-import {DialogModule} from 'primeng/dialog';
-import {DropdownModule} from 'primeng/dropdown';
-import {
-  FormValidationMessagesComponent
-} from '../../../utils/components/form-validation-messages/form-validation-messages.component';
-import {InputNumberModule} from 'primeng/inputnumber';
-import {InputTextareaModule} from 'primeng/inputtextarea';
-import {FormControlStatusDirective} from '../../../utils/directives/form-control-status.directive';
+  combineLatest,
+  filter,
+  startWith,
+  Subscription,
+  switchMap,
+} from 'rxjs';
+import { MasterOrderStoreModule } from '../../../root-store/master-order-store';
+import { Ripple } from 'primeng/ripple';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormValidationMessagesComponent } from '../../../utils/components/form-validation-messages/form-validation-messages.component';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { FormControlStatusDirective } from '../../../utils/directives/form-control-status.directive';
 import {
   ProductStoreActions,
   ProductStoreModule,
@@ -53,32 +53,27 @@ import {
   ComplementStoreModule,
   ComplementStoreSelectors,
 } from '../../../root-store/complement-store';
-import {ComboModelDto} from '../../../utils/models/combo-model.dto';
-import {MasterOrderFormResourceDto} from '../../../model/master-order/master-order-form-resource.dto';
-import {RadioButtonModule} from 'primeng/radiobutton';
+import { ComboModelDto } from '../../../utils/models/combo-model.dto';
+import { MasterOrderFormResourceDto } from '../../../model/master-order/master-order-form-resource.dto';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import {
   CommercialProductStoreActions,
   CommercialProductStoreModule,
   CommercialProductStoreSelectors,
 } from '../../../root-store/commercial-product-store';
-import {ZebraPrintService} from '../../../utils/services/zebra-print.service';
-import {
-  MasterOrderDetailsUpdateFormResourceDto
-} from '../../../model/master-order-details/master-order-details-update-form-resource.dto';
-import {
-  OrderDetailsStoreActions,
-  OrderDetailsStoreModule,
-  OrderDetailsStoreSelectors,
-} from '../../../root-store/order-details-store';
-import {SpinnerComponent} from '../../../utils/components/spinner/spinner.component';
-import {ModalSuccessComponent} from '../../../utils/components/modal-success/modal-success.component';
-import {MasterOrderService} from '../../../services/master-order.service';
-import {OrderDetailsService} from '../../../services/order-details.service';
-import {ModalErrorComponent} from '../../../utils/components/modal-error/modal-error.component';
-import {minLengthArray} from '../../../utils/form-validation/array-validator.form';
-import {co} from "@fullcalendar/core/internal-common";
-import {ListHistoryManufactureComponent} from "../list-history-manufacture/list-history-manufacture.component";
-import {MasterOrderResourceDto} from "../../../model/master-order/master-order-resource.dto";
+import { ZebraPrintService } from '../../../utils/services/zebra-print.service';
+import { MasterOrderDetailsUpdateFormResourceDto } from '../../../model/master-order-details/master-order-details-update-form-resource.dto';
+import { OrderDetailsStoreModule } from '../../../root-store/order-details-store';
+import { SpinnerComponent } from '../../../utils/components/spinner/spinner.component';
+import { ModalSuccessComponent } from '../../../utils/components/modal-success/modal-success.component';
+import { MasterOrderService } from '../../../services/master-order.service';
+import { OrderDetailsService } from '../../../services/order-details.service';
+import { ModalErrorComponent } from '../../../utils/components/modal-error/modal-error.component';
+import { minLengthArray } from '../../../utils/form-validation/array-validator.form';
+import { ListHistoryManufactureComponent } from '../list-history-manufacture/list-history-manufacture.component';
+import { TagModule } from 'primeng/tag';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { MenuModule } from 'primeng/menu';
 
 @Component({
   selector: 'app-list-manufacture',
@@ -107,17 +102,20 @@ import {MasterOrderResourceDto} from "../../../model/master-order/master-order-r
     CommercialProductStoreModule,
     OrderDetailsStoreModule,
     NgIf,
+    TagModule,
     SpinnerComponent,
     ModalSuccessComponent,
     ModalErrorComponent,
-    JsonPipe,
     ListHistoryManufactureComponent,
+    SplitButtonModule,
+    MenuModule,
   ],
   providers: [PrimeNGConfig],
   templateUrl: './list-manufacture.component.html',
 })
 export class ListManufactureComponent
-  implements OnInit, OnDestroy, AfterViewInit {
+  implements OnInit, OnDestroy, AfterViewInit
+{
   cols: ColumModelDto[] = [];
   subCols: ColumModelDto[] = [];
   detailTableCols: ColumModelDto[] = [];
@@ -134,6 +132,8 @@ export class ListManufactureComponent
   viaCombo: ComboModelDto[] = [];
   commercialProductCombo: ComboModelDto[] = [];
   unitMetricCombo: ComboModelDto[] = [];
+  bedDayCombo: ComboModelDto[] = [];
+  statusCombo: ComboModelDto[] = [];
   conditionCombo: ComboModelDto[] = [];
   operation: string = 'created';
   dialogTitle: string = 'Agregar Nueva Fórmula';
@@ -163,7 +163,7 @@ export class ListManufactureComponent
 
   openHistory = false;
   historyIdentification!: { identification: string; diagnosisOrder: string };
-  concentrationDisabled = true;
+  items!: MenuItem[];
 
   constructor(
     private route: ActivatedRoute,
@@ -175,8 +175,7 @@ export class ListManufactureComponent
     private zebraPrintService: ZebraPrintService,
     private masterOrderService: MasterOrderService,
     private orderDetailService: OrderDetailsService,
-  ) {
-  }
+  ) {}
 
   ngAfterViewInit() {
     this.primengConfig.ripple = true;
@@ -190,22 +189,27 @@ export class ListManufactureComponent
       // expirationDate = new Date(this.currentTableSelectedDetail.productionDate);
     }
     // expirationDate.setDate(expirationDate.getDate() + 4);
-    this.concentrationDisabled = true;
     this.orderDetailForm = this.fb.group({
       via: ['', Validators.required],
       productionDate: [date, Validators.required],
       expirationDate: [null, Validators.required],
       productName: ['', Validators.required],
       dose: [null, Validators.required],
+      bedDay: [
+        this.bedDayCombo.find((item) => item.code === 'N/A'),
+        [Validators.required],
+      ],
       unitMetric: ['', Validators.required],
       complement: ['', Validators.required],
       volTotal: [null, Validators.required],
+      status: [''],
       prot: ['Proteger Luz y Refrigerar', Validators.required],
       administrationTime: [null, Validators.required],
+      administrationDate: [null, Validators.required],
       condition: [''],
       observation: [''],
-      concentration: [{ value: '', disabled: true}, Validators.required],
-      commercialPart: this.fb.array([], minLengthArray(1)),
+      concentration: [null, Validators.required],
+      commercialPart: this.fb.array([]),
     });
 
     commercialPartsData.forEach((data) => {
@@ -231,9 +235,7 @@ export class ListManufactureComponent
   }
 
   removeOrderPart(index: number) {
-    if (this.commercialPart.length > 1) {
-      this.commercialPart.removeAt(index);
-    }
+    this.commercialPart.removeAt(index);
   }
 
   get selectedColumns(): ColumModelDto[] {
@@ -250,6 +252,32 @@ export class ListManufactureComponent
     this.viaComboSubscription$.unsubscribe();
     this.productComboSubscription$.unsubscribe();
     this.complementComboSubscription$.unsubscribe();
+  }
+
+  getMenuItems(master: any, detail: any): MenuItem[] {
+    return [
+      {
+        label: 'Agregar Fórmula',
+        icon: 'pi pi-plus-circle',
+        command: () => this.initProcessManufacture(detail, master),
+      },
+      {
+        label: 'Detalle Fórmula',
+        icon: 'pi pi-minus-circle',
+        command: () => this.detailProduct(detail, master),
+      },
+      {
+        label: 'Ver Histórico',
+        icon: 'pi pi-history',
+        command: () => this.initHistoryManufacture(detail, master),
+      },
+      { separator: true },
+      {
+        label: 'Imprimir Etiqueta',
+        icon: 'pi pi-print',
+        command: () => this.previewLabel(detail, master),
+      },
+    ];
   }
 
   ngOnInit(): void {
@@ -272,17 +300,32 @@ export class ListManufactureComponent
     const via = this.orderDetailForm.get('via')?.value;
     const commercialPart = this.orderDetailForm.get('commercialPart')?.value;
 
-    const dose$ = this.orderDetailForm.get('dose')?.valueChanges.pipe(startWith(dose));
-    const via$ = this.orderDetailForm.get('via')?.valueChanges.pipe(startWith(via));
-    const commercialPart$ = this.orderDetailForm.get('commercialPart')?.valueChanges.pipe(startWith(commercialPart));
-
+    const dose$ = this.orderDetailForm
+      .get('dose')
+      ?.valueChanges.pipe(startWith(dose));
+    const via$ = this.orderDetailForm
+      .get('via')
+      ?.valueChanges.pipe(startWith(via));
+    const commercialPart$ = this.orderDetailForm
+      .get('commercialPart')
+      ?.valueChanges.pipe(startWith(commercialPart));
+    console.log('dose$', dose$);
+    console.log('via$', via$);
+    console.log('commercialPart$', commercialPart$);
     if (dose$ && via$ && commercialPart$) {
-      combineLatest([dose$, via$, commercialPart$]).subscribe(([dose, via, commercialPart]) => {
-        if (this.isManualConcentration) return;
-        if (dose && via && commercialPart.length > 0 && commercialPart[0]?.commercial) {
-          this.setConcentrationValue(dose, via, commercialPart);
-        }
-      });
+      combineLatest([dose$, via$, commercialPart$]).subscribe(
+        ([dose, via, commercialPart]) => {
+          if (this.isManualConcentration) return;
+          if (
+            dose &&
+            via &&
+            commercialPart.length > 0 &&
+            commercialPart[0]?.commercial
+          ) {
+            this.setConcentrationValue(dose, via, commercialPart);
+          }
+        },
+      );
     }
   }
   setConcentrationValue(dose: any, via: any, commercialPart: any) {
@@ -291,22 +334,34 @@ export class ListManufactureComponent
     }
     const concentration = commercialPart[0].commercial?.concentration;
     const concentrationUnit = commercialPart[0].commercial?.concentrationUnit;
-    const defaultConcentration = commercialPart[0].commercial?.defaultConcentration;
+    const defaultConcentration =
+      commercialPart[0].commercial?.defaultConcentration;
     const viaCode = via.code;
     if (defaultConcentration) {
-      this.orderDetailForm.get('concentration')?.patchValue(defaultConcentration, { emitEvent: false });
+      this.orderDetailForm
+        .get('concentration')
+        ?.patchValue(defaultConcentration, { emitEvent: false });
     } else {
       if (concentration && concentrationUnit) {
-        console.log('dose', dose)
-        console.log('concentration', concentration)
-        console.log('calculate: ', (dose / concentration))
-        const concentrationValue = (dose / concentration) + ' ML';
-        this.orderDetailForm.get('concentration')?.patchValue(concentrationValue, { emitEvent: false });
+        const concentrationValue = dose / concentration + ' ML';
+        this.orderDetailForm
+          .get('concentration')
+          ?.patchValue(concentrationValue, { emitEvent: false });
       }
-      if (!concentration && !concentrationUnit && commercialPart[0].commercial?.factors.length > 0) {
-        const factor = commercialPart[0].commercial.factors.find((f: any) => f.administrationRoute === viaCode);
-        const concentrationValue = factor ? (dose / factor.factor) + ' ML' : (dose / 1) + ' ML';
-        this.orderDetailForm.get('concentration')?.patchValue(concentrationValue, { emitEvent: false });
+      if (
+        !concentration &&
+        !concentrationUnit &&
+        commercialPart[0].commercial?.factors.length > 0
+      ) {
+        const factor = commercialPart[0].commercial.factors.find(
+          (f: any) => f.administrationRoute === viaCode,
+        );
+        const concentrationValue = factor
+          ? dose / factor.factor + ' ML'
+          : dose / 1 + ' ML';
+        this.orderDetailForm
+          .get('concentration')
+          ?.patchValue(concentrationValue, { emitEvent: false });
       }
     }
   }
@@ -319,8 +374,7 @@ export class ListManufactureComponent
           this.isLoadingUpdate = true;
           this.masterOrders = this.groupByPatientIdentification(value);
         },
-        error: (err) => {
-        },
+        error: (err) => {},
         complete: () => {
           this.isLoadingUpdate = false;
         },
@@ -354,29 +408,30 @@ export class ListManufactureComponent
 
   initColumns(): void {
     this.cols = [
-      {field: 'patientIdentification', header: 'ID'},
-      {field: 'patientRut', header: 'Rut'},
-      {field: 'patientName', header: 'Nombre'},
-      {field: 'patientLastName', header: 'Apellido'},
+      { field: 'patientIdentification', header: 'ID' },
+      { field: 'patientRut', header: 'Rut' },
+      { field: 'patientName', header: 'Nombre' },
+      { field: 'patientLastName', header: 'Apellido' },
     ];
 
     this.subCols = [
       // { field: 'masterRecord', header: 'Id' },
-      {field: 'cycleNumber', header: 'Ciclo'},
-      {field: 'unitHospitalName', header: 'Un. Hosp'},
-      {field: 'productionDate', header: 'Producción'},
-      {field: 'diagnosisName', header: 'Diag'},
-      {field: 'schemaName', header: 'Esquema'},
+      { field: 'cycleNumber', header: 'Ciclo' },
+      { field: 'unitHospitalName', header: 'Un. Hosp' },
+      { field: 'productionDate', header: 'Producción' },
+      { field: 'diagnosisName', header: 'Diag' },
+      { field: 'schemaName', header: 'Esquema' },
     ];
 
     this.detailTableCols = [
-      {field: 'masterRecord', header: 'ID'},
-      {field: 'via.description', header: 'Via'},
-      {field: 'productCode', header: 'P. Code'},
-      {field: 'productName', header: 'Prod.'},
-      {field: 'quantity', header: 'Dosis.'},
-      {field: 'batch', header: 'Lote'},
-      {field: 'complementName', header: 'Vol.'},
+      { field: 'masterRecord', header: 'ID' },
+      { field: 'status', header: 'Estado' },
+      { field: 'via.description', header: 'Via' },
+      { field: 'productCode', header: 'P. Code' },
+      { field: 'productName', header: 'Prod.' },
+      { field: 'quantity', header: 'Dosis.' },
+      { field: 'batch', header: 'Lote' },
+      { field: 'complementName', header: 'Vol.' },
     ];
   }
 
@@ -389,6 +444,19 @@ export class ListManufactureComponent
     const hours = String(inDate.getHours()).padStart(2, '0');
     const minutes = String(inDate.getMinutes()).padStart(2, '0');
     return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }
+
+  getSeverity(status: string) {
+    switch (status) {
+      case 'ACTIVE':
+        return 'success';
+      case 'PENDING':
+        return 'warning';
+      case 'SUSPENDED':
+        return 'danger';
+      default:
+        return 'info';
+    }
   }
 
   parseFieldInData(data: any, field: string) {
@@ -404,7 +472,7 @@ export class ListManufactureComponent
           .map((part: any) => part.batch)
           .join('//');
       }
-      if(field === 'quantity') {
+      if (field === 'quantity') {
         return acc.quantity + ' ' + acc.unitMetric;
       }
       return acc[obj];
@@ -434,11 +502,13 @@ export class ListManufactureComponent
         diagnosisOrder: item.diagnosisOrderStage.diagnosisPatient.id,
         viaDescription: item.viaDescription,
         pharmaceuticalChemist: item.pharmaceuticalChemist,
+        administrationDate: item.administrationDate,
+        bedDay: item.bedDay,
         doctorName: item.doctorName,
         unitHospitalName: item.unitHospitalName,
         idDiagnosisOrder: item.diagnosisOrderStage.id,
         serviceName:
-        item.diagnosisOrderStage.diagnosisPatient?.services?.description,
+          item.diagnosisOrderStage.diagnosisPatient?.services?.description,
         idMasterId: item.id,
         orderDetails: item.orderDetails || [],
         diagnosisName: item.diagnosisName,
@@ -446,7 +516,8 @@ export class ListManufactureComponent
         cycleDay: item.cycleDay,
         schemaName: item.schemaName,
         concentration: item.concentration,
-        state: item.state,
+        status: item.status,
+        reasonForSuspension: item.reasonForSuspension,
       });
       return acc;
     }, {});
@@ -468,8 +539,14 @@ export class ListManufactureComponent
     setTimeout(() => {
       const input = document.getElementById('concentration');
       if (input) {
-        input.addEventListener('focus', () => this.isManualConcentration = true);
-        input.addEventListener('blur', () => this.isManualConcentration = false);
+        input.addEventListener(
+          'focus',
+          () => (this.isManualConcentration = true),
+        );
+        input.addEventListener(
+          'blur',
+          () => (this.isManualConcentration = false),
+        );
       }
     });
     this.calculateConcentration();
@@ -482,6 +559,8 @@ export class ListManufactureComponent
     this.initComboCommercialProduct();
     this.initComboUnitMetric();
     this.initConditionCombo();
+    this.initBedDay();
+    this.initStatusCombo();
   }
 
   initConditionCombo() {
@@ -498,20 +577,28 @@ export class ListManufactureComponent
         code: 'Administrar con filtro de 0,45 mcm',
         name: 'Administrar con filtro de 0,45 mcm',
       },
-      {code: 'Intratecal', name: 'Intratecal'},
+      { code: 'Intratecal', name: 'Intratecal' },
+      { code: '96 horas a T° ambiente', name: '96 horas a T° ambiente' },
     ];
   }
 
   initComboUnitMetric() {
     // ML, L, MG, KG, UN, UI, MCG
     this.unitMetricCombo = [
-      {code: 'ML', name: 'ML'},
-      {code: 'L', name: 'L'},
-      {code: 'MG', name: 'MG'},
-      {code: 'KG', name: 'KG'},
-      {code: 'UN', name: 'UN'},
-      {code: 'UI', name: 'UI'},
-      {code: 'MCG', name: 'MCG'},
+      { code: 'ML', name: 'ML' },
+      { code: 'L', name: 'L' },
+      { code: 'MG', name: 'MG' },
+      { code: 'KG', name: 'KG' },
+      { code: 'UN', name: 'UN' },
+      { code: 'UI', name: 'UI' },
+      { code: 'MCG', name: 'MCG' },
+    ];
+  }
+
+  initBedDay() {
+    this.bedDayCombo = [
+      { code: 'N/A', name: 'N/A' },
+      { code: 'SI', name: 'SI' },
     ];
   }
 
@@ -580,9 +667,10 @@ export class ListManufactureComponent
     this.currentTableSelectedMaster = {};
   }
 
-
   updateFormula() {
-    const expirationHours = Number(this.orderDetailForm.value.expirationDate);
+    const expirationHours = Number(
+      new Date(this.orderDetailForm.value.expirationDate),
+    );
     const patchFormula: MasterOrderDetailsUpdateFormResourceDto = {
       master: this.currentTableSelectedDetail.idMasterId,
       masterRecord: this.masterRecordPath,
@@ -591,7 +679,12 @@ export class ListManufactureComponent
         via: this.orderDetailForm.value.via?.code,
         dose: this.orderDetailForm.value.dose,
         productionDate: this.orderDetailForm.value.productionDate,
-        expirationDate: new Date(this.orderDetailForm.value.productionDate.getTime() + expirationHours * 60 * 60 * 1000),
+        administrationDate: this.orderDetailForm.value.administrationDate,
+        bedDay: this.orderDetailForm.value.bedDay?.code,
+        expirationDate: new Date(
+          this.orderDetailForm.value.productionDate.getTime() +
+            expirationHours * 60 * 60 * 1000,
+        ),
         unitMetric: this.orderDetailForm.value.unitMetric?.code,
         complementCode: this.orderDetailForm.value.complement?.code,
         volTotal: this.orderDetailForm.value.volTotal,
@@ -600,6 +693,7 @@ export class ListManufactureComponent
         administrationTime: this.orderDetailForm.value.administrationTime,
         concentration: this.orderDetailForm?.value?.concentration,
         observation: this.orderDetailForm.value.observation,
+        status: this.orderDetailForm.value.status,
         commercialPart: this.orderDetailForm.value.commercialPart.map(
           (c: any) => ({
             commercial: c.commercial?.code,
@@ -621,14 +715,13 @@ export class ListManufactureComponent
       error: (err) => {
         this.messageError = 'No se logró actualizar la fórmula';
         this.displayError = true;
+        console.log(err);
       },
       complete: () => {
         this.isLoadingUpdate = false;
       },
     });
   }
-
-
 
   detailProduct(detail: any, master: any) {
     this.masterDetailTable = detail.orderDetails;
@@ -638,21 +731,37 @@ export class ListManufactureComponent
   }
 
   formatDateTimeSeparated(inDate: any) {
-    // let timestamp;
-    // if (inDate instanceof Date) {
-    //   timestamp = inDate.getTime() * 1000;
-    // } else {
-    //   timestamp = inDate * 1000;
-    // }
-    const date = new Date(inDate * 1000);
+    let date;
+    if (inDate instanceof Date) {
+      date = inDate;
+    } else if (
+      (typeof inDate === 'number' && !isNaN(inDate)) ||
+      typeof inDate === 'string'
+    ) {
+      date = new Date(inDate);
+    } else {
+      return {
+        formattedDate: 'Error',
+        formattedTime: 'N/A',
+      };
+    }
+    if (isNaN(date.getTime())) {
+      return {
+        formattedDate: 'Inválida',
+        formattedTime: 'Inválida',
+      };
+    }
+
+    // 2. Extracción y Formato (tu lógica original)
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // +1 porque enero es 0
     const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
     const formattedDate = `${day}/${month}/${year}`;
     const formattedTime = `${hours}:${minutes}`;
+
     return {
       formattedDate,
       formattedTime,
@@ -677,14 +786,15 @@ export class ListManufactureComponent
         canvasContainer?.appendChild(headCanvas);
         await this.zebraPrintService.previewLabel(headZpl, headCanvasId);
         for (let i = 0; i < detail.orderDetails.length; i++) {
-          const zpl = this.generateZplDetail(detail, i, master);
-          const canvasId = `labelCanvas${i}`;
-          const canvasContainer = document.getElementById('canvasContainer');
-          const canvas = document.createElement('canvas');
-          canvas.id = canvasId;
-          canvasContainer?.appendChild(canvas);
-          await this.zebraPrintService.previewLabel(zpl, canvasId);
-
+          if (detail.orderDetails[i].status === 'ACTIVE') {
+            const zpl = this.generateZplDetail(detail, i, master);
+            const canvasId = `labelCanvas${i}`;
+            const canvasContainer = document.getElementById('canvasContainer');
+            const canvas = document.createElement('canvas');
+            canvas.id = canvasId;
+            canvasContainer?.appendChild(canvas);
+            await this.zebraPrintService.previewLabel(zpl, canvasId);
+          }
         }
       } catch (error) {
         console.error('Error previewing label:', error);
@@ -719,8 +829,16 @@ export class ListManufactureComponent
   }
 
   private generateZplDetail(detail: any, i: number, master: any) {
-    const laboratory = detail.orderDetails[i].commercialOrderDetails[0]?.laboratory || 'N/A';
-    const truncatedLab = laboratory.length > 33 ? laboratory.substring(0, 33) + '...' : laboratory;
+    const laboratory =
+      detail.orderDetails[i].commercialOrderDetails[0]?.laboratory || 'N/A';
+    const truncatedLab =
+      laboratory.length > 33 ? laboratory.substring(0, 33) + '...' : laboratory;
+    let doseForCeroOne = `^FO114,320^A0N^FD${detail.orderDetails[i].productName} ${detail.orderDetails[i].quantity} ${detail.orderDetails[i].unitMetric}^FS`;
+    let doseForCeroTwo = `^FO115,321^A0N^FD${detail.orderDetails[i].productName} ${detail.orderDetails[i].quantity} ${detail.orderDetails[i].unitMetric}^FS`;
+    if (detail.orderDetails[i].quantity === 0) {
+      doseForCeroOne = `^FO114,320^A0N^FD${detail.orderDetails[i].productName} ^FS`;
+      doseForCeroTwo = `^FO115,321^A0N^FD${detail.orderDetails[i].productName} ^FS`;
+    }
     return `^XA
 ^PW1000
 ^LL1000
@@ -739,38 +857,42 @@ export class ListManufactureComponent
 ^FO190,140^AN^FD${master.patientLastName}, ${master.patientName}^FS
 ^FO20,170^AN^FDN° RUT:^FS
 ^FO110,170^AN^FD${master.patientRut}^FS
-^FO500,170^AN^FDR.M.: ^FS
-^FO560,170^AN^FD${detail.orderDetails[i].masterRecord}^FS
+^FO540,170^AN^FDR.M.: ^FS
+^FO600,170^AN^FD${detail.orderDetails[i].masterRecord}^FS
 ^FO20,200^AN^FDInstitución:^FS
 ^FO161,200^AN^FD${detail.serviceName}^FS
-^FO520,200^AN^FDOrden:  ^FS
-^FO590,200^AN^FD${i + 1}/${detail.orderDetails.length}^FS
+^FO540,200^AN^FDOrden:  ^FS
+^FO610,200^AN^FD${i + 1}/${detail.orderDetails.length}^FS
 ^FO20,230^AN^FDEsquema:^FS
 ^FO125,230^AN^FD${detail.schemaName},^FS
-^FO420,230^AN^FDCiclo:^FS
-^FO510,230^AN^FD${detail.cycleNumber}^FS
+^FO540,230^AN^FDCiclo:^FS
+^FO610,230^AN^FD${detail.cycleNumber}^FS
 ^FO20,260^AN^FDDiagnóstico: ^FS
 ^FO165,260^AN^FD${detail.diagnosisName}^FS
+^FO540,260^AN^FDCama: ^FS
+^FO610,260^AN^FD${detail.orderDetails[i].bedDay}^FS
 ^FO20,290^GB750,3,3^FS
 ^FO20,320^A0N^FDDroga: ^FS
 ^FO21,321^A0N^FDDroga: ^FS
-^FO114,320^A0N^FD${detail.orderDetails[i].productName} ${detail.orderDetails[i].quantity} ${detail.orderDetails[i].unitMetric}^FS
-^FO115,321^A0N^FD${detail.orderDetails[i].productName} ${detail.orderDetails[i].quantity} ${detail.orderDetails[i].unitMetric}^FS
+${doseForCeroOne}
+${doseForCeroTwo}
 ^FO20,350^A0N^FD${detail.orderDetails[i].complementName}^FS
 ^FO21,351^A0N^FD${detail.orderDetails[i].complementName}^FS
 ^FO20,380^A0N^FDVol.Total:^FS
 ^FO21,381^A0N^FDVol.Total:^FS
 ^FO150,380^A0N^FD${detail.orderDetails[i].volumeTotal} mL,^FS
 ^FO151,381^A0N^FD${detail.orderDetails[i].volumeTotal} mL,^FS
-^FO330,380^AN^FDTiempo:  ^FS
-^FO420,380^AN^FD${detail.orderDetails[i].administrationTime}^FS
+^FO380,380^AN^FDTiempo:  ^FS
+^FO470,380^AN^FD${detail.orderDetails[i].administrationTime}^FS
 ^FO20,410^AN^FDVía adm.:^FS
 ^FO130,410^AN^FD${detail.orderDetails[i].via.description} ^FS
-^FO300,410^AN^FD${detail.orderDetails[i].prot}^FS
+^FO380,410^AN^FD${detail.orderDetails[i].prot}^FS
 ^FO20,440^AN^FDPrecaución: ^FS
 ^FO165,440^AN^FD${detail.orderDetails[i].condition || 'Sin Observación'}^FS
 ^FO20,470^AN^FD${detail.orderDetails[i].observation || ''}^FS
-^FO20,500^GB750,3,3^FS
+^FO20,500^AN^FDFecha Administración: ^FS
+^FO250,500^AN^FD${this.formatDateTimeSeparated(detail.orderDetails[i].administrationDate).formattedDate}^FS
+^FO20,520^GB750,3,3^FS
 ^FO20,530^AN^FDMédico Resp.: ^FS
 ^FO180,530^AN^FD${detail.doctorName}^FS
 ^FO550,530^AN^FDDía:^FS
@@ -800,10 +922,11 @@ export class ListManufactureComponent
 ^XZ`;
   }
 
+  headCount = 0;
   openCopyDialog() {
     const lengthDetails = this.printDetail?.detail?.orderDetails?.length;
     if (lengthDetails) {
-      this.copyValues = Array.from({length: lengthDetails}, () => 1);
+      this.copyValues = Array.from({ length: lengthDetails }, () => 1);
     }
     this.copyDialog = true;
   }
@@ -817,11 +940,13 @@ export class ListManufactureComponent
         return;
       }
       this.zebraPrintService.setPrinter(printers[0]);
-      const headZpl = this.generateHeadZpl(
-        this.printDetail.detail,
-        this.printDetail.master,
-      );
-      await this.zebraPrintService.print(headZpl);
+      if (this.headCount > 0) {
+        const headZpl = this.generateHeadZpl(
+          this.printDetail.detail,
+          this.printDetail.master,
+        );
+        await this.zebraPrintService.print(headZpl);
+      }
       for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
         const zpl = this.generateZplDetail(
           this.printDetail.detail,
@@ -832,7 +957,6 @@ export class ListManufactureComponent
         for (let f = 0; f < copies; f++) {
           await this.zebraPrintService.print(zpl);
         }
-
       }
     } catch (error) {
       console.error('Error during printing process:', error);
@@ -846,7 +970,7 @@ export class ListManufactureComponent
   editProductionProcess(details: any, operation: string) {
     this.operation = operation;
     this.dialogTitle = 'Editar Fórmula ' + details?.masterRecord;
-    if(operation === 'for_history') {
+    if (operation === 'for_history') {
       this.dialogTitle = 'Crear en base al histórico ' + details?.masterRecord;
     }
     this.masterRecordPath = details?.masterRecord;
@@ -856,22 +980,23 @@ export class ListManufactureComponent
       part: part.quantity,
     }));
     this.initFormOrderDetails(commercial);
-    if(operation === 'for_history') {
-      details.productionDate = new Date(this.detailHistoryBackup.productionDate);
+    if (operation === 'for_history') {
+      details.productionDate = new Date(
+        this.detailHistoryBackup.productionDate,
+      );
       details.expirationDate = null;
     }
     let diffHours = null;
-    if(details.expirationDate){
-      const productionDate = details.productionDate;
-      const expirationDate = details.expirationDate;
-
-      const diffSeconds = expirationDate - productionDate;
-      diffHours = diffSeconds / 3600; // 3600 segundos en una hora
+    if (details.expirationDate) {
+      const productionDate = new Date(details.productionDate);
+      const expirationDate = new Date(details.expirationDate);
+      const diffSeconds = expirationDate.getTime() - productionDate.getTime();
+      diffHours = diffSeconds / 3600 / 1000; // 3600 segundos en una hora
     }
-
     this.orderDetailForm.patchValue({
       via: details.via,
       productionDate: new Date(details.productionDate),
+      administrationDate: new Date(details.administrationDate),
       expirationDate: diffHours,
       productName: this.productCombo.find(
         (f) => f.name === details.productName,
@@ -880,12 +1005,14 @@ export class ListManufactureComponent
       unitMetric: this.unitMetricCombo.find(
         (f) => f.name === details.unitMetric,
       ),
+      bedDay: this.bedDayCombo.find((f) => f.code === details.bedDay),
       complement: this.complementCombo.find(
         (f) => f.name === details.complementName,
       ),
       volTotal: details.volumeTotal,
       prot: details.prot,
       concentration: details.concentration,
+      status: details.status,
       condition: this.conditionCombo.find((f) => f.name === details.condition),
       administrationTime: details.administrationTime,
       observation: details.observation,
@@ -898,12 +1025,17 @@ export class ListManufactureComponent
     setTimeout(() => {
       const input = document.getElementById('concentration');
       if (input) {
-        input.addEventListener('focus', () => this.isManualConcentration = true);
-        input.addEventListener('blur', () => this.isManualConcentration = false);
+        input.addEventListener(
+          'focus',
+          () => (this.isManualConcentration = true),
+        );
+        input.addEventListener(
+          'blur',
+          () => (this.isManualConcentration = false),
+        );
       }
     });
     this.calculateConcentration();
-
   }
 
   confirmDialog($event: boolean) {
@@ -917,6 +1049,9 @@ export class ListManufactureComponent
 
   masterHistoryBackup!: any;
   detailHistoryBackup!: any;
+  statusModal = false;
+  reasonForSuspension = '';
+  statusOrder: any = null;
 
   initHistoryManufacture(detail: any, master: any) {
     this.masterHistoryBackup = master;
@@ -939,7 +1074,7 @@ export class ListManufactureComponent
     const expirationHours = Number(formValue.expirationDate);
     const masterOrder: MasterOrderFormResourceDto = {
       patientIdentification:
-      this.currentTableSelectedMaster.patientIdentification,
+        this.currentTableSelectedMaster.patientIdentification,
       via: formValue.via.code,
       diagnosisOrder: this.currentTableSelectedDetail.idDiagnosisOrder,
       master: this.currentTableSelectedDetail.idMasterId,
@@ -948,11 +1083,16 @@ export class ListManufactureComponent
         productCode: formValue.productName.code,
         dose: formValue.dose,
         productionDate: formValue.productionDate,
-        expirationDate: new Date(formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000),
+        administrationDate: formValue.administrationDate,
+        bedDay: formValue.bedDay?.code,
+        expirationDate: new Date(
+          formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000,
+        ),
         unitMetric: formValue.unitMetric.code,
         complementCode: formValue.complement.code,
         volTotal: formValue.volTotal,
         prot: formValue.prot,
+        status: '',
         condition: formValue.condition.code,
         administrationTime: formValue.administrationTime,
         observation: formValue.observation,
@@ -988,8 +1128,7 @@ export class ListManufactureComponent
     const formValue = this.orderDetailForm.value;
     const expirationHours = Number(formValue.expirationDate);
     const masterOrder: MasterOrderFormResourceDto = {
-      patientIdentification:
-      this.masterHistoryBackup.patientIdentification,
+      patientIdentification: this.masterHistoryBackup.patientIdentification,
       via: formValue.via.code,
       diagnosisOrder: this.detailHistoryBackup.idDiagnosisOrder,
       master: this.detailHistoryBackup.idMasterId,
@@ -998,14 +1137,19 @@ export class ListManufactureComponent
         productCode: formValue.productName.code,
         dose: formValue.dose,
         productionDate: formValue.productionDate,
-        expirationDate: new Date(formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000),
+        expirationDate: new Date(
+          formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000,
+        ),
         unitMetric: formValue.unitMetric.code,
         complementCode: formValue.complement.code,
+        administrationDate: formValue.administrationDate,
+        bedDay: formValue.bedDay?.code,
         volTotal: formValue.volTotal,
         prot: formValue.prot,
         condition: formValue?.condition?.code,
         administrationTime: formValue.administrationTime,
         observation: formValue.observation,
+        status: formValue.status,
         concentration: formValue?.concentration,
         commercialPart: formValue.commercialPart.map((c: any) => ({
           commercial: c.commercial.code,
@@ -1041,13 +1185,76 @@ export class ListManufactureComponent
     if (this.operation == 'updated') {
       this.updateFormula();
     }
-    if(this.operation == 'for_history') {
+    if (this.operation == 'for_history') {
       this.createFormulaFromHistory();
     }
+    this.loadMasterOrders();
   }
 
   historyUsed(masterUsed: any) {
     this.operation = 'for_history';
     this.editProductionProcess(masterUsed.orderDetails[0], 'for_history');
+  }
+
+  masterRecordChangeStatus = '';
+  previewStatusOrder = '';
+
+  protected editStatusOrder(master: any) {
+    this.masterRecordChangeStatus = master.masterRecord;
+    this.statusOrder = this.statusCombo.find((f) => f.code === master.status);
+    this.reasonForSuspension = master.reasonForSuspension || '';
+    this.previewStatusOrder = this.statusOrder.code;
+    this.statusModal = true;
+  }
+
+  private initStatusCombo() {
+    this.statusCombo = [
+      { code: 'ACTIVE', name: 'ACTIVE' },
+      { code: 'PENDING', name: 'PENDING' },
+      { code: 'SUSPENDED', name: 'SUSPENDED' },
+    ];
+  }
+
+  protected changeStatus() {
+    this.isLoadingUpdate = true;
+    if (
+      this.previewStatusOrder === 'PENDING' &&
+      this.statusOrder.code === 'ACTIVE'
+    ) {
+      this.messageError =
+        'No se puede cambiar de PENDING a ACTIVE ya que le falta crear Producto Comercial';
+      this.displayError = true;
+      this.isLoadingUpdate = false;
+      this.statusModal = false;
+      this.prepareDialogDetail = false;
+      return;
+    }
+    this.orderDetailService
+      .changeStatus(
+        this.masterRecordChangeStatus,
+        this.statusOrder.code,
+        this.reasonForSuspension,
+      )
+      .subscribe({
+        next: (value) => {
+          this.statusModal = false;
+          this.prepareDialogDetail = false;
+          this.displayOk = true;
+          this.reasonForSuspension = '';
+        },
+        error: (err) => {
+          this.messageError = 'No se logró cambiar el estado del preparado';
+          this.displayError = true;
+        },
+        complete: () => {
+          this.isLoadingUpdate = false;
+          this.loadMasterOrders();
+        },
+      });
+  }
+
+  protected prepareMenu($event: Event, master: any, detail: any, menu: any) {
+    this.items = this.getMenuItems(master, detail);
+    menu.toggle($event);
   }
 }

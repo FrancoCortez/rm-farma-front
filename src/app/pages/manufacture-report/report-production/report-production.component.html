@@ -5,7 +5,8 @@
                [columns]="selectedColumns"
                [paginator]="true"
                [rowHover]="true"
-               [rows]="10"
+               [rowsPerPageOptions]="[10,20,30,40,50]"
+               [rows]="30"
                [tableStyle]="{'min-width': '50rem'}"
                [value]=manufactureReports
                [exportFilename]="'reporte-produccion_' + nowDate"
@@ -44,9 +45,11 @@
               </p-selectButton>
             </div>
             <div class="field md:col-4"></div>
-            <div class="field col-12 md:col-2">
-              <button pButton pRipple label="Export Csv" icon="pi pi-upload" class="p-button-help"
-                      (click)="dt.exportCSV({  })"></button>
+            <div class="field col-12 md:col-2 flex align-items-center justify-content-end">
+              <button pButton pRipple label="CSV" icon="pi pi-file-excel" class="p-button-help mr-3"
+                      (click)="dt.exportCSV()"></button>
+              <button pButton pRipple label="Excel" icon="pi pi-file-excel" class="p-button-help"
+                      (click)="exportExcel()"></button>
             </div>
           </div>
           <div *ngIf="stateSelection==='personalize'" class="card grid p-fluid mt-3">

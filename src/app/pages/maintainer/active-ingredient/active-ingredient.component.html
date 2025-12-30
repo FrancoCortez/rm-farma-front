@@ -1,0 +1,104 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button pButton pRipple label="Nuevo" (click)="openCreateModal()" icon="pi pi-plus"
+                    class="p-button-success mr-2"></button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <button pButton label="CSV" icon="pi pi-file-excel" class="p-button-help mr-3" (click)="dt.exportCSV()"></button>
+          <button pButton label="Excel" icon="pi pi-file-excel" class="p-button-help" (click)="exportExcel()"></button>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table #dt
+               [columns]="cols"
+               [paginator]="true"
+               [rowsPerPageOptions]="[10,20,30,40,50]"
+               [showCurrentPageReport]="true"
+               currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} principios activos"
+               [rowHover]="true"
+               [rows]="30"
+               [tableStyle]="{'min-width': '50rem'}"
+               [value]=activeIngredientList
+               [exportFilename]="'pa_' + nowDate"
+               responsiveLayout="scroll"
+               [scrollable]="true"
+               [globalFilterFields]="['code', 'description']"
+               [loading]="loadingReport"
+               dataKey="id"
+               styleClass="p-datatable-gridlines">
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Administrador de Principios Activos</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."
+                     class="w-full sm:w-auto">
+            </span>
+          </div>
+        </ng-template>
+        <ng-template let-columns pTemplate="header">
+          <tr>
+            <th *ngFor="let col of columns" style="min-width: 14rem;">
+              {{ col.header }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template let-columns="columns" let-details pTemplate="body">
+          <tr>
+            <td *ngFor="let col of columns">
+              {{ parseFieldInData(details, col.field) }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="createDialogVisible" [modal]="true" [style]="{width: '600px'}" class="p-fluid"
+          [header]="'Creación de Principio Activo'">
+  <ng-template pTemplate="content">
+    <form [formGroup]="activeIngredientCreateForm">
+      <div class="flex flex-column">
+        <div class="justify-content-center align-content-center font medium">
+          <div class="grid p-fluid mt-3">
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="activeIngredientCreateForm.get('code')" id="code" type="text" pInputText
+                       formControlName="code"/>
+                <label for="code">Código</label>
+              </span>
+              <app-form-validation-messages [control]="activeIngredientCreateForm.get('code')" [errorType]="'required'"
+                                            [message]="'El código del PA es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <input [appFormControlStatus]="activeIngredientCreateForm.get('description')" id="description" type="text" pInputText
+                       formControlName="description"/>
+                <label for="name">Nombre y/o Descripción</label>
+              </span>
+              <app-form-validation-messages [control]="activeIngredientCreateForm.get('description')" [errorType]="'required'"
+                                            [message]="'El nombre y/o descripción del PA es obligatorio'"></app-form-validation-messages>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button class="p-button-text p-button-secondary" (click)="cancelModal()" icon="pi pi-times" label="Cancelar" pButton pRipple></button>
+    <button [disabled]="activeIngredientCreateForm.invalid" (click)="saveActiveIngredient()" class="p-button-text" icon="pi pi-check" label="Agregar" pButton pRipple></button>
+  </ng-template>
+</p-dialog>
+
+
+<app-spinner *ngIf="isLoadingUpdate"></app-spinner>
+<app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
+                   [message]="'Se ha creado el PA con éxito'"></app-modal-success>
+<app-modal-error (confirm)="confirmDialogError($event)" [display]="displayError"
+                 [message]="messageError"></app-modal-error>

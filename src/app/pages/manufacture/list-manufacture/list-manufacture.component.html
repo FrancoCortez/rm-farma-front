@@ -10,7 +10,8 @@
                [expandedRowKeys]="expandedRows"
                [paginator]="true"
                [rowHover]="true"
-               [rows]="10"
+               [rowsPerPageOptions]="[10,20,30,40,50]"
+               [rows]="30"
                [tableStyle]="{'min-width': '50rem'}"
                [value]="masterOrders"
                dataKey="patientIdentification"
@@ -48,7 +49,7 @@
                 <input (ngModelChange)="updateFilters()" [(ngModel)]="searchIdentification" id="identification"
                        pInputText
                        type="text">
-                <label for="identification">Identificación</label>
+                <label for="identification">Buscar...</label>
               </span>
             </div>
             <div class="col-12 md:col-4">
@@ -91,38 +92,30 @@
                          styleClass="p-datatable-gridlines">
                   <ng-template let-columns pTemplate="header">
                     <tr>
-                      <th></th>
-                      <th>Hist</th>
                       <th *ngFor="let cols of columns" style="min-width: 12rem">
                         {{ cols.header }}
                       </th>
-                      <th></th>
                       <th></th>
                     </tr>
                   </ng-template>
                   <ng-template let-columns="columns" let-detail pTemplate="body">
                     <tr>
-                      <td>
-                        <button (click)="initProcessManufacture(detail, master)" class="p-button-rounded p-button-info"
-                                icon="pi pi-plus-circle" pButton pRipple type="button"></button>
-                      </td>
-                      <td class="justify-content-center align-items-center">
-                        <button
-                                (click)="initHistoryManufacture(detail, master)" class="p-button-rounded p-button-info"
-                                icon="pi pi-search" pButton pRipple type="button"></button>
-                      </td>
                       <td *ngFor="let cols of columns">
                         {{ parseFieldInData(detail, cols.field) }}
                       </td>
+<!--                      <td>-->
+<!--                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)"-->
+<!--                                class="p-button-rounded p-button-info"-->
+<!--                                icon="pi pi-info" pButton pRipple type="button"></button>-->
+<!--                      </td>-->
+<!--                      <td>-->
+<!--                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)"-->
+<!--                                class="p-button-rounded p-button-info"-->
+<!--                                icon="pi pi-print" pButton pRipple type="button"></button>-->
+<!--                      </td>-->
                       <td>
-                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)"
-                                class="p-button-rounded p-button-info"
-                                icon="pi pi-info" pButton pRipple type="button"></button>
-                      </td>
-                      <td>
-                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)"
-                                class="p-button-rounded p-button-info"
-                                icon="pi pi-print" pButton pRipple type="button"></button>
+                        <button pButton type="button" icon="pi pi-ellipsis-v" (click)="prepareMenu($event, master, detail, menu)" class="p-button-text p-button-plain"></button>
+                        <p-menu appendTo="body"  #menu [popup]="true" [model]="items"></p-menu>
                       </td>
                     </tr>
                   </ng-template>
@@ -184,6 +177,7 @@
                                formControlName="expirationDate"
                                prefix="Expira en "
                                suffix=" hrs"
+                               mode="decimal" [minFractionDigits]="1" [maxFractionDigits]="1"
                                id="expirationDate"></p-inputNumber>
                 <label for="expirationDate">Fecha Vencimiento</label>
               </span>
@@ -217,6 +211,33 @@
             </div>
             <div class="field col-12 md:col-6">
               <span class="p-float-label">
+                <p-calendar [appFormControlStatus]="orderDetailForm.get('administrationDate')"
+                            dateFormat="dd/mm/yy" formControlName="administrationDate"
+                            id="administrationDate"></p-calendar>
+                <label for="administrationDate">Fecha de Administración</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('administrationDate')"
+                                            [errorType]="'required'"
+                                            [message]="'La fecha de administración es obligatoria'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-3">
+              <span class="p-float-label">
+                <p-dropdown [appFormControlStatus]="orderDetailForm.get('bedDay')" [filter]="true"
+                            [options]="bedDayCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron Días de Cama"
+                            emptyMessage="No se encontraron días de cama" filterBy="name" formControlName="bedDay"
+                            id="bedDay" optionLabel="name"
+                            placeholder="Seleccione Día Cama"></p-dropdown>
+                <label for="productName">Día Cama</label>
+              </span>
+              <app-form-validation-messages [control]="orderDetailForm.get('unitMetric')"
+                                            [errorType]="'required'"
+                                            [message]="'La unidad de medida es obligatorio'"></app-form-validation-messages>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
                 <p-dropdown [appFormControlStatus]="orderDetailForm.get('productName')" [filter]="true"
                             [options]="productCombo" dataKey="code"
                             [virtualScroll]="true"
@@ -233,9 +254,10 @@
             </div>
             <div class="field col-12 md:col-3">
               <span class="p-float-label">
-                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('dose')" autocomplete="off"
+                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('dose')"
+                               autocomplete="off"
                                formControlName="dose"
-                                [mode]="'decimal'"
+                               [mode]="'decimal'"
                                [minFractionDigits]="0"
                                [maxFractionDigits]="4"
                                id="dose"></p-inputNumber>
@@ -335,6 +357,7 @@
                             [options]="conditionCombo" dataKey="code"
                             [virtualScroll]="true"
                             [virtualScrollItemSize]="38"
+                            [showClear]="true"
                             emptyFilterMessage="No se encontraron complementos"
                             emptyMessage="No existen Complementos en Sistema" filterBy="name"
                             formControlName="condition"
@@ -439,9 +462,9 @@
            responsiveLayout="scroll"
            styleClass="p-datatable-gridlines">
     <ng-template let-columns pTemplate="header">
-
       <tr>
         <th></th>
+<!--        <th></th>-->
         <th *ngFor="let col of columns" style="min-width: 12rem">
           {{ col.header }}
         </th>
@@ -453,9 +476,16 @@
           <button (click)="editProductionProcess(master, 'updated')" class="p-button-rounded p-button-info"
                   icon="pi pi-pencil"
                   pButton pRipple type="button"></button>
+
         </td>
         <td *ngFor="let col of columns">
-          {{ parseFieldInData(master, col.field) }}
+          @if (col.field === 'status') {
+            <td>
+              <p-tag [style]="{cursor: 'pointer'}" (click)="editStatusOrder(master)" [value]="master.status" [severity]="getSeverity(master.status)"/>
+            </td>
+          } @else {
+            {{ parseFieldInData(master, col.field) }}
+          }
         </td>
       </tr>
     </ng-template>
@@ -465,6 +495,16 @@
           header="Cantidad de Copias">
   <div class="flex flex-column">
     <div class="justify-content-center align-items-center font-medium">
+      <div class="grid p-fluid">
+        <div class="field col-8 md:col-8 mt-3">
+          Cabecera de la etiqueta
+        </div>
+        <div class="field col-4 md:col-4">
+          <span class="p-float-label">
+              <p-inputNumber  autocomplete="off" [(ngModel)]="headCount"></p-inputNumber>
+          </span>
+        </div>
+      </div>
       <div class="grid p-fluid" *ngFor="let detail of printDetail?.detail?.orderDetails; let i = index">
         <div class="field col-8 md:col-8 mt-3">
           {{ detail.masterRecord }} - {{ detail.productName }}
@@ -481,6 +521,50 @@
       </div>
     </div>
   </div>
+</p-dialog>
+
+<p-dialog [(visible)]="statusModal" [modal]="true" [style]="{width: '600px', height: '500px'}" class="p-fluid"
+          [header]="'Cambiar estado del preparado'">
+  <ng-template pTemplate="content">
+    <div class="flex flex-column">
+      <div class="justify-content-center align-items-center font-medium">
+        <div class="grid p-fluid mt-3">
+          <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <p-dropdown [filter]="true"
+                            [options]="statusCombo" dataKey="code"
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            emptyFilterMessage="No se encontraron estados" emptyMessage="No existen estados en Sistema"
+                            filterBy="name"
+                            [(ngModel)]="statusOrder"
+                            id="via" optionLabel="name"
+                            placeholder="Seleccione el estado"></p-dropdown>
+                <label for="via">Estado del Preparado</label>
+              </span>
+          </div>
+          <div class="field col-12 md:col-12">
+              <span class="p-float-label">
+                <textarea
+                  rows="5"
+                  cols="0"
+                  [(ngModel)]="reasonForSuspension"
+                  pInputTextarea
+                  >
+                </textarea>
+                <label for="description">Motivo</label>
+              </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
+            pRipple></button>
+    <button class="p-button-text"
+            icon="pi pi-check" label="Aplicar" (click)="changeStatus()"  pButton pRipple></button>
+  </ng-template>
 </p-dialog>
 
 

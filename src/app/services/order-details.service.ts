@@ -5,9 +5,8 @@ import { Observable } from 'rxjs';
 import { OrderDetailsReportResourceDto } from '../model/master-order-details/order-details-report.resource.dto';
 import { MasterOrderDetailsUpdateFormResourceDto } from '../model/master-order-details/master-order-details-update-form-resource.dto';
 import { OrderDetailsResumeReportResourceDto } from '../model/master-order-details/order-details-resume-report.resource.dto';
-import {
-  OrderDetailsConcentrateReportResourceDto
-} from "../model/master-order-details/order-details-concentrate-report.resource.dto";
+import { OrderDetailsConcentrateReportResourceDto } from '../model/master-order-details/order-details-concentrate-report.resource.dto';
+import { OrderDetailsHistoryPatientDto } from '../model/master-order-details/order-details-history-patient.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -55,7 +54,25 @@ export class OrderDetailsService {
     );
   }
 
+  public historyPatientReport(): Observable<OrderDetailsHistoryPatientDto[]> {
+    return this.http.get<OrderDetailsHistoryPatientDto[]>(
+      `${this.host}/order-details/generate/patient-history-report`,
+    );
+  }
+
   public updateDetail(body: MasterOrderDetailsUpdateFormResourceDto) {
     return this.http.put(`${this.host}/order-details/update`, body);
+  }
+
+  changeStatus(
+    masterRecord: string,
+    code: string,
+    reasonForSuspension: string,
+  ) {
+    return this.http.post(`${this.host}/order-details/update-status`, {
+      masterRecord,
+      code,
+      reasonForSuspension,
+    });
   }
 }

@@ -1,13 +1,25 @@
 [
   {
+    "label": "Información",
+    "routerLink": ["/main"]
+  },
+  {
     "label": "Administración",
     "items": [
       {
-        "label": "Administrador de Usuarios",
-        "icon": "pi pi-fw pi-home",
-        "routerLink": [
-          "/main"
-        ]
+        "label": "Esquemas",
+        "icon": "",
+        "routerLink": ["/main/maintainer/schemas"]
+      },
+      {
+        "label": "Principios Activos",
+        "icon": "",
+        "routerLink": ["/main/maintainer/pa"]
+      },
+      {
+        "label": "Marca Comercial",
+        "icon": "",
+        "routerLink": ["/main/maintainer/commercial-product"]
       }
     ]
   },
@@ -21,16 +33,12 @@
           {
             "label": "Listar Pacientes",
             "icon": "pi pi-list",
-            "routerLink": [
-              "/main/patient/list-patient"
-            ]
+            "routerLink": ["/main/patient/list-patient"]
           },
           {
             "label": "Registrar Paciente",
             "icon": "pi pi-plus",
-            "routerLink": [
-              "/main/patient/add-patient"
-            ]
+            "routerLink": ["/main/patient/add-patient"]
           }
         ]
       }
@@ -42,9 +50,7 @@
       {
         "label": "Check Paciente",
         "icon": "pi pi-fw pi-users",
-        "routerLink": [
-          "/main/check-patient/check-patient"
-        ]
+        "routerLink": ["/main/check-patient/check-patient"]
       }
     ]
   },
@@ -58,9 +64,7 @@
           {
             "label": "Listar Producción",
             "icon": "pi pi-list",
-            "routerLink": [
-              "/main/production/list-production"
-            ]
+            "routerLink": ["/main/production/list-production"]
           }
         ]
       }
@@ -76,23 +80,22 @@
           {
             "label": "Producción Recetario",
             "icon": "pi pi-list",
-            "routerLink": [
-              "/main/production-report/report-production"
-            ]
+            "routerLink": ["/main/production-report/report-production"]
           },
           {
             "label": "Resumen Producción Recetario",
             "icon": "pi pi-list",
-            "routerLink": [
-              "/main/production-report/report-resume-production"
-            ]
+            "routerLink": ["/main/production-report/report-resume-production"]
           },
           {
             "label": "Reporte Concentración",
             "icon": "pi pi-list",
-            "routerLink": [
-              "/main/production-report/report-concentration"
-            ]
+            "routerLink": ["/main/production-report/report-concentration"]
+          },
+          {
+            "label": "Reporte Historico Paciente",
+            "icon": "pi pi-list",
+            "routerLink": ["/main/production-report/report-historic-patient"]
           }
         ]
       }

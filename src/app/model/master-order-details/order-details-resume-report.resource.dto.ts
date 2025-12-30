@@ -7,6 +7,7 @@ export class OrderDetailsResumeReportResourceDto {
   lastName?: string;
   name?: string;
   productionDate?: Date | string;
+  productionDateHour?: Date | string;
   observation?: string;
   genericProduct?: string;
   cycleNumber?: number;

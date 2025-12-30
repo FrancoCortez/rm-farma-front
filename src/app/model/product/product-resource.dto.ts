@@ -2,5 +2,6 @@ export class ProductResourceDto {
   id?: string;
   code?: string;
   description?: string;
-  laboratory?: string;
+  createdDate?: Date;
+  lastModifiedDate?: Date;
 }

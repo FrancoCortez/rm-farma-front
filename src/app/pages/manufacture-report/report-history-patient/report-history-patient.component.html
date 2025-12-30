@@ -8,12 +8,13 @@
                [rowsPerPageOptions]="[10,20,30,40,50]"
                [rows]="30"
                [tableStyle]="{'min-width': '50rem'}"
-               [value]=manufactureReports
-               [exportFilename]="'reporte_concentration_' + nowDate"
+               [value]=historyPatient
+               [exportFilename]="'report-history_patient_' + nowDate"
                responsiveLayout="scroll"
                [scrollable]="true"
                [loading]="loadingReport"
-               dataKey="name"
+               [globalFilterFields]="['fullPatientName', 'patientRut','patientIdentification']"
+               dataKey="patientRut"
                styleClass="p-datatable-gridlines">
         <ng-template pTemplate="caption">
           <div class="grid p-fluid mt-3">
@@ -36,29 +37,12 @@
             </div>
             <div class="field md:col-8"></div>
             <div class="field col-12 md:col-6">
-              <span class="p-float-label">
-                <p-calendar [(ngModel)]="searchDay" id="searchDay"
-                            dateFormat="dd/mm/yy"
-                            (onSelect)="selectedDay()"
-                            inputId="searchDay"></p-calendar>
-                <label for="searchDay">Fecha</label>
-              </span>
+             <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar...">
+            </span>
             </div>
             <div class="field md:col-4">
-            <span class="p-float-label">
-                  <p-dropdown [filter]="true"
-                              [options]="hospitalUnitCombo"
-                              appendTo="body" dataKey="code"
-                              [virtualScroll]="true"
-                              [virtualScrollItemSize]="38"
-                              emptyFilterMessage="No se encontro unidad hispitalaria"
-                              emptyMessage="No existen unidades hospitalarias en Sistema" filterBy="name"
-                              id="hospitalUnit" optionLabel="name"
-                              (onChange)="filterUnitHospital($event.value)"
-                              [showClear]="true"
-                              placeholder="Seleccione Unidad Hospitalaria"></p-dropdown>
-                  <label for="hospitalUnit">Unidad Hospitalaria</label>
-                </span>
             </div>
             <div class="field col-12 md:col-2 flex align-items-center justify-content-end">
               <button pButton pRipple label="CSV" icon="pi pi-file-excel" class="p-button-help mr-3"

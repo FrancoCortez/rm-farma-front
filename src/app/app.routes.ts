@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { manufactureReportRoutes } from './pages/manufacture-report/manufacture-report.routes';
 import { LoginComponent } from './pages/login/login.component';
 import {AuthGuardService} from "./services/auth-guard.service";
+import {WelcomeComponent} from "./pages/welcome/welcome/welcome.component";
 
 export const routes: Routes = [
   {
@@ -10,6 +11,15 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     canActivate: [AuthGuardService],
     children: [
+      {
+        path: '',
+        component: WelcomeComponent
+      },
+      {
+        path: 'maintainer',
+        loadChildren: () =>
+          import('./pages/maintainer/maintainer.routes'),
+      },
       {
         path: 'patient',
         loadChildren: () =>

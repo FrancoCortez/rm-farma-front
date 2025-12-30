@@ -16,6 +16,8 @@ import { ButtonDirective } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { CalendarModule } from 'primeng/calendar';
+import { map } from 'rxjs';
+import { ExcelExportService } from '../../../utils/services/excel-export.service';
 
 @Component({
   selector: 'app-report-production',
@@ -61,7 +63,10 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
     this._selectedColumns = this.cols.filter((col) => val.includes(col));
   }
 
-  constructor(private readonly store: Store<RootStoreState.RootState>) {}
+  constructor(
+    private readonly store: Store<RootStoreState.RootState>,
+    private readonly exportExcelService: ExcelExportService,
+  ) {}
 
   ngOnInit() {
     this.initColumns();
@@ -80,6 +85,7 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
     this.cols = [
       { field: 'masterRecord', header: 'Registro Magistral (RM)' },
       { field: 'productionDate', header: 'Fecha de Elaboración' },
+      { field: 'productionDateHour', header: 'Hora de Elaboración' },
       { field: 'fullPatientName', header: 'Paciente' },
       { field: 'patientRut', header: 'Rut' },
       { field: 'doctorName', header: 'Médico' },
@@ -126,7 +132,20 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
   getDataReport() {
     this.store.select(OrderDetailsStoreSelectors.selectDataReport).subscribe({
       next: (data) => {
-        this.manufactureReports = data;
+        let dataFinalParse: OrderDetailsReportResourceDto[] = [];
+        for (const dataParse of data) {
+          console.log(dataParse.productionDate);
+          dataFinalParse.push({
+            ...dataParse,
+            productionDate: this.formatDateTimeSeparated(
+              dataParse.productionDate,
+            ).formattedDate,
+            productionDateHour: this.formatDateTimeSeparated(
+              dataParse.productionDate,
+            ).formattedTime,
+          });
+        }
+        this.manufactureReports = dataFinalParse;
       },
     });
   }
@@ -198,5 +217,44 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
       };
       this.searchDataReport(this.filterDate.startDate, this.filterDate.endDate);
     }
+  }
+
+  formatDateTimeSeparated(inDate: any) {
+    console.log(inDate);
+    const [datePart, timePart] = inDate.split(' ');
+    const [dayExtract, monthExtract, yearExtract] = datePart.split('/');
+    const [hoursExtract, minutesExtract] = timePart.split(':');
+    const dateExtract = new Date(
+      Number(yearExtract),
+      Number(monthExtract) - 1,
+      Number(dayExtract),
+      Number(hoursExtract),
+      Number(minutesExtract),
+    );
+    const day = String(dateExtract.getDate()).padStart(2, '0');
+    const month = String(dateExtract.getMonth() + 1).padStart(2, '0');
+    const year = dateExtract.getFullYear();
+    const hours = String(dateExtract.getHours()).padStart(2, '0');
+    const minutes = String(dateExtract.getMinutes()).padStart(2, '0');
+    const formattedDate = `${day}/${month}/${year}`;
+    const formattedTime = `${hours}:${minutes}`;
+    return {
+      formattedDate,
+      formattedTime,
+    };
+  }
+
+  protected exportExcel() {
+    const exportData = this.manufactureReports.map((item) => {
+      const row: any = {};
+      this.cols.forEach((col) => {
+        row[col.header] = this.parseFieldInData(item, col.field);
+      });
+      return row;
+    });
+    this.exportExcelService.exportToExcel(
+      exportData,
+      `reporte_produccion_${this.nowDate}.xlsx`,
+    );
   }
 }
