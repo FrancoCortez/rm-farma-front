@@ -55,6 +55,7 @@ export class LoginComponent {
     { username: 'pfigari', password: '1234' },
     { username: 'avillarroel', password: 'Andy3614' },
     { username: 'pcalderon', password: 'pc*01' },
+    { username: 'agonzalez', password: 'ut7DTb42Rcrp' },
   ];
 
   loginEvent() {
