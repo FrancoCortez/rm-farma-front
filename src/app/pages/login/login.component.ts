@@ -49,13 +49,14 @@ export class LoginComponent {
   permissionsUsers = [
     { username: 'fcortez', password: 'fcortez' },
     { username: 'vpenichet', password: 'IP.2009' },
-    { username: 'lcifuentes', password: 'fuenteslci' },
     { username: 'gerpel', password: 'pelger' },
     { username: 'phernandez', password: 'ph01' },
     { username: 'pfigari', password: '1234' },
     { username: 'avillarroel', password: 'Andy3614' },
     { username: 'pcalderon', password: 'pc*01' },
     { username: 'agonzalez', password: 'ut7DTb42Rcrp' },
+    { username: 'igonzalez', password: 'ilian0905' },
+    { username: 'vvalenzuela', password: 'vv1806' },
   ];
 
   loginEvent() {

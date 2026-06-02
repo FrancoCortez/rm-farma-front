@@ -376,6 +376,7 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
   }
 
   savePatient() {
+    this.isLoading = true;
     const formValue = this.patientForm.getRawValue();
     const sendDataValue: PatientFormResourceDto = {
       rut: formValue.rut,

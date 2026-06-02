@@ -29,4 +29,12 @@ export class CommercialProductService {
       createDto,
     );
   }
+
+  public findByProductId(
+    id: string,
+  ): Observable<CommercialProductResourceDto[]> {
+    return this.http.get<CommercialProductResourceDto[]>(
+      `${this.host}/commercial-product/${encodeURIComponent(id)}`,
+    );
+  }
 }

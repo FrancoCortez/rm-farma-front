@@ -74,6 +74,7 @@ import { ListHistoryManufactureComponent } from '../list-history-manufacture/lis
 import { TagModule } from 'primeng/tag';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { MenuModule } from 'primeng/menu';
+import { CommercialProductService } from '../../../services/commercial-product.service';
 
 @Component({
   selector: 'app-list-manufacture',
@@ -132,7 +133,6 @@ export class ListManufactureComponent
   viaCombo: ComboModelDto[] = [];
   commercialProductCombo: ComboModelDto[] = [];
   unitMetricCombo: ComboModelDto[] = [];
-  bedDayCombo: ComboModelDto[] = [];
   statusCombo: ComboModelDto[] = [];
   conditionCombo: ComboModelDto[] = [];
   operation: string = 'created';
@@ -175,6 +175,7 @@ export class ListManufactureComponent
     private zebraPrintService: ZebraPrintService,
     private masterOrderService: MasterOrderService,
     private orderDetailService: OrderDetailsService,
+    private commercialProductService: CommercialProductService,
   ) {}
 
   ngAfterViewInit() {
@@ -195,17 +196,14 @@ export class ListManufactureComponent
       expirationDate: [null, Validators.required],
       productName: ['', Validators.required],
       dose: [null, Validators.required],
-      bedDay: [
-        this.bedDayCombo.find((item) => item.code === 'N/A'),
-        [Validators.required],
-      ],
+      bedDay: [null],
       unitMetric: ['', Validators.required],
       complement: ['', Validators.required],
       volTotal: [null, Validators.required],
       status: [''],
       prot: ['Proteger Luz y Refrigerar', Validators.required],
       administrationTime: [null, Validators.required],
-      administrationDate: [null, Validators.required],
+      administrationDate: [null],
       condition: [''],
       observation: [''],
       concentration: [null, Validators.required],
@@ -299,7 +297,6 @@ export class ListManufactureComponent
     const dose = this.orderDetailForm.get('dose')?.value;
     const via = this.orderDetailForm.get('via')?.value;
     const commercialPart = this.orderDetailForm.get('commercialPart')?.value;
-
     const dose$ = this.orderDetailForm
       .get('dose')
       ?.valueChanges.pipe(startWith(dose));
@@ -309,9 +306,6 @@ export class ListManufactureComponent
     const commercialPart$ = this.orderDetailForm
       .get('commercialPart')
       ?.valueChanges.pipe(startWith(commercialPart));
-    console.log('dose$', dose$);
-    console.log('via$', via$);
-    console.log('commercialPart$', commercialPart$);
     if (dose$ && via$ && commercialPart$) {
       combineLatest([dose$, via$, commercialPart$]).subscribe(
         ([dose, via, commercialPart]) => {
@@ -367,11 +361,11 @@ export class ListManufactureComponent
   }
 
   loadMasterOrders() {
+    this.isLoadingUpdate = true;
     this.masterOrderService
       .findAllMasterOrders(this.searchDay, this.searchIdentification)
       .subscribe({
         next: (value) => {
-          this.isLoadingUpdate = true;
           this.masterOrders = this.groupByPatientIdentification(value);
         },
         error: (err) => {},
@@ -556,10 +550,9 @@ export class ListManufactureComponent
     this.initComboProduct();
     this.initComboComplement();
     this.initViaCombo();
-    this.initComboCommercialProduct();
+    // this.initComboCommercialProduct();
     this.initComboUnitMetric();
     this.initConditionCombo();
-    this.initBedDay();
     this.initStatusCombo();
   }
 
@@ -595,13 +588,6 @@ export class ListManufactureComponent
     ];
   }
 
-  initBedDay() {
-    this.bedDayCombo = [
-      { code: 'N/A', name: 'N/A' },
-      { code: 'SI', name: 'SI' },
-    ];
-  }
-
   initComboProduct() {
     this.store.dispatch(ProductStoreActions.loadProduct());
     this.productComboSubscription$ = this.store
@@ -627,21 +613,36 @@ export class ListManufactureComponent
       });
   }
 
-  initComboCommercialProduct() {
-    this.store.dispatch(CommercialProductStoreActions.loadCommercialProducts());
-    this.commercialProductCombo$ = this.store
-      .select(CommercialProductStoreSelectors.selectCommercialProduct)
-      .subscribe({
-        next: (commercialProduct) => {
-          this.commercialProductCombo = commercialProduct.map((c) => ({
-            ...c,
-            code: c.code,
-            name: c.laboratory
-              ? `${c.code} - ${c.description} - ${c.laboratory}`
-              : `${c.code} - ${c.description}`,
-          }));
-        },
-      });
+  initComboCommercialProduct(id: string) {
+    // this.store.dispatch(CommercialProductStoreActions.loadCommercialProducts());
+    // this.commercialProductCombo$ = this.store
+    //   .select(CommercialProductStoreSelectors.selectCommercialProduct)
+    //   .subscribe({
+    //     next: (commercialProduct) => {
+    //       this.commercialProductCombo = commercialProduct.map((c) => ({
+    //         ...c,
+    //         code: c.code,
+    //         name: c.laboratory
+    //           ? `${c.code} - ${c.description} - ${c.laboratory}`
+    //           : `${c.code} - ${c.description}`,
+    //       }));
+    //     },
+    //   });
+    if (id) {
+      this.commercialProductCombo$ = this.commercialProductService
+        .findByProductId(id)
+        .subscribe({
+          next: (commercialProduct) => {
+            this.commercialProductCombo = commercialProduct.map((c) => ({
+              ...c,
+              code: c.code,
+              name: c.laboratory
+                ? `${c.code} - ${c.description} - ${c.laboratory}`
+                : `${c.code} - ${c.description}`,
+            }));
+          },
+        });
+    }
   }
 
   initComboComplement() {
@@ -663,8 +664,6 @@ export class ListManufactureComponent
     this.orderDetailDialog = false;
     this.masterHistoryBackup = {};
     this.detailHistoryBackup = {};
-    this.currentTableSelectedDetail = {};
-    this.currentTableSelectedMaster = {};
   }
 
   updateFormula() {
@@ -680,7 +679,7 @@ export class ListManufactureComponent
         dose: this.orderDetailForm.value.dose,
         productionDate: this.orderDetailForm.value.productionDate,
         administrationDate: this.orderDetailForm.value.administrationDate,
-        bedDay: this.orderDetailForm.value.bedDay?.code,
+        bedDay: this.orderDetailForm.value.bedDay,
         expirationDate: new Date(
           this.orderDetailForm.value.productionDate.getTime() +
             expirationHours * 60 * 60 * 1000,
@@ -705,7 +704,6 @@ export class ListManufactureComponent
     };
     this.orderDetailService.updateDetail(patchFormula).subscribe({
       next: (value) => {
-        this.isLoadingUpdate = true;
         this.prepareDialogDetail = false;
         this.orderDetailDialog = false;
         this.orderDetailForm.reset();
@@ -713,7 +711,6 @@ export class ListManufactureComponent
         this.displayOk = true;
       },
       error: (err) => {
-        this.messageError = 'No se logró actualizar la fórmula';
         this.displayError = true;
         console.log(err);
       },
@@ -842,9 +839,10 @@ export class ListManufactureComponent
     return `^XA
 ^PW1000
 ^LL1000
+^LH10,0
 ^CFA,20
 ^CI28
-^FO20,20^A0N,20,20^FDPREPARADO CITOESTÁTICO^FS
+^FO20,20^A0N,20,20^FDPREPARADO CITOSTÁTICO^FS
 ^FO50,60^A0N,20,20^FDPRODUCTO ESTÉRIL^FS
 ^FO420,15
 ^BCN,65,N,N
@@ -891,7 +889,7 @@ ${doseForCeroTwo}
 ^FO165,440^AN^FD${detail.orderDetails[i].condition || 'Sin Observación'}^FS
 ^FO20,470^AN^FD${detail.orderDetails[i].observation || ''}^FS
 ^FO20,500^AN^FDFecha Administración: ^FS
-^FO250,500^AN^FD${this.formatDateTimeSeparated(detail.orderDetails[i].administrationDate).formattedDate}^FS
+^FO250,500^AN^FD${detail.orderDetails[i].administrationDate ? this.formatDateTimeSeparated(detail.orderDetails[i].administrationDate).formattedDate : 'N/A'}^FS
 ^FO20,520^GB750,3,3^FS
 ^FO20,530^AN^FDMédico Resp.: ^FS
 ^FO180,530^AN^FD${detail.doctorName}^FS
@@ -907,10 +905,7 @@ ${doseForCeroTwo}
 ^FO530,590^AN^FD${this.formatDateTimeSeparated(detail.orderDetails[i].expirationDate).formattedTime}^FS
 ^FO20,620^AN^FDLaborat:^FS
 ^FO120,620^AN^FD${truncatedLab}^FS
-^FO550,620^AN^FDLote:^FS
-^FO610,620^AN^FD${detail.orderDetails[i].commercialOrderDetails
-      .map((part: any) => part.batch)
-      .join('//')}^FS
+^FO510,620^AN^FDLote: ${detail.orderDetails[i].commercialOrderDetails.map((part: any) => part.batch).join('//')}^FS
 ^FO40,650^AN^FDN° Registro: ^FS
 ^FO200,650^AN^FDRF XIII 01/24:3B,3D^FS
 ^FO450,650^AN^FDDT.QF.^FS
@@ -921,6 +916,11 @@ ${doseForCeroTwo}
 ^FO20,740^GB750,3,3^FS
 ^XZ`;
   }
+  //
+  // ^FO550,620^AN^FDLote:^FS
+  // ^FO610,620^AN^FD${detail.orderDetails[i].commercialOrderDetails
+  // .map((part: any) => part.batch)
+  // .join('//')}^FS
 
   headCount = 0;
   openCopyDialog() {
@@ -931,6 +931,41 @@ ${doseForCeroTwo}
     this.copyDialog = true;
   }
 
+  // async printEvent() {
+  //   this.isLoadingUpdate = true;
+  //   try {
+  //     const printers = await this.zebraPrintService.getAvailablePrinters();
+  //     if (printers.length === 0) {
+  //       console.error('No printers found');
+  //       return;
+  //     }
+  //     this.zebraPrintService.setPrinter(printers[0]);
+  //     if (this.headCount > 0) {
+  //       const headZpl = this.generateHeadZpl(
+  //         this.printDetail.detail,
+  //         this.printDetail.master,
+  //       );
+  //       await this.zebraPrintService.print(headZpl);
+  //     }
+  //     for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
+  //       const zpl = this.generateZplDetail(
+  //         this.printDetail.detail,
+  //         i,
+  //         this.printDetail.master,
+  //       );
+  //       const copies = this.copyValues[i] || 1;
+  //       for (let f = 0; f < copies; f++) {
+  //         await this.zebraPrintService.print(zpl);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during printing process:', error);
+  //   } finally {
+  //     this.isLoadingUpdate = false;
+  //     this.copyDialog = false;
+  //     this.zebraPreview = false;
+  //   }
+  // }
   async printEvent() {
     this.isLoadingUpdate = true;
     try {
@@ -939,7 +974,9 @@ ${doseForCeroTwo}
         console.error('No printers found');
         return;
       }
+
       this.zebraPrintService.setPrinter(printers[0]);
+
       if (this.headCount > 0) {
         const headZpl = this.generateHeadZpl(
           this.printDetail.detail,
@@ -947,13 +984,21 @@ ${doseForCeroTwo}
         );
         await this.zebraPrintService.print(headZpl);
       }
+
       for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
+        const copiesRaw = this.copyValues[i];
+        const copies = Number(copiesRaw);
+
+        if (!Number.isFinite(copies) || copies <= 0) {
+          continue;
+        }
+
         const zpl = this.generateZplDetail(
           this.printDetail.detail,
           i,
           this.printDetail.master,
         );
-        const copies = this.copyValues[i] || 1;
+
         for (let f = 0; f < copies; f++) {
           await this.zebraPrintService.print(zpl);
         }
@@ -968,79 +1013,203 @@ ${doseForCeroTwo}
   }
 
   editProductionProcess(details: any, operation: string) {
+    // console.log(details.productCode);F
+    // this.operation = operation;
+    // this.dialogTitle = 'Editar Fórmula ' + details?.masterRecord;
+    // if (operation === 'for_history') {
+    //   this.dialogTitle = 'Crear en base al histórico ' + details?.masterRecord;
+    // }
+    // this.masterRecordPath = details?.masterRecord;
+    // const commercial = details.commercialOrderDetails.map((part: any) => ({
+    //   commercial: this.commercialProductCombo.find((f) => f.code === part.code),
+    //   batch: part.batch,
+    //   part: part.quantity,
+    // }));
+    // this.initFormOrderDetails(commercial);
+    // if (operation === 'for_history') {
+    //   details.productionDate = new Date(
+    //     this.detailHistoryBackup.productionDate,
+    //   );
+    //   details.expirationDate = null;
+    //   details.administrationDate = null;
+    // }
+    // let diffHours = null;
+    // if (details.expirationDate) {
+    //   const productionDate = new Date(details.productionDate);
+    //   const expirationDate = new Date(details.expirationDate);
+    //   const diffSeconds = expirationDate.getTime() - productionDate.getTime();
+    //   diffHours = diffSeconds / 3600 / 1000; // 3600 segundos en una hora
+    // }
+    // this.orderDetailForm.patchValue({
+    //   via: details.via,
+    //   productionDate: new Date(details.productionDate),
+    //   administrationDate: details.administrationDate
+    //     ? new Date(details.administrationDate)
+    //     : null,
+    //   expirationDate: diffHours,
+    //   productName: this.productCombo.find(
+    //     (f) => f.name === details.productName,
+    //   ),
+    //   dose: details.quantity,
+    //   unitMetric: this.unitMetricCombo.find(
+    //     (f) => f.name === details.unitMetric,
+    //   ),
+    //   bedDay: details.bedDay,
+    //   complement: this.complementCombo.find(
+    //     (f) => f.name === details.complementName,
+    //   ),
+    //   volTotal: details.volumeTotal,
+    //   prot: details.prot,
+    //   concentration: details.concentration,
+    //   status: details.status,
+    //   condition: this.conditionCombo.find((f) => f.name === details.condition),
+    //   administrationTime: details.administrationTime,
+    //   observation: details.observation,
+    // });
+    // if (this.orderDetailForm.get('concentration')?.disabled) {
+    //   this.orderDetailForm.get('concentration')?.enable({ emitEvent: false });
+    // }
+    //
+    // this.orderDetailDialog = true;
+    // setTimeout(() => {
+    //   const input = document.getElementById('concentration');
+    //   if (input) {
+    //     input.addEventListener(
+    //       'focus',
+    //       () => (this.isManualConcentration = true),
+    //     );
+    //     input.addEventListener(
+    //       'blur',
+    //       () => (this.isManualConcentration = false),
+    //     );
+    //   }
+    // });
+    // this.calculateConcentration();
     this.operation = operation;
-    this.dialogTitle = 'Editar Fórmula ' + details?.masterRecord;
-    if (operation === 'for_history') {
-      this.dialogTitle = 'Crear en base al histórico ' + details?.masterRecord;
-    }
+    this.dialogTitle =
+      operation === 'for_history'
+        ? 'Crear en base al histórico ' + details?.masterRecord
+        : 'Editar Fórmula ' + details?.masterRecord;
     this.masterRecordPath = details?.masterRecord;
-    const commercial = details.commercialOrderDetails.map((part: any) => ({
-      commercial: this.commercialProductCombo.find((f) => f.code === part.code),
-      batch: part.batch,
-      part: part.quantity,
-    }));
-    this.initFormOrderDetails(commercial);
-    if (operation === 'for_history') {
-      details.productionDate = new Date(
-        this.detailHistoryBackup.productionDate,
-      );
-      details.expirationDate = null;
-    }
-    let diffHours = null;
-    if (details.expirationDate) {
-      const productionDate = new Date(details.productionDate);
-      const expirationDate = new Date(details.expirationDate);
-      const diffSeconds = expirationDate.getTime() - productionDate.getTime();
-      diffHours = diffSeconds / 3600 / 1000; // 3600 segundos en una hora
-    }
-    this.orderDetailForm.patchValue({
-      via: details.via,
-      productionDate: new Date(details.productionDate),
-      administrationDate: new Date(details.administrationDate),
-      expirationDate: diffHours,
-      productName: this.productCombo.find(
-        (f) => f.name === details.productName,
-      ),
-      dose: details.quantity,
-      unitMetric: this.unitMetricCombo.find(
-        (f) => f.name === details.unitMetric,
-      ),
-      bedDay: this.bedDayCombo.find((f) => f.code === details.bedDay),
-      complement: this.complementCombo.find(
-        (f) => f.name === details.complementName,
-      ),
-      volTotal: details.volumeTotal,
-      prot: details.prot,
-      concentration: details.concentration,
-      status: details.status,
-      condition: this.conditionCombo.find((f) => f.name === details.condition),
-      administrationTime: details.administrationTime,
-      observation: details.observation,
-    });
-    if (this.orderDetailForm.get('concentration')?.disabled) {
-      this.orderDetailForm.get('concentration')?.enable({ emitEvent: false });
-    }
 
-    this.orderDetailDialog = true;
-    setTimeout(() => {
-      const input = document.getElementById('concentration');
-      if (input) {
-        input.addEventListener(
-          'focus',
-          () => (this.isManualConcentration = true),
+    const applyDataAndOpen = (commercialList: any[]) => {
+      // 1. Llenar el combo con la data que llegó del servidor
+      this.commercialProductCombo = commercialList.map((c) => ({
+        ...c,
+        code: c.code,
+        name: c.laboratory
+          ? `${c.code} - ${c.description} - ${c.laboratory}`
+          : `${c.code} - ${c.description}`,
+      }));
+
+      // 2. Ahora que el combo tiene data, mapear los comerciales del detalle
+      const commercial = details.commercialOrderDetails.map((part: any) => ({
+        commercial: this.commercialProductCombo.find(
+          (f) => f.code === part.code,
+        ),
+        batch: part.batch,
+        part: part.quantity,
+      }));
+
+      // 3. Inicializar el form con los comerciales ya mapeados
+      this.initFormOrderDetails(commercial);
+
+      // 4. Ajustes para for_history
+      if (operation === 'for_history') {
+        details.productionDate = new Date(
+          this.detailHistoryBackup.productionDate,
         );
-        input.addEventListener(
-          'blur',
-          () => (this.isManualConcentration = false),
-        );
+        details.expirationDate = null;
+        details.administrationDate = null;
       }
-    });
-    this.calculateConcentration();
+
+      // 5. Calcular diffHours entre producción y vencimiento
+      let diffHours = null;
+      if (details.expirationDate) {
+        const productionDate = new Date(details.productionDate);
+        const expirationDate = new Date(details.expirationDate);
+        const diffSeconds = expirationDate.getTime() - productionDate.getTime();
+        diffHours = diffSeconds / 3600 / 1000;
+      }
+
+      // 6. PatchValue con el combo ya cargado — el find() ahora sí encuentra valores
+      this.orderDetailForm.patchValue({
+        via: details.via,
+        productionDate: new Date(details.productionDate),
+        administrationDate: details.administrationDate
+          ? new Date(details.administrationDate)
+          : null,
+        expirationDate: diffHours,
+        productName: this.productCombo.find(
+          (f) => f.name === details.productName,
+        ),
+        dose: details.quantity,
+        unitMetric: this.unitMetricCombo.find(
+          (f) => f.name === details.unitMetric,
+        ),
+        bedDay: details.bedDay,
+        complement: this.complementCombo.find(
+          (f) => f.name === details.complementName,
+        ),
+        volTotal: details.volumeTotal,
+        prot: details.prot,
+        concentration: details.concentration,
+        status: details.status,
+        condition: this.conditionCombo.find(
+          (f) => f.name === details.condition,
+        ),
+        administrationTime: details.administrationTime,
+        observation: details.observation,
+      });
+
+      if (this.orderDetailForm.get('concentration')?.disabled) {
+        this.orderDetailForm.get('concentration')?.enable({ emitEvent: false });
+      }
+
+      // 7. Abrir modal y registrar listeners de concentración
+      this.orderDetailDialog = true;
+      setTimeout(() => {
+        const input = document.getElementById('concentration');
+        if (input) {
+          input.addEventListener(
+            'focus',
+            () => (this.isManualConcentration = true),
+          );
+          input.addEventListener(
+            'blur',
+            () => (this.isManualConcentration = false),
+          );
+        }
+      });
+      this.calculateConcentration();
+    };
+
+    // Si hay productCode → primero cargar el combo, luego aplicar y abrir
+    if (details.productCode) {
+      this.isLoadingUpdate = true;
+      this.commercialProductService
+        .findByProductId(details.productCode)
+        .subscribe({
+          next: (commercialList) => {
+            applyDataAndOpen(commercialList);
+          },
+          error: () => {
+            // Si falla la carga del combo, abre igual con combo vacío
+            applyDataAndOpen([]);
+          },
+          complete: () => {
+            this.isLoadingUpdate = false;
+          },
+        });
+    } else {
+      // Sin productCode → abre directamente con combo vacío
+      applyDataAndOpen([]);
+    }
   }
 
   confirmDialog($event: boolean) {
-    this.displayOk = $event;
     this.loadMasterOrders();
+    this.displayOk = $event;
   }
 
   confirmDialogError($event: boolean) {
@@ -1084,7 +1253,7 @@ ${doseForCeroTwo}
         dose: formValue.dose,
         productionDate: formValue.productionDate,
         administrationDate: formValue.administrationDate,
-        bedDay: formValue.bedDay?.code,
+        bedDay: formValue.bedDay,
         expirationDate: new Date(
           formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000,
         ),
@@ -1093,7 +1262,7 @@ ${doseForCeroTwo}
         volTotal: formValue.volTotal,
         prot: formValue.prot,
         status: '',
-        condition: formValue.condition.code,
+        condition: formValue?.condition?.code,
         administrationTime: formValue.administrationTime,
         observation: formValue.observation,
         concentration: formValue?.concentration,
@@ -1107,7 +1276,6 @@ ${doseForCeroTwo}
     this.masterOrderForm.push(masterOrder);
     this.masterOrderService.createMasterOrder(this.masterOrderForm).subscribe({
       next: (value) => {
-        this.isLoadingUpdate = true;
         this.prepareDialogDetail = false;
         this.orderDetailDialog = false;
         this.orderDetailForm.reset();
@@ -1143,7 +1311,7 @@ ${doseForCeroTwo}
         unitMetric: formValue.unitMetric.code,
         complementCode: formValue.complement.code,
         administrationDate: formValue.administrationDate,
-        bedDay: formValue.bedDay?.code,
+        bedDay: formValue.bedDay,
         volTotal: formValue.volTotal,
         prot: formValue.prot,
         condition: formValue?.condition?.code,
@@ -1179,6 +1347,7 @@ ${doseForCeroTwo}
   }
 
   saveFormula() {
+    this.isLoadingUpdate = true;
     if (this.operation == 'created') {
       this.createFormula();
     }
@@ -1188,7 +1357,6 @@ ${doseForCeroTwo}
     if (this.operation == 'for_history') {
       this.createFormulaFromHistory();
     }
-    this.loadMasterOrders();
   }
 
   historyUsed(masterUsed: any) {
@@ -1200,7 +1368,7 @@ ${doseForCeroTwo}
   previewStatusOrder = '';
 
   protected editStatusOrder(master: any) {
-    this.masterRecordChangeStatus = master.masterRecord;
+    this.masterRecordChangeStatus = master.id;
     this.statusOrder = this.statusCombo.find((f) => f.code === master.status);
     this.reasonForSuspension = master.reasonForSuspension || '';
     this.previewStatusOrder = this.statusOrder.code;
@@ -1256,5 +1424,14 @@ ${doseForCeroTwo}
   protected prepareMenu($event: Event, master: any, detail: any, menu: any) {
     this.items = this.getMenuItems(master, detail);
     menu.toggle($event);
+  }
+
+  selectCommercialProduct($event: any) {
+    this.initComboCommercialProduct($event?.value?.code);
+  }
+
+  protected hideModalTableDetail() {
+    this.currentTableSelectedDetail = {};
+    this.currentTableSelectedMaster = {};
   }
 }

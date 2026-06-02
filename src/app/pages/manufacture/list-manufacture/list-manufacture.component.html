@@ -103,19 +103,21 @@
                       <td *ngFor="let cols of columns">
                         {{ parseFieldInData(detail, cols.field) }}
                       </td>
-<!--                      <td>-->
-<!--                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)"-->
-<!--                                class="p-button-rounded p-button-info"-->
-<!--                                icon="pi pi-info" pButton pRipple type="button"></button>-->
-<!--                      </td>-->
-<!--                      <td>-->
-<!--                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)"-->
-<!--                                class="p-button-rounded p-button-info"-->
-<!--                                icon="pi pi-print" pButton pRipple type="button"></button>-->
-<!--                      </td>-->
+                      <!--                      <td>-->
+                      <!--                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="detailProduct(detail, master)"-->
+                      <!--                                class="p-button-rounded p-button-info"-->
+                      <!--                                icon="pi pi-info" pButton pRipple type="button"></button>-->
+                      <!--                      </td>-->
+                      <!--                      <td>-->
+                      <!--                        <button [disabled]="detail?.orderDetails?.length === 0" (click)="previewLabel(detail, master)"-->
+                      <!--                                class="p-button-rounded p-button-info"-->
+                      <!--                                icon="pi pi-print" pButton pRipple type="button"></button>-->
+                      <!--                      </td>-->
                       <td>
-                        <button pButton type="button" icon="pi pi-ellipsis-v" (click)="prepareMenu($event, master, detail, menu)" class="p-button-text p-button-plain"></button>
-                        <p-menu appendTo="body"  #menu [popup]="true" [model]="items"></p-menu>
+                        <button pButton type="button" icon="pi pi-ellipsis-v"
+                                (click)="prepareMenu($event, master, detail, menu)"
+                                class="p-button-text p-button-plain"></button>
+                        <p-menu appendTo="body" #menu [popup]="true" [model]="items"></p-menu>
                       </td>
                     </tr>
                   </ng-template>
@@ -138,7 +140,7 @@
 </p-dialog>
 
 
-<p-dialog [(visible)]="orderDetailDialog" [modal]="true" [style]="{width: '1000px'}" class="p-fluid"
+<p-dialog [(visible)]="orderDetailDialog" id="dialog" [modal]="true" [style]="{width: '1000px'}" class="p-fluid"
           [header]="dialogTitle">
   <ng-template pTemplate="content">
     <form [formGroup]="orderDetailForm">
@@ -222,19 +224,12 @@
             </div>
             <div class="field col-12 md:col-3">
               <span class="p-float-label">
-                <p-dropdown [appFormControlStatus]="orderDetailForm.get('bedDay')" [filter]="true"
-                            [options]="bedDayCombo" dataKey="code"
-                            [virtualScroll]="true"
-                            [virtualScrollItemSize]="38"
-                            emptyFilterMessage="No se encontraron Días de Cama"
-                            emptyMessage="No se encontraron días de cama" filterBy="name" formControlName="bedDay"
-                            id="bedDay" optionLabel="name"
-                            placeholder="Seleccione Día Cama"></p-dropdown>
-                <label for="productName">Día Cama</label>
+                <input [appFormControlStatus]="orderDetailForm.get('bedDay')" autocomplete="off"
+                       formControlName="bedDay"
+                       id="bedDay" pInputText
+                       type="text">
+                <label for="bedDay">Día Cama</label>
               </span>
-              <app-form-validation-messages [control]="orderDetailForm.get('unitMetric')"
-                                            [errorType]="'required'"
-                                            [message]="'La unidad de medida es obligatorio'"></app-form-validation-messages>
             </div>
             <div class="field col-12 md:col-6">
               <span class="p-float-label">
@@ -242,6 +237,7 @@
                             [options]="productCombo" dataKey="code"
                             [virtualScroll]="true"
                             [virtualScrollItemSize]="38"
+                            (onChange)="selectCommercialProduct($event)"
                             emptyFilterMessage="No se encontraron productos"
                             emptyMessage="No existen Genéricos en Sistema" filterBy="name" formControlName="productName"
                             id="productName" optionLabel="name"
@@ -375,14 +371,15 @@
                 <div class="field col-12 md:col-12">
                   <span class="p-float-label">
                     <p-dropdown [appFormControlStatus]="commercialPart.get('commercial')" [filter]="true"
-                                [options]="commercialProductCombo" dataKey="code"
-                                [virtualScroll]="true"
-                                [virtualScrollItemSize]="38"
-                                emptyFilterMessage="No se encontraron complementos"
-                                emptyMessage="No existen Complementos en Sistema" filterBy="name"
-                                formControlName="commercial"
-                                id="commercial" optionLabel="name"
-                                placeholder="Seleccione el Complemento"></p-dropdown>
+                                                    [options]="commercialProductCombo" dataKey="code"
+                                                    [scrollHeight]="'200px'"
+                                                    emptyFilterMessage="No se encontraron Productos de Marca comercial"
+                                                    emptyMessage="No existen productos de marca comercial" filterBy="name"
+                                                    formControlName="commercial"
+                                                    id="commercial" optionLabel="name"
+                                                    [style]="{'width':'100%'}"
+                                                    [panelStyle]="{'max-width':'95%'}"
+                                                    placeholder="Seleccione un producto"></p-dropdown>
                     <label for="commercial">Comercial</label>
                   </span>
                   <app-form-validation-messages [control]="commercialPart.get('commercial')"
@@ -450,7 +447,7 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="prepareDialogDetail" [modal]="true" [style]="{width: '800px'}" class="p-fluid"
+<p-dialog [(visible)]="prepareDialogDetail"  (onHide)="hideModalTableDetail()" )[modal]="true" [style]="{width: '800px'}" class="p-fluid"
           header="Preparados">
   <p-table [columns]="detailTableCols"
            [paginator]="true"
@@ -464,7 +461,7 @@
     <ng-template let-columns pTemplate="header">
       <tr>
         <th></th>
-<!--        <th></th>-->
+        <!--        <th></th>-->
         <th *ngFor="let col of columns" style="min-width: 12rem">
           {{ col.header }}
         </th>
@@ -481,7 +478,8 @@
         <td *ngFor="let col of columns">
           @if (col.field === 'status') {
             <td>
-              <p-tag [style]="{cursor: 'pointer'}" (click)="editStatusOrder(master)" [value]="master.status" [severity]="getSeverity(master.status)"/>
+              <p-tag [style]="{cursor: 'pointer'}" (click)="editStatusOrder(master)" [value]="master.status"
+                     [severity]="getSeverity(master.status)"/>
             </td>
           } @else {
             {{ parseFieldInData(master, col.field) }}
@@ -501,7 +499,7 @@
         </div>
         <div class="field col-4 md:col-4">
           <span class="p-float-label">
-              <p-inputNumber  autocomplete="off" [(ngModel)]="headCount"></p-inputNumber>
+              <p-inputNumber autocomplete="off" [(ngModel)]="headCount"></p-inputNumber>
           </span>
         </div>
       </div>
@@ -550,7 +548,7 @@
                   cols="0"
                   [(ngModel)]="reasonForSuspension"
                   pInputTextarea
-                  >
+                >
                 </textarea>
                 <label for="description">Motivo</label>
               </span>
@@ -563,7 +561,7 @@
     <button (click)="hideDialog()" class="p-button-text p-button-secondary" icon="pi pi-times" label="Cancelar" pButton
             pRipple></button>
     <button class="p-button-text"
-            icon="pi pi-check" label="Aplicar" (click)="changeStatus()"  pButton pRipple></button>
+            icon="pi pi-check" label="Aplicar" (click)="changeStatus()" pButton pRipple></button>
   </ng-template>
 </p-dialog>
 
