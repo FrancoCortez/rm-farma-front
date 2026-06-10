@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { DoctorResourceDto } from '../model/doctor/doctor-resource.dto';
 import { DoctorCreateResourceDto } from '../model/doctor/doctor-create-resource.dto';
+import { DoctorUpdateResourceDto } from '../model/doctor/doctor-update-resource.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -27,5 +28,21 @@ export class DoctorService {
     doctor: DoctorCreateResourceDto,
   ): Observable<DoctorResourceDto> {
     return this.http.post<DoctorResourceDto>(`${this.host}/doctor`, doctor);
+  }
+
+  public updateDoctor(
+    id: string,
+    doctor: DoctorUpdateResourceDto,
+  ): Observable<DoctorResourceDto> {
+    return this.http.put<DoctorResourceDto>(
+      `${this.host}/doctor/${id}`,
+      doctor,
+    );
+  }
+
+  public deleteDoctor(id: string): Observable<void | DoctorResourceDto> {
+    return this.http.delete<void | DoctorResourceDto>(
+      `${this.host}/doctor/${id}`,
+    );
   }
 }
