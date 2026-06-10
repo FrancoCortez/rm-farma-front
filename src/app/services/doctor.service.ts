@@ -31,18 +31,20 @@ export class DoctorService {
   }
 
   public updateDoctor(
-    id: string,
+    id: string | undefined,
     doctor: DoctorUpdateResourceDto,
   ): Observable<DoctorResourceDto> {
     return this.http.put<DoctorResourceDto>(
-      `${this.host}/doctor/${id}`,
+      `${this.host}/doctor/${id ?? ''}`,
       doctor,
     );
   }
 
-  public deleteDoctor(id: string): Observable<void | DoctorResourceDto> {
+  public deleteDoctor(
+    id: string | undefined,
+  ): Observable<void | DoctorResourceDto> {
     return this.http.delete<void | DoctorResourceDto>(
-      `${this.host}/doctor/${id}`,
+      `${this.host}/doctor/${id ?? ''}`,
     );
   }
 }
