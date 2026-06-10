@@ -218,6 +218,22 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
 
   mapDiagnosisDataLoadingPatient(patient: PatientResourceDto) {
     return patient?.diagnosisPatient?.map((part) => {
+      // The doctor combo (ComboModelDto) only carries code/name; the legacy
+      // inline-create flow drops it into a DoctorResourceDto slot. After
+      // adding `code: number` to DoctorResourceDto, the structural
+      // assignment no longer type-checks. The lookup result is still
+      // consumed downstream as a form value, so the cast is safe and
+      // preserves behavior. If the project later migrates the combos to
+      // the full DTO shapes, this cast goes away.
+      const doctorCombo = this.doctorCombo.find(
+        (d) => d.code === part.doctor?.id,
+      );
+      const doctor: DoctorResourceDto | undefined = doctorCombo
+        ? ({
+            id: doctorCombo.code,
+            name: doctorCombo.name,
+          } as DoctorResourceDto)
+        : undefined;
       return {
         id: part.id,
         diagnosis: this.diagnosisCombo.find(
@@ -225,13 +241,13 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
         ),
         cycleNumber: part.cycleNumber,
         cycleDay: part.cycleDay,
-        doctor: this.doctorCombo.find((d) => d.code === part.doctor?.id),
+        doctor,
         schema: this.schemaCombo.find((d) => d.code === part.schema?.code),
         services: this.serviceCombo.find((d) => d.code === part.services?.code),
         hospitalUnit: this.hospitalUnitCombo.find(
           (d) => d.code === part.hospitalUnit?.code,
         ),
-      };
+      } as DiagnosisPatientResourceDto;
     });
   }
 
