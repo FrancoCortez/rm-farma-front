@@ -132,13 +132,47 @@
 </p-dialog>
 
 <app-spinner *ngIf="isLoadingUpdate"></app-spinner>
-<app-modal-success
-  (confirm)="confirmDialog($event)"
-  [display]="displayOk"
-  [message]="'Operación realizada con éxito'"
-></app-modal-success>
-<app-modal-error
-  (confirm)="confirmDialogError($event)"
-  [display]="displayError"
-  [message]="messageError"
-></app-modal-error>
+
+<p-dialog
+  [(visible)]="displayOk"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '420px' }"
+  header="Operación exitosa"
+  (onHide)="confirmDialog(false)"
+>
+  <p>Operación realizada con éxito.</p>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      type="button"
+      label="Aceptar"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="confirmDialog(false)"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="displayError"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '420px' }"
+  header="Error"
+  (onHide)="confirmDialogError(false)"
+>
+  <p>{{ messageError }}</p>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      type="button"
+      label="Cerrar"
+      icon="pi pi-times"
+      class="p-button-text p-button-danger"
+      (click)="confirmDialogError(false)"
+    ></button>
+  </ng-template>
+</p-dialog>

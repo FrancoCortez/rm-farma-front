@@ -17,8 +17,6 @@ import { DoctorResourceDto } from '../../../model/doctor/doctor-resource.dto';
 import { DoctorCreateResourceDto } from '../../../model/doctor/doctor-create-resource.dto';
 import { DoctorUpdateResourceDto } from '../../../model/doctor/doctor-update-resource.dto';
 import { DoctorFormDialogComponent } from './doctor-form-dialog.component';
-import { ModalSuccessComponent } from '../../../utils/components/modal-success/modal-success.component';
-import { ModalErrorComponent } from '../../../utils/components/modal-error/modal-error.component';
 import { SpinnerComponent } from '../../../utils/components/spinner/spinner.component';
 
 @Component({
@@ -28,8 +26,6 @@ import { SpinnerComponent } from '../../../utils/components/spinner/spinner.comp
     ButtonDirective,
     DialogModule,
     DoctorFormDialogComponent,
-    ModalErrorComponent,
-    ModalSuccessComponent,
     NgForOf,
     NgIf,
     PrimeTemplate,
