@@ -20,6 +20,11 @@
         "label": "Marca Comercial",
         "icon": "",
         "routerLink": ["/main/maintainer/commercial-product"]
+      },
+      {
+        "label": "Doctores",
+        "icon": "pi pi-fw pi-id-card",
+        "routerLink": ["/main/maintainer/doctor"]
       }
     ]
   },
