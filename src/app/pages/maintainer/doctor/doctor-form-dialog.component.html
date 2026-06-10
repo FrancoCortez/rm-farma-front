@@ -1,0 +1,69 @@
+<form [formGroup]="form">
+  <div class="grid p-fluid mt-3">
+    <div class="field col-12 md:col-12">
+      <span class="p-float-label">
+        <input
+          [appFormControlStatus]="form.get('rut')"
+          id="rut"
+          type="text"
+          pInputText
+          autocomplete="off"
+          appRutFormatter
+          formControlName="rut"
+        />
+        <label for="rut">RUT *</label>
+      </span>
+      <app-form-validation-messages
+        [control]="form.get('rut')"
+        [errorType]="'required'"
+        [message]="'El RUT del doctor es obligatorio'"
+      ></app-form-validation-messages>
+      <app-form-validation-messages
+        [control]="form.get('rut')"
+        [errorType]="'invalidRut'"
+        [message]="'El RUT ingresado no es válido'"
+      ></app-form-validation-messages>
+    </div>
+    <div class="field col-12 md:col-12">
+      <span class="p-float-label">
+        <input
+          [appFormControlStatus]="form.get('name')"
+          id="name"
+          type="text"
+          pInputText
+          autocomplete="off"
+          formControlName="name"
+        />
+        <label for="name">Nombre *</label>
+      </span>
+      <app-form-validation-messages
+        [control]="form.get('name')"
+        [errorType]="'required'"
+        [message]="'El nombre del doctor es obligatorio'"
+      ></app-form-validation-messages>
+    </div>
+    <div class="field col-12 md:col-12" *ngIf="mode === 'create'">
+      <span class="p-float-label">
+        <input
+          [appFormControlStatus]="form.get('code')"
+          id="code"
+          type="number"
+          pInputText
+          autocomplete="off"
+          formControlName="code"
+        />
+        <label for="code">Código *</label>
+      </span>
+      <app-form-validation-messages
+        [control]="form.get('code')"
+        [errorType]="'required'"
+        [message]="'El código del doctor es obligatorio'"
+      ></app-form-validation-messages>
+      <app-form-validation-messages
+        [control]="form.get('code')"
+        [errorType]="'pattern'"
+        [message]="'El código debe ser un número entre 1 y 99999'"
+      ></app-form-validation-messages>
+    </div>
+  </div>
+</form>
