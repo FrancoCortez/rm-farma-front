@@ -1,0 +1,144 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button
+              pButton
+              pRipple
+              type="button"
+              label="Nuevo Doctor"
+              icon="pi pi-plus"
+              class="p-button-success mr-2"
+              (click)="openCreateDialog()"
+            ></button>
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table
+        #dt
+        [columns]="cols"
+        [paginator]="true"
+        [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Doctores"
+        [rowHover]="true"
+        [rows]="30"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [value]="doctorsList"
+        [globalFilterFields]="['rut', 'name', 'code']"
+        [loading]="loadingReport"
+        dataKey="id"
+        styleClass="p-datatable-gridlines"
+      >
+        <ng-template pTemplate="caption">
+          <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+          >
+            <h5 class="m-0">Doctores</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Buscar..."
+                class="w-full sm:w-auto"
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th *ngFor="let col of columns" style="min-width: 12rem">
+              {{ col.header }}
+            </th>
+            <th style="min-width: 8rem">Estado</th>
+            <th style="min-width: 8rem">Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row let-columns="columns">
+          <tr>
+            <td *ngFor="let col of columns">{{ row[col.field] }}</td>
+            <td>
+              <p-tag
+                [value]="row.enabled ? 'Activo' : 'Inactivo'"
+                [severity]="row.enabled ? 'success' : 'danger'"
+              ></p-tag>
+            </td>
+            <td>
+              <button
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text mr-2"
+                (click)="openEditDialog(row)"
+              ></button>
+              <button
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-danger"
+                (click)="confirmDelete(row)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5">No se encontraron doctores.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="displayCreateDialog"
+  [modal]="true"
+  [style]="{ width: '600px' }"
+  class="p-fluid"
+  header="Nuevo Doctor"
+  [closable]="true"
+  [closeOnEscape]="true"
+>
+  <app-doctor-form-dialog
+    mode="create"
+    (save)="saveCreate($event)"
+    (cancel)="displayCreateDialog = false"
+  ></app-doctor-form-dialog>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="displayEditDialog"
+  [modal]="true"
+  [style]="{ width: '600px' }"
+  class="p-fluid"
+  header="Editar Doctor"
+  [closable]="true"
+  [closeOnEscape]="true"
+>
+  <app-doctor-form-dialog
+    mode="edit"
+    [doctor]="editingDoctor"
+    (save)="onEditSave($event)"
+    (cancel)="displayEditDialog = false"
+  ></app-doctor-form-dialog>
+</p-dialog>
+
+<app-spinner *ngIf="isLoadingUpdate"></app-spinner>
+<app-modal-success
+  (confirm)="confirmDialog($event)"
+  [display]="displayOk"
+  [message]="'Operación realizada con éxito'"
+></app-modal-success>
+<app-modal-error
+  (confirm)="confirmDialogError($event)"
+  [display]="displayError"
+  [message]="messageError"
+></app-modal-error>
