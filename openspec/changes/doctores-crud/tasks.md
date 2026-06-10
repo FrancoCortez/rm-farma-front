@@ -69,9 +69,9 @@ Chain strategy: stacked-to-main
 
 ## Phase 5: Route + menu (B5 — ~10 lines)
 
-- [ ] 5.1 Add `import { DoctorComponent }` and `{ path: 'doctor', component: DoctorComponent }` to `maintainer.routes.ts`; commit `feat(doctor): register doctor child route`.
-- [ ] 5.2 Append Doctores entry under "Administración" in `menu-items.json`; commit `feat(doctor): add Doctores sidebar entry`.
-- [ ] 5.3 Final `npm run build` + `npm test`; manual smoke at `/main/maintainer/doctor`.
+- [x] 5.1 Add `import { DoctorComponent }` and `{ path: 'doctor', component: DoctorComponent }` to `maintainer.routes.ts`; commit `feat(doctor): register doctor child route`.
+- [x] 5.2 Append Doctores entry under "Administración" in `menu-items.json`; commit `feat(doctor): add Doctores sidebar entry`.
+- [x] 5.3 Final `npm run build` + `npm test`; manual smoke at `/main/maintainer/doctor`. **Both green.** Test run: 32/32 success. Build: exit 0 (pre-existing warnings only — bundle budget, CommonJS bailouts, lara-light-blue stylesheet).
 
 **Verify**: build + tests green; sidebar shows "Doctores"; CRUD end-to-end.
 
