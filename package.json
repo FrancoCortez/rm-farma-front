@@ -37,6 +37,7 @@
     "prismjs": "^1.29.0",
     "quill": "^2.0.3",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.26.25",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5",
     "zebra-browser-print-wrapper": "^0.1.4",
@@ -56,6 +57,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "prettier": "^3.4.2",
+    "puppeteer": "^25.1.0",
     "typescript": "~5.4.2"
   }
 }
