@@ -225,6 +225,7 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
       // consumed downstream as a form value, so the cast is safe and
       // preserves behavior. If the project later migrates the combos to
       // the full DTO shapes, this cast goes away.
+      console.log(this.doctorCombo.find((d) => d.code === part.doctor?.code));
       const doctorCombo = this.doctorCombo.find(
         (d) => d.code === part.doctor?.id,
       );
@@ -392,8 +393,10 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
   }
 
   savePatient() {
+    console.log('entre al save');
     this.isLoading = true;
     const formValue = this.patientForm.getRawValue();
+    console.log(formValue.diagnosis);
     const sendDataValue: PatientFormResourceDto = {
       rut: formValue.rut,
       type: formValue.type,

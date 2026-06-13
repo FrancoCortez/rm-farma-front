@@ -8,23 +8,33 @@
     "items": [
       {
         "label": "Esquemas",
-        "icon": "",
+        "icon": "pi pi-fw pi-list",
         "routerLink": ["/main/maintainer/schemas"]
       },
       {
         "label": "Principios Activos",
-        "icon": "",
+        "icon": "pi pi-fw pi-box",
         "routerLink": ["/main/maintainer/pa"]
       },
       {
         "label": "Marca Comercial",
-        "icon": "",
+        "icon": "pi pi-fw pi-tag",
         "routerLink": ["/main/maintainer/commercial-product"]
       },
       {
         "label": "Doctores",
         "icon": "pi pi-fw pi-id-card",
         "routerLink": ["/main/maintainer/doctor"]
+      },
+      {
+        "label": "Servicios",
+        "icon": "pi pi-fw pi-cog",
+        "routerLink": ["/main/maintainer/service"]
+      },
+      {
+        "label": "Diagnósticos",
+        "icon": "pi pi-fw pi-file",
+        "routerLink": ["/main/maintainer/diagnosis"]
       }
     ]
   },

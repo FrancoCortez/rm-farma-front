@@ -1,0 +1,18 @@
+package: rm-farma-front
+
+capabilities:
+
+- name: read
+  description: "Read project files (openspec/, src/, configs) without modifying them."
+
+- name: write
+  description: "Write to openspec/ artifacts and project documentation."
+
+- name: edit
+  description: "Edit openspec/ artifacts, AGENTS.md, and openspec/config.yaml."
+
+- name: bash
+  description: "Run npm scripts, ng commands, git, and read-only inspection commands."
+
+# Tools excluded from delegation: none for init.
+denied: []

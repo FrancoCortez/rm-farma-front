@@ -7,5 +7,6 @@ export class MasterOrderFormResourceDto {
   expirationDate?: Date;
   diagnosisOrder?: string;
   master?: string;
+  quantity?: number;
   details?: MasterOrderDetailsFormResourceDto;
 }

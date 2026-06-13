@@ -1,0 +1,52 @@
+<form [formGroup]="form">
+  <div class="grid p-fluid mt-3">
+    <div class="field col-12 md:col-12">
+      <span class="p-float-label">
+        <input
+          [appFormControlStatus]="form.get('code')"
+          id="code"
+          type="text"
+          pInputText
+          autocomplete="off"
+          formControlName="code"
+          maxlength="30"
+        />
+        <label for="code">Código *</label>
+      </span>
+      <app-form-validation-messages
+        [control]="form.get('code')"
+        [errorType]="'required'"
+        [message]="'El código del servicio es obligatorio'"
+      ></app-form-validation-messages>
+      <app-form-validation-messages
+        [control]="form.get('code')"
+        [errorType]="'maxlength'"
+        [message]="'El código no puede exceder 30 caracteres'"
+      ></app-form-validation-messages>
+    </div>
+    <div class="field col-12 md:col-12">
+      <span class="p-float-label">
+        <textarea
+          [appFormControlStatus]="form.get('description')"
+          id="description"
+          pInputText
+          rows="3"
+          autocomplete="off"
+          formControlName="description"
+          maxlength="100"
+        ></textarea>
+        <label for="description">Descripción *</label>
+      </span>
+      <app-form-validation-messages
+        [control]="form.get('description')"
+        [errorType]="'required'"
+        [message]="'La descripción del servicio es obligatoria'"
+      ></app-form-validation-messages>
+      <app-form-validation-messages
+        [control]="form.get('description')"
+        [errorType]="'maxlength'"
+        [message]="'La descripción no puede exceder 100 caracteres'"
+      ></app-form-validation-messages>
+    </div>
+  </div>
+</form>

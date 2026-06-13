@@ -162,7 +162,28 @@
               <app-form-validation-messages [control]="orderDetailForm.get('via')" [errorType]="'required'"
                                             [message]="'La via es obligatoria'"></app-form-validation-messages>
             </div>
-            <div class="field col-12 md:col-6"></div>
+            <div class="field col-12 md:col-3"></div>
+            <div class="field col-12 md:col-3" *ngIf="isSpecialPatient && operation !== 'updated'">
+              <span class="p-float-label">
+                <p-inputNumber [appFormControlStatus]="orderDetailForm.get('quantity')" autocomplete="off"
+                               formControlName="quantity"
+                               [mode]="'decimal'"
+                               [minFractionDigits]="0"
+                               [maxFractionDigits]="0"
+                               id="quantity"></p-inputNumber>
+                <label for="quantity">Cantidad a generar</label>
+              </span>
+              <app-form-validation-messages
+                [control]="orderDetailForm.get('quantity')"
+                [errorType]="'min'"
+                [message]="'Debe ser al menos 1'">
+              </app-form-validation-messages>
+              <app-form-validation-messages
+                [control]="orderDetailForm.get('quantity')"
+                [errorType]="'max'"
+                [message]="'Máximo 100 por envío'">
+              </app-form-validation-messages>
+            </div>
             <div class="field col-12 md:col-6">
               <span class="p-float-label">
                 <p-calendar [appFormControlStatus]="orderDetailForm.get('productionDate')" [showTime]="true"
@@ -401,15 +422,17 @@
                 </div>
                 <div class="field col-12 md:col-3">
                   <span class="p-float-label">
-                    <input [appFormControlStatus]="commercialPart.get('part')" autocomplete="off" formControlName="part"
-                           id="part"
-                           pInputText
-                           type="text">
+                    <p-inputNumber [appFormControlStatus]="commercialPart.get('part')" autocomplete="off"
+                                   formControlName="part"
+                                   [mode]="'decimal'"
+                                   [minFractionDigits]="0"
+                                   [maxFractionDigits]="4"
+                                   id="part"></p-inputNumber>
                     <label for="part">Cantidad</label>
                   </span>
                   <app-form-validation-messages [control]="commercialPart.get('part')"
                                                 [errorType]="'required'"
-                                                [message]="'El la cantidad es obligatorio'"></app-form-validation-messages>
+                                                [message]="'La cantidad es obligatoria'"></app-form-validation-messages>
                 </div>
                 <div class="filed col-12 md:col-1">
                   <p-button icon="pi pi-times" (click)="removeOrderPart(i)" [rounded]="true" [text]="true"
@@ -447,7 +470,7 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="prepareDialogDetail"  (onHide)="hideModalTableDetail()" )[modal]="true" [style]="{width: '800px'}" class="p-fluid"
+<p-dialog [(visible)]="prepareDialogDetail"  (onHide)="hideModalTableDetail()" [modal]="true" [style]="{width: '800px'}" class="p-fluid"
           header="Preparados">
   <p-table [columns]="detailTableCols"
            [paginator]="true"
@@ -503,16 +526,39 @@
           </span>
         </div>
       </div>
-      <div class="grid p-fluid" *ngFor="let detail of printDetail?.detail?.orderDetails; let i = index">
+      <div *ngIf="isPrintSpecialPatient; else perDetailCopies" class="grid p-fluid">
         <div class="field col-8 md:col-8 mt-3">
-          {{ detail.masterRecord }} - {{ detail.productName }}
+          Copias por preparado
+          <small class="block text-color-secondary">
+            Se imprimirán {{ printDetail.detail?.orderDetails?.length || 0 }} preparados con las copias indicadas.
+          </small>
         </div>
         <div class="field col-4 md:col-4">
           <span class="p-float-label">
-              <p-inputNumber [(ngModel)]="copyValues[i]" autocomplete="off" id="copy-{{i}}"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="bulkCopies" autocomplete="off"
+                             [mode]="'decimal'"
+                             [minFractionDigits]="0"
+                             [maxFractionDigits]="0"
+                             id="bulk-copies"></p-inputNumber>
           </span>
         </div>
       </div>
+      <ng-template #perDetailCopies>
+        <div class="grid p-fluid" *ngFor="let detail of printDetail?.detail?.orderDetails; let i = index">
+          <div class="field col-8 md:col-8 mt-3">
+            {{ detail.masterRecord }} - {{ detail.productName }}
+          </div>
+          <div class="field col-4 md:col-4">
+            <span class="p-float-label">
+                <p-inputNumber [(ngModel)]="copyValues[i]" autocomplete="off"
+                               [mode]="'decimal'"
+                               [minFractionDigits]="0"
+                               [maxFractionDigits]="0"
+                               id="copy-{{i}}"></p-inputNumber>
+            </span>
+          </div>
+        </div>
+      </ng-template>
       <div class="field col-12">
         <button class="p-button-rounded p-button-info" icon="pi pi-copy" label="Imprimir" pButton pRipple
                 (click)="printEvent()"></button>
@@ -568,7 +614,7 @@
 
 <app-spinner *ngIf="isLoadingUpdate"></app-spinner>
 <app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
-                   [message]="'Se han creado los preparados con éxito'"></app-modal-success>
+                   [message]="successMessage"></app-modal-success>
 <app-modal-error (confirm)="confirmDialogError($event)" [display]="displayError"
                  [message]="messageError"></app-modal-error>
 

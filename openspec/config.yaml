@@ -1,0 +1,62 @@
+schema: spec-driven
+
+context: |
+  Project: rm-farma-front (Angular 17.3 application, generated with Angular CLI 17.3.11)
+  Language: TypeScript 5.4 (strict mode enabled: strict, noImplicitOverride, noPropertyAccessFromIndexSignature, noImplicitReturns, noFallthroughCasesInSwitch)
+  Framework: Angular 17.3 (standalone APIs via app.config.ts, Router-based SPA)
+  State management: NgRx 17.2 (@ngrx/store, @ngrx/effects, @ngrx/store-devtools)
+  UI: PrimeNG 17.18, PrimeFlex 3.3, PrimeIcons 6.0.1, FullCalendar 6.0, SweetAlert2 (ngx-sweetalert2)
+  Tooling: crypto-js, file-saver, xlsx, quill, prismjs, chart.js 3.3, zebra-browser-print-wrapper
+  Build: Angular CLI (@angular-devkit/build-angular:application builder), baseHref /rm-farma/, deployUrl /rm-farma/
+  Package manager: npm (package-lock.json present)
+  Test runner: Karma 6.4 + Jasmine 5.1 via @angular-devkit/build-angular:karma
+  Coverage: karma-coverage 2.2 (configured at runner level; not yet wired to a script)
+  Formatter: Prettier 3.4 (no project config file; uses Prettier defaults)
+  Linter: NOT CONFIGURED (no ESLint or other linter present)
+  Type checker: TypeScript 5.4 with strict + Angular strictTemplates/strictInputAccessModifiers/strictInjectionParameters
+  Output targets: ES2022, dist/rm-farma-front, budgets 500kb warning / 1mb error for initial bundle
+  Source layout: src/app/{layout,model,pages,root-store,services,utils} + environments
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - For NgRx changes, document the affected slice (actions/reducer/selectors/effects)
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale, especially around NgRx state shape
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns (standalone components, services, NgRx slices)
+    - Add or update *.spec.ts files when introducing behavior
+    tdd: true
+    test_command: "npm test -- --watch=false --browsers=ChromeHeadless"
+  verify:
+    test_command: "npm test -- --watch=false --browsers=ChromeHeadless"
+    build_command: "npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
+
+testing:
+  strict_tdd: true
+  detected_at: "2026-06-09"
+  runner:
+    command: "ng test"
+    framework: "karma + jasmine"
+  layers:
+    unit: "karma + jasmine"
+    integration: "not configured"
+    e2e: "not configured"
+  coverage:
+    available: true
+    tool: "karma-coverage"
+    command: "ng test --code-coverage"
+  quality:
+    linter: "not configured"
+    type_checker: "tsc (via ng build) + Angular strict templates"
+    formatter: "prettier (no project config, defaults apply)"

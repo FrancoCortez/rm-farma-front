@@ -164,6 +164,29 @@ export class ListManufactureComponent
   openHistory = false;
   historyIdentification!: { identification: string; diagnosisOrder: string };
   items!: MenuItem[];
+  specialPatientIdentification = '616082043';
+
+  lastQuantity = 1;
+  get successMessage(): string {
+    return this.lastQuantity > 1
+      ? `Se han creado ${this.lastQuantity} preparados con éxito`
+      : 'Se ha creado el preparado con éxito';
+  }
+
+  get isSpecialPatient(): boolean {
+    const identification =
+      this.operation === 'for_history'
+        ? this.masterHistoryBackup?.patientIdentification
+        : this.currentTableSelectedMaster?.patientIdentification;
+    return identification === this.specialPatientIdentification;
+  }
+
+  get isPrintSpecialPatient(): boolean {
+    return (
+      this.printDetail?.master?.patientIdentification ===
+      this.specialPatientIdentification
+    );
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -207,6 +230,10 @@ export class ListManufactureComponent
       condition: [''],
       observation: [''],
       concentration: [null, Validators.required],
+      quantity: [
+        1,
+        [Validators.required, Validators.min(1), Validators.max(100)],
+      ],
       commercialPart: this.fb.array([]),
     });
 
@@ -219,7 +246,7 @@ export class ListManufactureComponent
     return this.fb.group({
       commercial: [data.commercial || '', Validators.required],
       batch: [data.batch || '', Validators.required],
-      part: [data.part || '', Validators.required],
+      part: [data.part ?? null, [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -765,6 +792,50 @@ export class ListManufactureComponent
     };
   }
 
+  private getPreviewIndices(detail: any, isSpecial: boolean): number[] {
+    const total = detail?.orderDetails?.length ?? 0;
+    if (total === 0) {
+      return [];
+    }
+    if (!isSpecial || total <= 2) {
+      return Array.from({ length: total }, (_, i) => i);
+    }
+    const ordered = detail.orderDetails
+      .map((d: any, idx: number) => ({
+        idx,
+        key: this.getNumericSortKey(d.masterRecord),
+      }))
+      .sort(
+        (a: { idx: number; key: number }, b: { idx: number; key: number }) =>
+          a.key - b.key,
+      );
+    const firstIdx = ordered[0].idx;
+    const lastIdx = ordered[ordered.length - 1].idx;
+    return firstIdx === lastIdx ? [firstIdx] : [firstIdx, lastIdx];
+  }
+
+  private getNumericSortKey(masterRecord: any): number {
+    if (masterRecord == null) return Number.POSITIVE_INFINITY;
+    const match = String(masterRecord).match(/-?\d+/);
+    return match ? Number(match[0]) : Number.POSITIVE_INFINITY;
+  }
+
+  private getOrderLabel(detail: any, i: number): string {
+    const total = detail?.orderDetails?.length ?? 0;
+    if (total === 0) {
+      return '0/0';
+    }
+    const orderedIndices = detail.orderDetails
+      .map((_: any, idx: number) => idx)
+      .sort(
+        (a: number, b: number) =>
+          this.getNumericSortKey(detail.orderDetails[a].masterRecord) -
+          this.getNumericSortKey(detail.orderDetails[b].masterRecord),
+      );
+    const position = orderedIndices.indexOf(i) + 1;
+    return `${position}/${total}`;
+  }
+
   async previewLabel(detail: any, master: any) {
     this.isLoadingUpdate = true;
     this.zebraPreview = true;
@@ -773,7 +844,6 @@ export class ListManufactureComponent
       master,
     };
     setTimeout(async () => {
-      // Generar la etiqueta del encabezado
       try {
         const headZpl = this.generateHeadZpl(detail, master);
         const canvasContainer = document.getElementById('canvasContainer');
@@ -782,11 +852,15 @@ export class ListManufactureComponent
         headCanvas.id = headCanvasId;
         canvasContainer?.appendChild(headCanvas);
         await this.zebraPrintService.previewLabel(headZpl, headCanvasId);
-        for (let i = 0; i < detail.orderDetails.length; i++) {
+
+        const isSpecial =
+          master?.patientIdentification === this.specialPatientIdentification;
+        const indices = this.getPreviewIndices(detail, isSpecial);
+
+        for (const i of indices) {
           if (detail.orderDetails[i].status === 'ACTIVE') {
             const zpl = this.generateZplDetail(detail, i, master);
             const canvasId = `labelCanvas${i}`;
-            const canvasContainer = document.getElementById('canvasContainer');
             const canvas = document.createElement('canvas');
             canvas.id = canvasId;
             canvasContainer?.appendChild(canvas);
@@ -860,7 +934,7 @@ export class ListManufactureComponent
 ^FO20,200^AN^FDInstitución:^FS
 ^FO161,200^AN^FD${detail.serviceName}^FS
 ^FO540,200^AN^FDOrden:  ^FS
-^FO610,200^AN^FD${i + 1}/${detail.orderDetails.length}^FS
+^FO610,200^AN^FD${this.getOrderLabel(detail, i)}^FS
 ^FO20,230^AN^FDEsquema:^FS
 ^FO125,230^AN^FD${detail.schemaName},^FS
 ^FO540,230^AN^FDCiclo:^FS
@@ -923,11 +997,13 @@ ${doseForCeroTwo}
   // .join('//')}^FS
 
   headCount = 0;
+  bulkCopies = 1;
   openCopyDialog() {
     const lengthDetails = this.printDetail?.detail?.orderDetails?.length;
     if (lengthDetails) {
       this.copyValues = Array.from({ length: lengthDetails }, () => 1);
     }
+    this.bulkCopies = 1;
     this.copyDialog = true;
   }
 
@@ -985,9 +1061,15 @@ ${doseForCeroTwo}
         await this.zebraPrintService.print(headZpl);
       }
 
+      const isSpecial =
+        this.printDetail?.master?.patientIdentification ===
+        this.specialPatientIdentification;
+      const bulkCopies = Number(this.bulkCopies);
+      const useBulk =
+        isSpecial && Number.isFinite(bulkCopies) && bulkCopies > 0;
+
       for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
-        const copiesRaw = this.copyValues[i];
-        const copies = Number(copiesRaw);
+        const copies = useBulk ? bulkCopies : Number(this.copyValues[i]);
 
         if (!Number.isFinite(copies) || copies <= 0) {
           continue;
@@ -1239,50 +1321,20 @@ ${doseForCeroTwo}
   }
 
   createFormula() {
-    const formValue = this.orderDetailForm.value;
-    const expirationHours = Number(formValue.expirationDate);
-    const masterOrder: MasterOrderFormResourceDto = {
-      patientIdentification:
-        this.currentTableSelectedMaster.patientIdentification,
-      via: formValue.via.code,
-      diagnosisOrder: this.currentTableSelectedDetail.idDiagnosisOrder,
-      master: this.currentTableSelectedDetail.idMasterId,
-      productionDate: formValue.productionDate,
-      details: {
-        productCode: formValue.productName.code,
-        dose: formValue.dose,
-        productionDate: formValue.productionDate,
-        administrationDate: formValue.administrationDate,
-        bedDay: formValue.bedDay,
-        expirationDate: new Date(
-          formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000,
-        ),
-        unitMetric: formValue.unitMetric.code,
-        complementCode: formValue.complement.code,
-        volTotal: formValue.volTotal,
-        prot: formValue.prot,
-        status: '',
-        condition: formValue?.condition?.code,
-        administrationTime: formValue.administrationTime,
-        observation: formValue.observation,
-        concentration: formValue?.concentration,
-        commercialPart: formValue.commercialPart.map((c: any) => ({
-          commercial: c.commercial.code,
-          batch: c.batch,
-          part: c.part,
-        })),
-      },
-    };
-    this.masterOrderForm.push(masterOrder);
+    this.isLoadingUpdate = true;
+    this.lastQuantity = this.isSpecialPatient
+      ? (this.orderDetailForm.value.quantity ?? 1)
+      : 1;
+    this.masterOrderForm = [this.buildMasterOrderFromForm()];
     this.masterOrderService.createMasterOrder(this.masterOrderForm).subscribe({
-      next: (value) => {
+      next: () => {
         this.prepareDialogDetail = false;
         this.orderDetailDialog = false;
         this.orderDetailForm.reset();
         this.masterOrderForm = [];
         this.displayOk = true;
       },
-      error: (err) => {
+      error: () => {
         this.messageError = 'No se logro crear la fórmula';
         this.displayError = true;
       },
@@ -1293,31 +1345,45 @@ ${doseForCeroTwo}
   }
 
   createFormulaFromHistory() {
+    this.createFormula();
+  }
+
+  private buildMasterOrderFromForm(): MasterOrderFormResourceDto {
     const formValue = this.orderDetailForm.value;
     const expirationHours = Number(formValue.expirationDate);
-    const masterOrder: MasterOrderFormResourceDto = {
-      patientIdentification: this.masterHistoryBackup.patientIdentification,
+    const productionDate: Date = formValue.productionDate;
+    const isHistory = this.operation === 'for_history';
+    const master = isHistory
+      ? this.detailHistoryBackup
+      : this.currentTableSelectedDetail;
+    const identification = isHistory
+      ? this.masterHistoryBackup.patientIdentification
+      : this.currentTableSelectedMaster.patientIdentification;
+
+    return {
+      patientIdentification: identification,
       via: formValue.via.code,
-      diagnosisOrder: this.detailHistoryBackup.idDiagnosisOrder,
-      master: this.detailHistoryBackup.idMasterId,
-      productionDate: formValue.productionDate,
+      diagnosisOrder: master.idDiagnosisOrder,
+      master: master.idMasterId,
+      productionDate,
+      quantity: this.isSpecialPatient ? formValue.quantity : 1,
       details: {
         productCode: formValue.productName.code,
         dose: formValue.dose,
-        productionDate: formValue.productionDate,
+        productionDate,
+        administrationDate: formValue.administrationDate,
+        bedDay: formValue.bedDay,
         expirationDate: new Date(
-          formValue.productionDate.getTime() + expirationHours * 60 * 60 * 1000,
+          productionDate.getTime() + expirationHours * 60 * 60 * 1000,
         ),
         unitMetric: formValue.unitMetric.code,
         complementCode: formValue.complement.code,
-        administrationDate: formValue.administrationDate,
-        bedDay: formValue.bedDay,
         volTotal: formValue.volTotal,
         prot: formValue.prot,
         condition: formValue?.condition?.code,
         administrationTime: formValue.administrationTime,
         observation: formValue.observation,
-        status: formValue.status,
+        status: isHistory ? formValue.status : '',
         concentration: formValue?.concentration,
         commercialPart: formValue.commercialPart.map((c: any) => ({
           commercial: c.commercial.code,
@@ -1326,24 +1392,6 @@ ${doseForCeroTwo}
         })),
       },
     };
-    this.masterOrderForm.push(masterOrder);
-    this.masterOrderService.createMasterOrder(this.masterOrderForm).subscribe({
-      next: (value) => {
-        this.isLoadingUpdate = true;
-        this.prepareDialogDetail = false;
-        this.orderDetailDialog = false;
-        this.orderDetailForm.reset();
-        this.masterOrderForm = [];
-        this.displayOk = true;
-      },
-      error: (err) => {
-        this.messageError = 'No se logro crear la fórmula';
-        this.displayError = true;
-      },
-      complete: () => {
-        this.isLoadingUpdate = false;
-      },
-    });
   }
 
   saveFormula() {
