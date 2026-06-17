@@ -44,6 +44,22 @@
                 <label for="searchDay">Fecha</label>
               </span>
             </div>
+            <div class="field md:col-4">
+              <span class="p-float-label">
+                  <p-dropdown [filter]="true"
+                              [options]="hospitalUnitCombo"
+                              appendTo="body" dataKey="code"
+                              [virtualScroll]="true"
+                              [virtualScrollItemSize]="38"
+                              emptyFilterMessage="No se encontro unidad hispitalaria"
+                              emptyMessage="No existen unidades hospitalarias en Sistema" filterBy="name"
+                              id="hospitalUnit" optionLabel="name"
+                              (onChange)="filterUnitHospital($event.value)"
+                              [showClear]="true"
+                              placeholder="Seleccione Unidad Hospitalaria"></p-dropdown>
+                  <label for="hospitalUnit">Unidad Hospitalaria</label>
+              </span>
+            </div>
             <div class="filed col-12 md:col-4">
               <span class="p-float-label">
                 <input (ngModelChange)="updateFilters()" [(ngModel)]="searchIdentification" id="identification"
@@ -392,15 +408,15 @@
                 <div class="field col-12 md:col-12">
                   <span class="p-float-label">
                     <p-dropdown [appFormControlStatus]="commercialPart.get('commercial')" [filter]="true"
-                                                    [options]="commercialProductCombo" dataKey="code"
-                                                    [scrollHeight]="'200px'"
-                                                    emptyFilterMessage="No se encontraron Productos de Marca comercial"
-                                                    emptyMessage="No existen productos de marca comercial" filterBy="name"
-                                                    formControlName="commercial"
-                                                    id="commercial" optionLabel="name"
-                                                    [style]="{'width':'100%'}"
-                                                    [panelStyle]="{'max-width':'95%'}"
-                                                    placeholder="Seleccione un producto"></p-dropdown>
+                                [options]="commercialProductCombo" dataKey="code"
+                                [scrollHeight]="'200px'"
+                                emptyFilterMessage="No se encontraron Productos de Marca comercial"
+                                emptyMessage="No existen productos de marca comercial" filterBy="name"
+                                formControlName="commercial"
+                                id="commercial" optionLabel="name"
+                                [style]="{'width':'100%'}"
+                                [panelStyle]="{'max-width':'95%'}"
+                                placeholder="Seleccione un producto"></p-dropdown>
                     <label for="commercial">Comercial</label>
                   </span>
                   <app-form-validation-messages [control]="commercialPart.get('commercial')"
@@ -470,7 +486,8 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="prepareDialogDetail"  (onHide)="hideModalTableDetail()" [modal]="true" [style]="{width: '800px'}" class="p-fluid"
+<p-dialog [(visible)]="prepareDialogDetail" (onHide)="hideModalTableDetail()" [modal]="true" [style]="{width: '800px'}"
+          class="p-fluid"
           header="Preparados">
   <p-table [columns]="detailTableCols"
            [paginator]="true"

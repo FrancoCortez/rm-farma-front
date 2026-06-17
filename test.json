@@ -1,0 +1,556 @@
+[
+  {
+    "masterRecord": null,
+    "productionDate": 1781711465,
+    "diagnosisOrder": "bf871f20-cf91-4af3-8868-ad1c81700b81",
+    "viaDescription": null,
+    "doctorName": "DAVID SAAVEDRA",
+    "unitHospitalName": "CDIEM",
+    "idDiagnosisOrder": "c70e7931-c79e-4347-b8c8-0df41ac9db29",
+    "serviceName": "CDIEM - AMBULATORIO",
+    "idMasterId": "801a2f09-9d67-4c91-afdf-2a727ac6f3c1",
+    "orderDetails": [
+      {
+        "id": "ea27ef56-5c93-4acc-aaf0-7fa9f19027d9",
+        "masterRecord": "2093/26",
+        "productName": "BEVACIZUMAB",
+        "productCode": "GO010",
+        "quantity": 280,
+        "unitMetric": "MG",
+        "volumeTotal": 100,
+        "administrationTime": "1 HORA",
+        "prot": "Proteger Luz y Refrigerar",
+        "condition": null,
+        "observation": "",
+        "complementName": "Suero Fisiológico 0.9%",
+        "complementCode": "1",
+        "productionDate": 1781711468,
+        "expirationDate": 1772220965.715,
+        "administrationDate": 1771988400,
+        "bedDay": "N/A",
+        "concentration": "11.2 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "10855ca5-8061-4403-921e-c4b92055aa6e",
+          "code": "1",
+          "description": "Suero Fisiológico 0.9%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "f7fc6801-4a42-49c8-aeb6-2003e5ec2328",
+            "commercial": "ZIRABEV 100MG / 4ML",
+            "code": "100015",
+            "laboratory": "LABORATORIO PFYZER",
+            "quantity": 3,
+            "batch": "LW9371",
+            "commercialProduct": {
+              "id": "a6abd1bb-58ff-4de7-af08-518e2672d8d3",
+              "code": "100015",
+              "description": "ZIRABEV 100MG / 4ML",
+              "laboratory": "LABORATORIO PFIZER",
+              "concentration": 25,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "697c3087-0bac-4a80-b631-f4277b2efefd",
+                "code": "GO010",
+                "description": "BEVACIZUMAB",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "1061c8df-6326-4a2e-81a4-0d96dd7a9473",
+        "masterRecord": "2090/26",
+        "productName": "FLUOROURACILO",
+        "productCode": "GO034",
+        "quantity": 470,
+        "unitMetric": "MG",
+        "volumeTotal": 230,
+        "administrationTime": "BOLO",
+        "prot": "Proteger Luz y Refrigerar",
+        "condition": "Precaución citostático irritante",
+        "observation": "",
+        "complementName": "Suero Fisiológico 0.9%",
+        "complementCode": "1",
+        "productionDate": 1781711468,
+        "expirationDate": 1772566565.715,
+        "administrationDate": 1771988400,
+        "bedDay": "N/A",
+        "concentration": "9.4 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "10855ca5-8061-4403-921e-c4b92055aa6e",
+          "code": "1",
+          "description": "Suero Fisiológico 0.9%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "b30835a2-66c2-4f51-8b48-ce855f1bf4e8",
+            "commercial": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+            "code": "106060",
+            "laboratory": "SANDOZ CHILE SPA",
+            "quantity": 1,
+            "batch": "109932",
+            "commercialProduct": {
+              "id": "4e5d62a7-85d2-4970-bd6d-9aa5c5a03c7e",
+              "code": "106060",
+              "description": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+              "laboratory": "SANDOZ CHILE SPA",
+              "concentration": 50,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "855df3fd-eb59-4362-9682-dbeca1748a89",
+                "code": "GO034",
+                "description": "FLUOROURACILO",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "1282873b-7c63-4ce9-9435-743aae707816",
+        "masterRecord": "2091/26",
+        "productName": "FLUOROURACILO",
+        "productCode": "GO034",
+        "quantity": 2870,
+        "unitMetric": "MG",
+        "volumeTotal": 230,
+        "administrationTime": "46 HORAS",
+        "prot": "Proteger Luz, Temperatura Ambiente",
+        "condition": "Precaución citostático irritante",
+        "observation": "",
+        "complementName": "Suero Fisiológico 0.9%",
+        "complementCode": "1",
+        "productionDate": 1781711468,
+        "expirationDate": 1772566565.715,
+        "administrationDate": 1771988400,
+        "bedDay": "N/A",
+        "concentration": "57.4 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "10855ca5-8061-4403-921e-c4b92055aa6e",
+          "code": "1",
+          "description": "Suero Fisiológico 0.9%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "e673194f-1e9f-4ae7-8208-c85253675c1f",
+            "commercial": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+            "code": "106060",
+            "laboratory": "SANDOZ CHILE SPA",
+            "quantity": 3,
+            "batch": "109932",
+            "commercialProduct": {
+              "id": "4e5d62a7-85d2-4970-bd6d-9aa5c5a03c7e",
+              "code": "106060",
+              "description": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+              "laboratory": "SANDOZ CHILE SPA",
+              "concentration": 50,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "855df3fd-eb59-4362-9682-dbeca1748a89",
+                "code": "GO034",
+                "description": "FLUOROURACILO",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "99f773fb-7c07-4a12-b6d6-4c6250848369",
+        "masterRecord": "2092/26",
+        "productName": "OXALIPLATINO",
+        "productCode": "GO057",
+        "quantity": 100,
+        "unitMetric": "MG",
+        "volumeTotal": 250,
+        "administrationTime": "120 MIN",
+        "prot": "Proteger Luz y Refrigerar",
+        "condition": "Precaución citostático irritante",
+        "observation": "",
+        "complementName": "Suero Glucosado al 5%",
+        "complementCode": "4",
+        "productionDate": 1781711468,
+        "expirationDate": 1772134565.715,
+        "administrationDate": 1771988400,
+        "bedDay": "N/A",
+        "concentration": "20 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "2c8bdcb0-0891-4c22-881b-10e680af0054",
+          "code": "4",
+          "description": "Suero Glucosado al 5%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "a3f4d252-4c4c-4417-ade7-9f78dfa56388",
+            "commercial": "OXALIPLATINO 100 MG / 20 ML SOL. INY. X 1 FA",
+            "code": "106117",
+            "laboratory": "FRESENIUS KABI CHILE LTDA",
+            "quantity": 1,
+            "batch": "87250056BA",
+            "commercialProduct": {
+              "id": "b8bda3aa-a086-4ac2-b6c3-644fe91140a3",
+              "code": "106117",
+              "description": "OXALIPLATINO 100 MG / 20 ML SOL. INY. X 1 FA",
+              "laboratory": "FRESENIUS KABI CHILE LTDA",
+              "concentration": 5,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "cecc5270-fabc-4aa8-b782-cfa230948e7e",
+                "code": "GO057",
+                "description": "OXALIPLATINO",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      }
+    ],
+    "diagnosisName": "CA COLON",
+    "cycleNumber": 11,
+    "cycleDay": 1,
+    "schemaName": "- FOLFOX/BEVACIZUMAB."
+  },
+  {
+    "masterRecord": null,
+    "productionDate": 1781711465,
+    "diagnosisOrder": "bf871f20-cf91-4af3-8868-ad1c81700b81",
+    "viaDescription": null,
+    "doctorName": "DAVID SAAVEDRA",
+    "unitHospitalName": "CDIEM",
+    "idDiagnosisOrder": "67a5c6fb-7216-4554-8464-f2abc23a14e5",
+    "serviceName": "CDIEM - AMBULATORIO",
+    "idMasterId": "f7fae1a5-b339-4cd7-b6e3-2638373c2306",
+    "orderDetails": [
+      {
+        "id": "ff92e75a-9693-4900-8eec-54050756ca6a",
+        "masterRecord": "357/26",
+        "productName": "FLUOROURACILO",
+        "productCode": "GO034",
+        "quantity": 470,
+        "unitMetric": "MG",
+        "volumeTotal": 230,
+        "administrationTime": "BOLO",
+        "prot": "Proteger Luz y Refrigerar",
+        "condition": "Precaución citostático irritante",
+        "observation": "",
+        "complementName": "Suero Fisiológico 0.9%",
+        "complementCode": "1",
+        "productionDate": 1781711468,
+        "expirationDate": 1768858677.79,
+        "administrationDate": 1768273200,
+        "bedDay": "N/A",
+        "concentration": "9.4 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "10855ca5-8061-4403-921e-c4b92055aa6e",
+          "code": "1",
+          "description": "Suero Fisiológico 0.9%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "d54e8f2b-9caa-4b21-91ab-58886ba6b2d2",
+            "commercial": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+            "code": "106060",
+            "laboratory": "SANDOZ CHILE SPA",
+            "quantity": 1,
+            "batch": "109932",
+            "commercialProduct": {
+              "id": "4e5d62a7-85d2-4970-bd6d-9aa5c5a03c7e",
+              "code": "106060",
+              "description": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+              "laboratory": "SANDOZ CHILE SPA",
+              "concentration": 50,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "855df3fd-eb59-4362-9682-dbeca1748a89",
+                "code": "GO034",
+                "description": "FLUOROURACILO",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "f83eca8c-ac46-4fa1-8ee6-db51205d3975",
+        "masterRecord": "359/26",
+        "productName": "FLUOROURACILO",
+        "productCode": "GO034",
+        "quantity": 2870,
+        "unitMetric": "MG",
+        "volumeTotal": 230,
+        "administrationTime": "46 HORAS",
+        "prot": "Proteger Luz, Temperatura Ambiente",
+        "condition": "Precaución citostático irritante",
+        "observation": "",
+        "complementName": "Suero Fisiológico 0.9%",
+        "complementCode": "1",
+        "productionDate": 1781711468,
+        "expirationDate": 1768858677.79,
+        "administrationDate": 1768273200,
+        "bedDay": "N/A",
+        "concentration": "57.4 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "10855ca5-8061-4403-921e-c4b92055aa6e",
+          "code": "1",
+          "description": "Suero Fisiológico 0.9%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "aecfee3a-8608-4923-bd93-662419c13c56",
+            "commercial": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+            "code": "106060",
+            "laboratory": "SANDOZ CHILE SPA",
+            "quantity": 3,
+            "batch": "109932",
+            "commercialProduct": {
+              "id": "4e5d62a7-85d2-4970-bd6d-9aa5c5a03c7e",
+              "code": "106060",
+              "description": "FLUOROURACILO 1000MG / 20ML X 1 AMP",
+              "laboratory": "SANDOZ CHILE SPA",
+              "concentration": 50,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "855df3fd-eb59-4362-9682-dbeca1748a89",
+                "code": "GO034",
+                "description": "FLUOROURACILO",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "bf8bb31d-4b1d-42d1-b024-ca8ca1295064",
+        "masterRecord": "358/26",
+        "productName": "OXALIPLATINO",
+        "productCode": "GO057",
+        "quantity": 100,
+        "unitMetric": "MG",
+        "volumeTotal": 250,
+        "administrationTime": "120 MIN",
+        "prot": "Proteger Luz y Refrigerar",
+        "condition": "Precaución citostático irritante",
+        "observation": "",
+        "complementName": "Suero Glucosado al 5%",
+        "complementCode": "4",
+        "productionDate": 1781711468,
+        "expirationDate": 1768513077.79,
+        "administrationDate": 1768273200,
+        "bedDay": "N/A",
+        "concentration": "20 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "2c8bdcb0-0891-4c22-881b-10e680af0054",
+          "code": "4",
+          "description": "Suero Glucosado al 5%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "4ac0afc0-5cd4-42bb-b12b-e2f1b2a98005",
+            "commercial": "OXALIPLATINO 100 MG / 20 ML SOL. INY. X 1 FA",
+            "code": "106117",
+            "laboratory": "FRESENIUS KABI CHILE LTDA",
+            "quantity": 1,
+            "batch": "87250056BA",
+            "commercialProduct": {
+              "id": "b8bda3aa-a086-4ac2-b6c3-644fe91140a3",
+              "code": "106117",
+              "description": "OXALIPLATINO 100 MG / 20 ML SOL. INY. X 1 FA",
+              "laboratory": "FRESENIUS KABI CHILE LTDA",
+              "concentration": 5,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "cecc5270-fabc-4aa8-b782-cfa230948e7e",
+                "code": "GO057",
+                "description": "OXALIPLATINO",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "7133b5c5-7250-4caa-bbaa-74f80e63e12b",
+        "masterRecord": "356/26",
+        "productName": "BEVACIZUMAB",
+        "productCode": "GO010",
+        "quantity": 280,
+        "unitMetric": "MG",
+        "volumeTotal": 100,
+        "administrationTime": "1 HORA",
+        "prot": "Proteger Luz y Refrigerar",
+        "condition": null,
+        "observation": "",
+        "complementName": "Suero Fisiológico 0.9%",
+        "complementCode": "1",
+        "productionDate": 1781711468,
+        "expirationDate": 1768513077.79,
+        "administrationDate": 1768273200,
+        "bedDay": "N/A",
+        "concentration": "11.2 ML",
+        "via": {
+          "id": "46595099-d769-11ef-9b43-0242ac110002",
+          "code": "VI3",
+          "description": "INTRAVENOSO",
+          "enabled": true
+        },
+        "status": "ACTIVE",
+        "reasonForSuspension": null,
+        "complement": {
+          "id": "10855ca5-8061-4403-921e-c4b92055aa6e",
+          "code": "1",
+          "description": "Suero Fisiológico 0.9%",
+          "enabled": true
+        },
+        "commercialOrderDetails": [
+          {
+            "id": "8cf19e0b-6ae6-4b0e-abd0-7b57bf5eaa1a",
+            "commercial": "ZIRABEV 100MG / 4ML",
+            "code": "100015",
+            "laboratory": "LABORATORIO PFYZER",
+            "quantity": 3,
+            "batch": "LW9371",
+            "commercialProduct": {
+              "id": "a6abd1bb-58ff-4de7-af08-518e2672d8d3",
+              "code": "100015",
+              "description": "ZIRABEV 100MG / 4ML",
+              "laboratory": "LABORATORIO PFIZER",
+              "concentration": 25,
+              "concentrationUnit": "MG/ML",
+              "defaultConcentration": null,
+              "createdDate": null,
+              "lastModifiedDate": null,
+              "factors": [],
+              "product": {
+                "id": "697c3087-0bac-4a80-b631-f4277b2efefd",
+                "code": "GO010",
+                "description": "BEVACIZUMAB",
+                "enabled": true,
+                "createdDate": null,
+                "lastModifiedDate": null
+              },
+              "enabled": true
+            }
+          }
+        ]
+      }
+    ],
+    "diagnosisName": "CA COLON",
+    "cycleNumber": 8,
+    "cycleDay": 1,
+    "schemaName": "- FOLFOX/BEVACIZUMAB."
+  }
+]

@@ -18,6 +18,7 @@ import { DoctorCreateResourceDto } from '../../../model/doctor/doctor-create-res
 import { DoctorUpdateResourceDto } from '../../../model/doctor/doctor-update-resource.dto';
 import { DoctorFormDialogComponent } from './doctor-form-dialog.component';
 import { SpinnerComponent } from '../../../utils/components/spinner/spinner.component';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-doctor',
@@ -35,6 +36,7 @@ import { SpinnerComponent } from '../../../utils/components/spinner/spinner.comp
     TagModule,
     ToastModule,
     ToolbarModule,
+    InputTextModule,
   ],
   templateUrl: './doctor.component.html',
 })
@@ -112,10 +114,7 @@ export class DoctorComponent implements OnInit {
     });
   }
 
-  saveEdit(
-    id: string,
-    payload: DoctorUpdateResourceDto,
-  ): void {
+  saveEdit(id: string, payload: DoctorUpdateResourceDto): void {
     this.isLoadingUpdate = true;
     this.doctorService.updateDoctor(id, payload).subscribe({
       next: () => {

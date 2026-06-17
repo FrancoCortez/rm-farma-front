@@ -69,12 +69,13 @@ import { ModalSuccessComponent } from '../../../utils/components/modal-success/m
 import { MasterOrderService } from '../../../services/master-order.service';
 import { OrderDetailsService } from '../../../services/order-details.service';
 import { ModalErrorComponent } from '../../../utils/components/modal-error/modal-error.component';
-import { minLengthArray } from '../../../utils/form-validation/array-validator.form';
 import { ListHistoryManufactureComponent } from '../list-history-manufacture/list-history-manufacture.component';
 import { TagModule } from 'primeng/tag';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { MenuModule } from 'primeng/menu';
 import { CommercialProductService } from '../../../services/commercial-product.service';
+import { HospitalUnitResourceDto } from '../../../model/hospital-unit/hospital-unit-resource.dto';
+import { HospitalUnitService } from '../../../services/hospital-unit.service';
 
 @Component({
   selector: 'app-list-manufacture',
@@ -199,6 +200,7 @@ export class ListManufactureComponent
     private masterOrderService: MasterOrderService,
     private orderDetailService: OrderDetailsService,
     private commercialProductService: CommercialProductService,
+    private readonly hospitalUnit: HospitalUnitService,
   ) {}
 
   ngAfterViewInit() {
@@ -393,7 +395,9 @@ export class ListManufactureComponent
       .findAllMasterOrders(this.searchDay, this.searchIdentification)
       .subscribe({
         next: (value) => {
-          this.masterOrders = this.groupByPatientIdentification(value);
+          const grouped = this.groupByPatientIdentification(value);
+          this.masterOrders = grouped;
+          this.masterOrdersBackup = structuredClone(grouped);
         },
         error: (err) => {},
         complete: () => {
@@ -574,6 +578,7 @@ export class ListManufactureComponent
   }
 
   initCombo() {
+    this.initComboHospitalUnit();
     this.initComboProduct();
     this.initComboComplement();
     this.initViaCombo();
@@ -1481,5 +1486,38 @@ ${doseForCeroTwo}
   protected hideModalTableDetail() {
     this.currentTableSelectedDetail = {};
     this.currentTableSelectedMaster = {};
+  }
+
+  hospitalUnitCombo!: HospitalUnitResourceDto[];
+  masterOrdersBackup: any[] = [];
+  filterUnitHospital(value: any) {
+    const filterName = value?.name?.trim().toLowerCase();
+
+    if (!filterName) {
+      this.masterOrders = [...this.masterOrdersBackup];
+      return;
+    }
+
+    this.masterOrders = this.masterOrdersBackup
+      .map((master) => {
+        const filteredDetails =
+          master.details?.filter((detail: any) =>
+            detail.unitHospitalName?.toLowerCase().includes(filterName),
+          ) ?? [];
+
+        return {
+          ...master,
+          details: filteredDetails,
+        };
+      })
+      .filter((master) => master.details.length > 0);
+  }
+
+  initComboHospitalUnit() {
+    this.hospitalUnit.findAllHospitalUnit().subscribe({
+      next: (data: HospitalUnitResourceDto[]) => {
+        this.hospitalUnitCombo = data;
+      },
+    });
   }
 }

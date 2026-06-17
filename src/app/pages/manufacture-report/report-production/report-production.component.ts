@@ -220,7 +220,6 @@ export class ReportProductionComponent implements OnInit, OnDestroy {
   }
 
   formatDateTimeSeparated(inDate: any) {
-    console.log(inDate);
     const [datePart, timePart] = inDate.split(' ');
     const [dayExtract, monthExtract, yearExtract] = datePart.split('/');
     const [hoursExtract, minutesExtract] = timePart.split(':');

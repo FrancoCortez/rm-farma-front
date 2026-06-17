@@ -8,12 +8,12 @@
     "items": [
       {
         "label": "Esquemas",
-        "icon": "pi pi-fw pi-list",
+        "icon": "pi pi-fw pi-table",
         "routerLink": ["/main/maintainer/schemas"]
       },
       {
         "label": "Principios Activos",
-        "icon": "pi pi-fw pi-box",
+        "icon": "pi pi-fw pi-database",
         "routerLink": ["/main/maintainer/pa"]
       },
       {
@@ -23,12 +23,12 @@
       },
       {
         "label": "Doctores",
-        "icon": "pi pi-fw pi-id-card",
+        "icon": "pi pi-fw pi-user",
         "routerLink": ["/main/maintainer/doctor"]
       },
       {
         "label": "Servicios",
-        "icon": "pi pi-fw pi-cog",
+        "icon": "pi pi-fw pi-wrench",
         "routerLink": ["/main/maintainer/service"]
       },
       {
@@ -47,12 +47,12 @@
         "items": [
           {
             "label": "Listar Pacientes",
-            "icon": "pi pi-list",
+            "icon": "pi pi-search",
             "routerLink": ["/main/patient/list-patient"]
           },
           {
             "label": "Registrar Paciente",
-            "icon": "pi pi-plus",
+            "icon": "pi pi-user-plus",
             "routerLink": ["/main/patient/add-patient"]
           }
         ]
@@ -64,7 +64,7 @@
     "items": [
       {
         "label": "Check Paciente",
-        "icon": "pi pi-fw pi-users",
+        "icon": "pi pi-fw pi-check-circle",
         "routerLink": ["/main/check-patient/check-patient"]
       }
     ]
@@ -74,7 +74,7 @@
     "items": [
       {
         "label": "Administración de Producción",
-        "icon": "pi pi-fw pi-prime",
+        "icon": "pi pi-fw pi-cog",
         "items": [
           {
             "label": "Listar Producción",
@@ -90,27 +90,45 @@
     "items": [
       {
         "label": "Reportes de Producción",
-        "icon": "pi pi-fw pi-prime",
+        "icon": "pi pi-fw pi-chart-bar",
         "items": [
           {
             "label": "Producción Recetario",
-            "icon": "pi pi-list",
+            "icon": "pi pi-file-export",
             "routerLink": ["/main/production-report/report-production"]
           },
           {
             "label": "Resumen Producción Recetario",
-            "icon": "pi pi-list",
+            "icon": "pi pi-file-export",
             "routerLink": ["/main/production-report/report-resume-production"]
           },
           {
             "label": "Reporte Concentración",
-            "icon": "pi pi-list",
+            "icon": "pi pi-file-export",
             "routerLink": ["/main/production-report/report-concentration"]
           },
           {
             "label": "Reporte Historico Paciente",
-            "icon": "pi pi-list",
+            "icon": "pi pi-file-export",
             "routerLink": ["/main/production-report/report-historic-patient"]
+          }
+        ]
+      },
+      {
+        "label": "Reportes de Bupa",
+        "icon": "pi pi-fw pi-book",
+        "items": [
+          {
+            "label": "Libro de Recetas",
+            "icon": "pi pi-book",
+            "routerLink": ["/main/production-report/report-recipe-book"]
+          },
+          {
+            "label": "Planilla de Elaboración",
+            "icon": "pi pi-file-import",
+            "routerLink": [
+              "/main/production-report/report-chemotherapy-preparation-form"
+            ]
           }
         ]
       }

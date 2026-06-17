@@ -1,0 +1,34 @@
+export class ChemotherapyPreparationFormDto {
+  productionDate?: Date | string;
+  productionDateHour?: Date | string;
+  masterRecord?: string;
+  fullPatientName?: string;
+  patientRut?: string;
+  patientIdentification?: string;
+  service?: string;
+  bed?: string;
+  diagnosis?: string;
+  schema_de?: string;
+  cycleNumber?: number;
+  cycleDay?: number;
+  doctorName?: string;
+  doctorRut?: string;
+  activeIngredient?: string;
+  dose?: string;
+  batch?: string;
+  laboratory?: string;
+  expirationDate?: Date | string;
+  volumeTotal?: string;
+  complement?: string;
+  via?: string;
+  administrationTime?: string;
+  administrationDate?: Date | string;
+  expirationAdministrationDate?: Date | string;
+  expirationAdministrationDateHour?: Date | string;
+  conditionValue?: string;
+  observation?: string;
+  qfValidate?: string;
+  qfPrepare?: string;
+  technicalPrepare?: string;
+  qfConditioningTechnician?: string;
+}
