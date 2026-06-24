@@ -1050,13 +1050,13 @@ ${doseForCeroTwo}
   async printEvent() {
     this.isLoadingUpdate = true;
     try {
-      const printers = await this.zebraPrintService.getAvailablePrinters();
-      if (printers.length === 0) {
-        console.error('No printers found');
-        return;
-      }
+      // const printers = await this.zebraPrintService.getAvailablePrinters();
+      // if (printers.length === 0) {
+      //   console.error('No printers found');
+      //   return;
+      // }
 
-      this.zebraPrintService.setPrinter(printers[0]);
+      // this.zebraPrintService.setPrinter(printers[0]);
 
       if (this.headCount > 0) {
         const headZpl = this.generateHeadZpl(
@@ -1066,12 +1066,19 @@ ${doseForCeroTwo}
         await this.zebraPrintService.print(headZpl);
       }
 
+      await this.zebraPrintService.warmUpIfIdle();
+
       const isSpecial =
         this.printDetail?.master?.patientIdentification ===
         this.specialPatientIdentification;
       const bulkCopies = Number(this.bulkCopies);
       const useBulk =
         isSpecial && Number.isFinite(bulkCopies) && bulkCopies > 0;
+
+      let sentOk = 0;
+      let sentFailed = 0;
+      const failedIndexes: number[] = [];
+      let totalFailedAttempts = 0;
 
       for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
         const copies = useBulk ? bulkCopies : Number(this.copyValues[i]);
@@ -1087,8 +1094,36 @@ ${doseForCeroTwo}
         );
 
         for (let f = 0; f < copies; f++) {
-          await this.zebraPrintService.print(zpl);
+          console.log('copias', f);
+          const result = await this.zebraPrintService.printWithRetry(zpl);
+          if (result.ok) {
+            sentOk++;
+          } else {
+            sentFailed++;
+            totalFailedAttempts += result.attempts;
+            failedIndexes.push(i);
+            console.error(
+              `[printEvent] copy ${f + 1}/${copies} of detail ${i} failed after ${result.attempts} attempts`,
+              result.error,
+            );
+          }
         }
+      }
+
+      console.log('[printEvent] summary', {
+        sentOk,
+        sentFailed,
+        failedIndexes,
+        totalFailedAttempts,
+      });
+
+      if (sentFailed > 0) {
+        this.messageError = this.buildPrintErrorMessage(
+          sentOk,
+          sentFailed,
+          totalFailedAttempts,
+        );
+        this.displayError = true;
       }
     } catch (error) {
       console.error('Error during printing process:', error);
@@ -1097,6 +1132,23 @@ ${doseForCeroTwo}
       this.copyDialog = false;
       this.zebraPreview = false;
     }
+  }
+
+  private buildPrintErrorMessage(
+    sentOk: number,
+    sentFailed: number,
+    totalFailedAttempts: number,
+  ): string {
+    const total = sentOk + sentFailed;
+    const failedLabel = sentFailed === 1 ? '1 copia' : `${sentFailed} copias`;
+    const attemptLabel =
+      totalFailedAttempts === 1 ? '1 intento' : `${totalFailedAttempts} intentos`;
+    const okLabel = sentOk === 1 ? '1 copia' : `${sentOk} copias`;
+    const summary =
+      sentOk > 0
+        ? `Se imprimieron ${okLabel} correctamente, pero ${failedLabel} no se pudieron enviar tras ${attemptLabel} de conexión.`
+        : `No se pudo enviar ${failedLabel} tras ${attemptLabel} de conexión.`;
+    return `${summary} Posible causa: pérdida de comunicación con la impresora Zebra. Verifica que esté encendida, conectada a la red y con el servicio "Zebra Browser Print" activo, y vuelve a intentarlo.`;
   }
 
   editProductionProcess(details: any, operation: string) {
