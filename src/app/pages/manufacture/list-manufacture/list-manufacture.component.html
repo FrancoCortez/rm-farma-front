@@ -629,9 +629,38 @@
 </p-dialog>
 
 
-<app-spinner *ngIf="isLoadingUpdate"></app-spinner>
+<app-spinner *ngIf="isLoadingUpdate && !isPrinting"></app-spinner>
 <app-modal-success (confirm)="confirmDialog($event)" [display]="displayOk"
                    [message]="successMessage"></app-modal-success>
 <app-modal-error (confirm)="confirmDialogError($event)" [display]="displayError"
                  [message]="messageError"></app-modal-error>
+<p-dialog [(visible)]="printProgressDialog" [modal]="true" [closable]="false"
+          [closeOnEscape]="false" [style]="{width: '480px'}"
+          header="Imprimiendo etiquetas">
+  <div class="flex flex-column gap-3">
+    <div class="font-medium">
+      Impresas <strong>{{ printProgressCurrent }}</strong> de
+      {{ printProgressTotal }} copias
+    </div>
+    <p-progressBar
+      [value]="printProgressPercent"
+      [showValue]="true" unit="%">
+    </p-progressBar>
+    <div class="text-color-secondary text-sm" *ngIf="printProgressCurrentDetail">
+      Etiqueta: {{ printProgressCurrentDetail }}
+      <span *ngIf="printProgressCurrentAttempt > 1">
+        · Intento {{ printProgressCurrentAttempt }}/3
+      </span>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-2" *ngIf="printProgressResults.length > 0">
+      <i *ngFor="let r of printProgressResults"
+         class="pi"
+         [class.pi-check-circle]="r === 'ok'"
+         [class.pi-times-circle]="r === 'fail'"
+         [class.text-green-500]="r === 'ok'"
+         [class.text-red-500]="r === 'fail'"
+         style="font-size: 1.25rem"></i>
+    </div>
+  </div>
+</p-dialog>
 

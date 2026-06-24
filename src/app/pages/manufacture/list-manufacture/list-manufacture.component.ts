@@ -73,6 +73,7 @@ import { ListHistoryManufactureComponent } from '../list-history-manufacture/lis
 import { TagModule } from 'primeng/tag';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { MenuModule } from 'primeng/menu';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { CommercialProductService } from '../../../services/commercial-product.service';
 import { HospitalUnitResourceDto } from '../../../model/hospital-unit/hospital-unit-resource.dto';
 import { HospitalUnitService } from '../../../services/hospital-unit.service';
@@ -111,6 +112,7 @@ import { HospitalUnitService } from '../../../services/hospital-unit.service';
     ListHistoryManufactureComponent,
     SplitButtonModule,
     MenuModule,
+    ProgressBarModule,
   ],
   providers: [PrimeNGConfig],
   templateUrl: './list-manufacture.component.html',
@@ -161,6 +163,18 @@ export class ListManufactureComponent
   messageError = '';
   copyDialog = false;
   copyValues: number[] = [];
+  printProgressDialog = false;
+  printProgressCurrent = 0;
+  printProgressTotal = 0;
+  printProgressCurrentDetail = '';
+  printProgressCurrentAttempt = 0;
+  printProgressResults: ('ok' | 'fail')[] = [];
+  isPrinting = false;
+
+  get printProgressPercent(): number {
+    if (this.printProgressTotal <= 0) return 0;
+    return Math.round((this.printProgressCurrent / this.printProgressTotal) * 100);
+  }
 
   openHistory = false;
   historyIdentification!: { identification: string; diagnosisOrder: string };
@@ -1058,6 +1072,34 @@ ${doseForCeroTwo}
 
       // this.zebraPrintService.setPrinter(printers[0]);
 
+      const isSpecial =
+        this.printDetail?.master?.patientIdentification ===
+        this.specialPatientIdentification;
+      const bulkCopies = Number(this.bulkCopies);
+      const useBulk =
+        isSpecial && Number.isFinite(bulkCopies) && bulkCopies > 0;
+
+      let totalCopies = 0;
+      if (this.headCount > 0) totalCopies += this.headCount;
+      for (let i = 0; i < this.printDetail.detail.orderDetails.length; i++) {
+        const c = useBulk ? bulkCopies : Number(this.copyValues[i]);
+        if (Number.isFinite(c) && c > 0) totalCopies += c;
+      }
+      if (totalCopies === 0) {
+        this.isLoadingUpdate = false;
+        this.copyDialog = false;
+        this.zebraPreview = false;
+        return;
+      }
+      this.printProgressTotal = totalCopies;
+      this.printProgressCurrent = 0;
+      this.printProgressResults = [];
+      this.printProgressCurrentDetail = '';
+      this.printProgressCurrentAttempt = 0;
+      this.printProgressDialog = true;
+      this.isPrinting = true;
+      this.cdr.detectChanges();
+
       if (this.headCount > 0) {
         const headZpl = this.generateHeadZpl(
           this.printDetail.detail,
@@ -1067,13 +1109,6 @@ ${doseForCeroTwo}
       }
 
       await this.zebraPrintService.warmUpIfIdle();
-
-      const isSpecial =
-        this.printDetail?.master?.patientIdentification ===
-        this.specialPatientIdentification;
-      const bulkCopies = Number(this.bulkCopies);
-      const useBulk =
-        isSpecial && Number.isFinite(bulkCopies) && bulkCopies > 0;
 
       let sentOk = 0;
       let sentFailed = 0;
@@ -1096,17 +1131,24 @@ ${doseForCeroTwo}
         for (let f = 0; f < copies; f++) {
           console.log('copias', f);
           const result = await this.zebraPrintService.printWithRetry(zpl);
+          this.printProgressCurrentDetail =
+            this.printDetail.detail.orderDetails[i].masterRecord;
+          this.printProgressCurrentAttempt = result.attempts;
           if (result.ok) {
             sentOk++;
+            this.printProgressCurrent++;
+            this.printProgressResults.push('ok');
           } else {
             sentFailed++;
             totalFailedAttempts += result.attempts;
             failedIndexes.push(i);
+            this.printProgressResults.push('fail');
             console.error(
               `[printEvent] copy ${f + 1}/${copies} of detail ${i} failed after ${result.attempts} attempts`,
               result.error,
             );
           }
+          this.cdr.detectChanges();
         }
       }
 
@@ -1131,6 +1173,12 @@ ${doseForCeroTwo}
       this.isLoadingUpdate = false;
       this.copyDialog = false;
       this.zebraPreview = false;
+      this.printProgressDialog = false;
+      this.isPrinting = false;
+      this.printProgressResults = [];
+      this.printProgressCurrent = 0;
+      this.printProgressCurrentDetail = '';
+      this.printProgressCurrentAttempt = 0;
     }
   }
 
