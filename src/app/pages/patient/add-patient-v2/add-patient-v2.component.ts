@@ -225,13 +225,12 @@ export class AddPatientV2Component implements OnInit, OnDestroy {
       // consumed downstream as a form value, so the cast is safe and
       // preserves behavior. If the project later migrates the combos to
       // the full DTO shapes, this cast goes away.
-      console.log(this.doctorCombo.find((d) => d.code === part.doctor?.code));
       const doctorCombo = this.doctorCombo.find(
         (d) => d.code === part.doctor?.id,
       );
       const doctor: DoctorResourceDto | undefined = doctorCombo
         ? ({
-            id: doctorCombo.code,
+            code: doctorCombo.code,
             name: doctorCombo.name,
           } as DoctorResourceDto)
         : undefined;
